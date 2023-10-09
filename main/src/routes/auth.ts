@@ -1,15 +1,51 @@
 import express, {Request, Response} from 'express';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { User } from '../models/user';
 
 const router = express.Router();
 
-router.post('/login', (req: Request, res: Response) => {
+const key = 'your_secret_key';
 
+router.post('/login', (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    User.findOne({ where: { email } }).then((user) => {
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        bcrypt.compare(password, user.password).then((validPassword) => {
+            if (!validPassword) return res.status(401).json({ message: 'Wrong password' });
+
+            res.json({ token: jwt.sign({ id: user.id }, key) });
+
+        }).catch((e) => {
+            res.status(500).send('Internal Server Error');
+        });
+    }).catch((e) => {
+        res.status(500).send('Internal Server Error');
+    });
 });
 
-router.post('/register', (req: Request, res: Response) => {
+router.post('/register', async (req: Request, res: Response) => {
+    const { username, password, email, firstName, lastName } = req.body;
     
+    bcrypt.hash(password, 10).then((hashedPassword) => {
+        User.create({
+            username,
+            password: hashedPassword,
+            email,
+            firstName,
+            lastName
+        }).then((user) => {
+            res.json(user);
+        }).catch((e) => {
+            res.status(400).json({
+                error: e.errors[0].message
+            })
+        });
+    }).catch((e) => {
+        res.status(500).send('Internal Server Error');
+    });
 });
 
 export default router;

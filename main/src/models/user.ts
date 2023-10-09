@@ -10,6 +10,15 @@ class User extends Model {
   public password!: string;
 }
 
+export interface UserModel {
+  id: number,
+  email: string,
+  username: string,
+  firstName: string,
+  lastName: string,
+  password: string
+};
+
 User.init(
   {
     id: {
@@ -20,20 +29,32 @@ User.init(
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
+        validate: {
+          isEmail: true
+        }
     },
     username: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: {
+          len: [3, 255]
+        }
     },
     firstName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+          len: [0, 255]
+        }
     },
     lastName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+          len: [0, 255]
+        }
     },
     password: {
       type: DataTypes.STRING,
@@ -43,6 +64,7 @@ User.init(
   {
     sequelize,
     modelName: 'user',
+    timestamps: false
   }
 );
 
