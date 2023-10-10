@@ -8,9 +8,9 @@ const router = express.Router();
 const key = 'your_secret_key';
 
 router.post('/login', (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    User.findOne({ where: { email } }).then((user) => {
+    User.findOne({ where: (username ? { username: username } : { email: email }) }).then((user) => {
         if (!user) return res.status(404).json({ error: 'User not found' });
 
         bcrypt.compare(password, user.password).then((validPassword) => {
