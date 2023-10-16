@@ -1,10 +1,11 @@
-import express, {Request, Response} from 'express';
-import { User, UserModel } from '../models/user';
+import express from 'express';
+import { User } from '../models/User.js';
 
 const router = express.Router();
 
-router.get('/', (req: Request & { user?: UserModel }, res: Response) => {
+router.get('/', (req, res) => {
     if (!req.user) return;
+    
     User.findByPk(req.user.id).then((user) => {
 
         if (!user) return res.status(404).json({ error: 'User not found' });

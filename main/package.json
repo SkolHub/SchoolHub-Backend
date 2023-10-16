@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "main",
   "version": "1.0.0",
   "description": "",
@@ -21,7 +22,6 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
-    "sequelize": "^6.33.0",
-    "typescript": "^5.2.2"
+    "sequelize": "^6.33.0"
   }
 }

@@ -1,30 +1,21 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '../db';
+import { sequelize } from '../db.js';
 
 class User extends Model {
-  public id!: number;
-  public email!: string;
-  public username!: string;
-  public firstName!: string;
-  public lastName!: string;
-  public password!: string;
+  id;
+  email;
+  username;
+  firstName;
+  lastName;
+  password;
 }
-
-export interface UserModel {
-  id: number,
-  email: string,
-  username: string,
-  firstName: string,
-  lastName: string,
-  password: string
-};
 
 User.init(
   {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
-        primaryKey: true,
+        primaryKey: true
     },
     email: {
         type: DataTypes.STRING,
@@ -46,14 +37,14 @@ User.init(
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: [0, 255]
+          len: [1, 255]
         }
     },
     lastName: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: [0, 255]
+          len: [1, 255]
         }
     },
     password: {
