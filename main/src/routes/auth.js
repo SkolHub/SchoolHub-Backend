@@ -13,6 +13,8 @@ router.post('/login', (req, res) => {
     User.findOne({ where: (username ? { username: username } : { email: email }) }).then((user) => {
         if (!user) return res.status(404).json({ message: 'User not found' });
 
+        user = user.dataValues;
+
         bcrypt.compare(password, user.password).then((validPassword) => {
             if (!validPassword) return res.status(401).json({ message: 'Wrong password' });
 

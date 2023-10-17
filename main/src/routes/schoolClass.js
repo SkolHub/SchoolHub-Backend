@@ -1,15 +1,10 @@
-import express from "express";
-import { SchoolClass } from "../models/SchoolClass.js";
-
-import gradeRouter from './grade.js';
+import express from 'express';
+import { SchoolClass } from '../models/SchoolClass.js';
+import { User } from '../models/User.js';
 
 const router = express.Router();
 
-//router.use('/:id/grade', gradeRouter);
-
 router.get('/:id', (req, res) => {
-    if (!req.user) return;
-
     SchoolClass.findByPk(req.params.id)
     .then((classes) => {
         res.json(classes);
@@ -19,8 +14,6 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    if (!req.user) return;
-
     const { organizationId, name, identifier, subject, icon, theme } = req.body;
 
     SchoolClass.create({
@@ -39,8 +32,6 @@ router.post('/', (req, res) => {
 });
 
 router.post('/:id/join', (req, res) => {
-    if (!req.user) return;
-
     const { user_id } = req.body;
 
     User.findByPk(user_id)
@@ -67,8 +58,6 @@ router.post('/:id/join', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-    if (!req.user) return;
-
     const { name, identifier, subject, icon, theme } = req.body;
 
     SchoolClass.update({
@@ -89,8 +78,6 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-    if (!req.user) return;
-
     SchoolClass.destroy({
         where: {
             id: req.params.id

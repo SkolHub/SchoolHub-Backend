@@ -7,8 +7,6 @@ const router = express.Router();
 // Object.getOwnPropertyNames(Object.getPrototypeOf(user))
 
 router.get('/:id/classes', (req, res) => {
-    if (!req.user) return;
-
     User.findByPk(req.user.id)
     .then((user) => {
         user.getSchoolclasses().then((classes) => {
@@ -22,8 +20,6 @@ router.get('/:id/classes', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-    if (!req.user) return;
-
     User.findByPk(req.user.id)
     .then((user) => {
         user.getOrganizations({
@@ -39,8 +35,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    if (!req.user) return;
-
     const { name } = req.body;
 
     Organization.create({
@@ -54,8 +48,6 @@ router.post('/', (req, res) => {
 });
 
 router.post('/:id/join', (req, res) => {
-    if (!req.user) return;
-
     const { user_id, role } = req.body;
 
     User.findByPk(user_id)
@@ -81,8 +73,6 @@ router.post('/:id/join', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-    if (!req.user) return;
-
     const { name } = req.body;
 
     Organization.update({
@@ -99,8 +89,6 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-    if (!req.user) return;
-
     Organization.destroy({
         where: {
           id: req.params.id,
