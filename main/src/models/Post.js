@@ -10,11 +10,23 @@ export const post = sequelize.define('post',
         },
         title: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false
         },
         body: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false
+        },
+        creator: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        type: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        schoolclassId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         }
     },
     {

@@ -1,5 +1,6 @@
 import express from 'express';
 import { Grade } from '../models/Grade.js';
+import { SchoolClass } from '../models/SchoolClass.js';
 
 const router = express.Router();
 
@@ -23,14 +24,22 @@ router.get('/teacher/:classId', (req, res) => {
 router.post('/:classId', (req, res) => {
     const { value, date, userId } = req.body;
 
-    Grade.create({
-        value,
-        date,
-        schoolclassId: req.params.classId,
-        userId,
-        organizationId: 1 // TO BE MODIFIED WITH ACTUAL ORGANIZATION
-    }).then((grade) => {
-        res.json(grade);
+    SchoolClass.findByPk(req.params.classId)
+    .then((schoolClass) => {
+        if (!schoolClass) return res.status(404).json({ message: 'class not found' });
+
+        Grade.create({
+            value,
+            date,
+            schoolclassId: req.params.classId,
+            userId,
+            organizationId: schoolClass.organizationId
+        }).then((grade) => {
+            res.json(grade);
+        }).catch((e) => {
+            res.status(500).json(e);
+        });
+
     }).catch((e) => {
         res.status(500).json(e);
     });

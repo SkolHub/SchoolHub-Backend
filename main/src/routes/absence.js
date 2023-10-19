@@ -1,5 +1,6 @@
 import express from 'express';
 import { Absence } from '../models/Absence.js';
+import { SchoolClass } from '../models/SchoolClass.js';
 
 const router = express.Router();
 
@@ -19,14 +20,22 @@ router.get('/student/:organizationId', (req, res) => {
 router.post('/:classId', (req, res) => {
     const { date, userId } = req.body;
 
-    Absence.create({
-        excused: false,
-        date,
-        schoolclassId: req.params.classId,
-        userId,
-        organizationId: 1 // TO BE MODIFIED WITH ACTUAL ORGANIZATION
-    }).then((absence) => {
-        res.json(absence);
+    SchoolClass.findByPk(req.params.classId)
+    .then((schoolClass) => {
+        if (!schoolClass) return res.status(404).json({ message: 'class not found' });
+
+        Absence.create({
+            excused: false,
+            date,
+            schoolclassId: req.params.classId,
+            userId,
+            organizationId: schoolClass.organizationId
+        }).then((absence) => {
+            res.json(absence);
+        }).catch((e) => {
+            res.status(500).json(e);
+        });
+
     }).catch((e) => {
         res.status(500).json(e);
     });

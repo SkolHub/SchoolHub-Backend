@@ -9,6 +9,7 @@ import organizationRouter from './routes/organization.js';
 import schoolClassRouter from './routes/schoolClass.js';
 import gradeRouter from './routes/grade.js';
 import absenceRouter from './routes/absence.js';
+import postRouter from './routes/post.js'
 
 import { sequelize } from './db.js';
 import { authenticateToken } from './middleware/auth.js';
@@ -28,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-const forceSync = false;
+const forceSync = true;
 
 sequelize.sync({ force: forceSync }).then(() => {
     console.log(`Database synced ${ forceSync ? 'and resetted ' : '' }✅`);
@@ -43,6 +44,21 @@ sequelize.sync({ force: forceSync }).then(() => {
                 lastName: 'example'
             });
         });
+
+        Organization.create({
+            name: 'Test Organization',
+            creator: 1
+        });
+
+        SchoolClass.create({
+            organizationId: 1,
+            name: 'Test class',
+            identifier: '10D',
+            subject: 'CS',
+            icon: 'leaf',
+            theme: 'green',
+            creator: 1
+        })
     }
 });
 
@@ -74,6 +90,7 @@ app.use('/api/organization', authenticateToken, organizationRouter);
 app.use('/api/class', authenticateToken, schoolClassRouter);
 app.use('/api/grade', authenticateToken, gradeRouter);
 app.use('/api/absence', authenticateToken, absenceRouter);
+app.use('/api/post', authenticateToken, postRouter);
 
 app.listen(PORT, () => {
     console.log(`✅ Server is running on port ${PORT}`);
