@@ -11,13 +11,13 @@ router.get("/", (req: Request, res: Response) => {
       },
     })
     .then((account) => {
-      res.json({
+      console.log({
         username: account?.username,
         email: account?.email,
         firstName: account?.firstName,
         lastName: account?.lastName,
         id: account?.id,
-      });
+      })
     })
     .catch((e) => {
       res.status(500).json(e);

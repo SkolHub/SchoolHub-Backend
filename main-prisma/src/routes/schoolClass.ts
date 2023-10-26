@@ -14,7 +14,7 @@ const schoolClassContentValidator = [
 ];
 
 router.get("/:id/student", (req: Request, res: Response) => {
-    
+
 });
 
 router.post(
@@ -58,11 +58,11 @@ router.put(
           id: +req.params.id,
         },
         data: {
-          ...(name && { name }),
-          ...(identifier && { identifier }),
-          ...(subject && { subject }),
-          ...(icon && { icon }),
-          ...(theme && { theme }),
+          name: name,
+          identifier: identifier,
+          subject: subject,
+          icon: icon,
+          theme: theme,
         },
       })
       .then((schoolClass) => {

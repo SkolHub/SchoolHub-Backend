@@ -78,7 +78,13 @@ router.post(
             },
           })
           .then((user) => {
-            res.json(user);
+            res.json({
+              username: user?.username,
+              email: user?.email,
+              firstName: user?.firstName,
+              lastName: user?.lastName,
+              id: user?.id,
+            });
           })
           .catch((e) => {
             res.status(500).send("Internal Server Error");
