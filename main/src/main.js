@@ -9,7 +9,6 @@ import organizationRouter from './routes/organization.js';
 import schoolClassRouter from './routes/schoolClass.js';
 import gradeRouter from './routes/grade.js';
 import absenceRouter from './routes/absence.js';
-import postRouter from './routes/post.js'
 
 import { sequelize } from './db.js';
 import { authenticateToken } from './middleware/auth.js';
@@ -90,7 +89,6 @@ app.use('/api/organization', authenticateToken, organizationRouter);
 app.use('/api/class', authenticateToken, schoolClassRouter);
 app.use('/api/grade', authenticateToken, gradeRouter);
 app.use('/api/absence', authenticateToken, absenceRouter);
-app.use('/api/post', authenticateToken, postRouter);
 
 app.listen(PORT, () => {
     console.log(`✅ Server is running on port ${PORT}`);

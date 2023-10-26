@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgres://postgres:test12345@localhost:5432/schoolhub"
+}
+
+model User {
+  id            Int                @id @default(autoincrement())
+  username      String             @unique
+  email         String             @unique
+  firstName     String
+  lastName      String
+  password      String
+  organizations UserOrganization[]
+  schoolClasses UserSchoolClass[]
+  grades        Grade[]
+  absences      Absence[]
+  posts         Post[]
+}
+
+model Organization {
+  id            Int                @id @default(autoincrement())
+  name          String
+  creatorId     Int
+  users         UserOrganization[]
+  schoolClasses SchoolClass[]
+  grades        Grade[]
+  absences      Absence[]
+  posts         Post[]
+}
+
+model UserOrganization {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  organizationId Int
+  role           String
+  user           User         @relation(fields: [userId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model SchoolClass {
+  id             Int               @id @default(autoincrement())
+  name           String
+  identifier     String
+  subject        String
+  icon           String
+  theme          String
+  creatorId      Int
+  users          UserSchoolClass[]
+  grades         Grade[]
+  absences       Absence[]
+  posts          Post[]
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  organizationId Int
+}
+
+model UserSchoolClass {
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  schoolClass   SchoolClass @relation(fields: [schoolClassId], references: [id])
+  schoolClassId Int
+}
+
+model Grade {
+  id             Int          @id @default(autoincrement())
+  date           DateTime
+  value          String
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  schoolClass    SchoolClass  @relation(fields: [schoolClassId], references: [id])
+  schoolClassId  Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int
+}
+
+model Absence {
+  id             Int          @id @default(autoincrement())
+  date           DateTime
+  excused        Boolean
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  schoolClass    SchoolClass  @relation(fields: [schoolClassId], references: [id])
+  schoolClassId  Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int
+}
+
+model Post {
+  id             Int              @id @default(autoincrement())
+  title          String
+  body           String
+  type           String
+  user           User             @relation(fields: [userId], references: [id])
+  userId         Int
+  schoolClass    SchoolClass      @relation(fields: [schoolClassId], references: [id])
+  schoolClassId  Int
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  organizationId Int
+  attachments    PostAttachment[]
+  submissions    Submission[]
+  comments       PostComment[]
+}
+
+model PostAttachment {
+  id     Int    @id @default(autoincrement())
+  name   String
+  post   Post   @relation(fields: [postId], references: [id])
+  postId Int
+}
+
+model Submission {
+  id          Int                    @id @default(autoincrement())
+  submitted   Boolean
+  post        Post                   @relation(fields: [postId], references: [id])
+  postId      Int
+  attachments SubmissionAttachment[]
+}
+
+model SubmissionAttachment {
+  id           Int        @id @default(autoincrement())
+  name         String
+  submission   Submission @relation(fields: [submissionId], references: [id])
+  submissionId Int
+}
+
+model PostComment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  body      String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+}

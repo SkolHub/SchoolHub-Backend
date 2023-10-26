@@ -15,7 +15,7 @@ export const organizationSlice = createSlice({
     name: 'organization',
     initialState,
     reducers: {
-        
+
     }
 });
 
