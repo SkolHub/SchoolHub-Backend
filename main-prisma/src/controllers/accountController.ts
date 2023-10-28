@@ -1,9 +1,7 @@
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import prisma from '../../prisma/prisma-client';
 
-const router = express.Router();
-
-router.get('/', (req: Request, res: Response) => {
+const getAccount = (req: Request, res: Response) => {
 	prisma.user
 		.findUnique({
 			where: {
@@ -22,6 +20,6 @@ router.get('/', (req: Request, res: Response) => {
 		.catch((e) => {
 			res.status(500).json(e);
 		});
-});
+};
 
-export default router;
+export default { getAccount };

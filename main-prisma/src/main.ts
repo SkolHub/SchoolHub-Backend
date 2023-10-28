@@ -1,16 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 
-import authRouter from './routes/auth';
-import accountController from './routes/account';
-import organizationController from './routes/organization';
-import classController from './routes/schoolClass';
-import gradeController from './routes/grade';
-import absenceController from './routes/absence';
-import postController from './routes/post';
-import postCommentController from './routes/postComment';
-import attachmentController from './routes/attachment';
-import submissionController from './routes/submission';
+import authRouter from './routes/authRouter';
+import accountController from './routes/accountRouter';
+import organizationController from './routes/organizationRouter';
+import classController from './routes/schoolClassRouter';
+import gradeController from './routes/gradeRouter';
+import absenceController from './routes/absenceRouter';
+import postController from './routes/postRouter';
+import postCommentController from './routes/postCommentRouter';
+import attachmentController from './routes/attachmentRouter';
+import submissionController from './routes/submissionRouter';
 
 import { authenticateToken } from './middleware/authMiddleware';
 
