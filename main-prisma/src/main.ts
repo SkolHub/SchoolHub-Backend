@@ -7,8 +7,12 @@ import organizationController from './routes/organization';
 import classController from './routes/schoolClass';
 import gradeController from './routes/grade';
 import absenceController from './routes/absence';
+import postController from './routes/post';
+import postCommentController from './routes/postComment';
+import attachmentController from './routes/attachment';
+import submissionController from './routes/submission';
 
-import { authenticateToken } from './middleware/auth';
+import { authenticateToken } from './middleware/authMiddleware';
 
 const PORT = 8000;
 
@@ -23,7 +27,11 @@ app.use('/api/organization', authenticateToken, organizationController);
 app.use('/api/class', authenticateToken, classController);
 app.use('/api/grade', authenticateToken, gradeController);
 app.use('/api/absence', authenticateToken, absenceController);
+app.use('/api/post', authenticateToken, postController);
+app.use('/api/post_comment', authenticateToken, postCommentController);
+app.use('/api/attachment', authenticateToken, attachmentController);
+app.use('/api/submission', authenticateToken, submissionController);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT} ✅`);
+	console.log(`Server is running on port ${PORT} ✅`);
 });

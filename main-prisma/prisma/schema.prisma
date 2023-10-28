@@ -18,6 +18,7 @@ model User {
   schoolClasses UserSchoolClass[]
   grades        Grade[]
   absences      Absence[]
+  submissions   Submission[]
 }
 
 model Organization {
@@ -103,23 +104,28 @@ model Post {
 }
 
 model PostAttachment {
-  id     Int    @id @default(autoincrement())
-  name   String
-  post   Post   @relation(fields: [postId], references: [id])
-  postId Int
+  id       Int    @id @default(autoincrement())
+  filepath String
+  filename String
+  post     Post   @relation(fields: [postId], references: [id])
+  postId   Int
 }
 
 model Submission {
   id          Int                    @id @default(autoincrement())
   submitted   Boolean
+  submittedAt DateTime
   post        Post                   @relation(fields: [postId], references: [id])
   postId      Int
+  user        User                   @relation(fields: [userId], references: [id])
+  userId      Int
   attachments SubmissionAttachment[]
 }
 
 model SubmissionAttachment {
   id           Int        @id @default(autoincrement())
-  name         String
+  filepath     String
+  filename     String
   submission   Submission @relation(fields: [submissionId], references: [id])
   submissionId Int
 }
