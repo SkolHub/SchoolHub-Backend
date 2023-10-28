@@ -1,14 +1,14 @@
-import express, { Request, Response } from "express";
-import prisma from "../../prisma/prisma-client";
+import express, { Request, Response } from 'express';
+import prisma from '../../prisma/prisma-client';
 
 const router = express.Router();
 
-router.get("/", (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
   prisma.user
     .findUnique({
       where: {
-        id: req.body.user,
-      },
+        id: req.body.user
+      }
     })
     .then((account) => {
       console.log({
@@ -16,8 +16,8 @@ router.get("/", (req: Request, res: Response) => {
         email: account?.email,
         firstName: account?.firstName,
         lastName: account?.lastName,
-        id: account?.id,
-      })
+        id: account?.id
+      });
     })
     .catch((e) => {
       res.status(500).json(e);

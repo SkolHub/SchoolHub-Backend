@@ -1,24 +1,22 @@
-import express, { Request, Response } from "express";
-import { body } from "express-validator";
-import prisma from "../../prisma/prisma-client";
-import { validate } from "../middleware/validator";
+import express, { Request, Response } from 'express';
+import { body } from 'express-validator';
+import prisma from '../../prisma/prisma-client';
+import { validate } from '../middleware/validator';
 
 const router = express.Router();
 
 const schoolClassContentValidator = [
-  body("name").exists().isString().isLength({ min: 3, max: 255 }),
-  body("identifier").exists().isString().isLength({ min: 3, max: 255 }),
-  body("subject").exists().isString().isLength({ min: 3, max: 255 }),
-  body("icon").exists().isString().isLength({ min: 3, max: 255 }),
-  body("theme").exists().isString().isLength({ min: 3, max: 255 }),
+  body('name').exists().isString().isLength({ min: 3, max: 255 }),
+  body('identifier').exists().isString().isLength({ min: 3, max: 255 }),
+  body('subject').exists().isString().isLength({ min: 3, max: 255 }),
+  body('icon').exists().isString().isLength({ min: 3, max: 255 }),
+  body('theme').exists().isString().isLength({ min: 3, max: 255 })
 ];
 
-router.get("/:id/student", (req: Request, res: Response) => {
-
-});
+router.get('/:id/student', (req: Request, res: Response) => {});
 
 router.post(
-  "/:organizationId",
+  '/:organizationId',
   schoolClassContentValidator,
   validate,
   (req: Request, res: Response) => {
@@ -33,8 +31,8 @@ router.post(
           icon,
           theme,
           creatorId: +req.body.user,
-          organizationId: +req.params.organizationId,
-        },
+          organizationId: +req.params.organizationId
+        }
       })
       .then((schoolClass) => {
         res.json(schoolClass);
@@ -46,7 +44,7 @@ router.post(
 );
 
 router.put(
-  "/:id",
+  '/:id',
   schoolClassContentValidator,
   validate,
   (req: Request, res: Response) => {
@@ -55,15 +53,15 @@ router.put(
     prisma.schoolClass
       .update({
         where: {
-          id: +req.params.id,
+          id: +req.params.id
         },
         data: {
           name: name,
           identifier: identifier,
           subject: subject,
           icon: icon,
-          theme: theme,
-        },
+          theme: theme
+        }
       })
       .then((schoolClass) => {
         res.json(schoolClass);
@@ -74,12 +72,12 @@ router.put(
   }
 );
 
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete('/:id', (req: Request, res: Response) => {
   prisma.schoolClass
     .delete({
       where: {
-        id: +req.params.id,
-      },
+        id: +req.params.id
+      }
     })
     .then((schoolClass) => {
       res.json(schoolClass);

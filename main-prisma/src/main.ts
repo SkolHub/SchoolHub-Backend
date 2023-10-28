@@ -25,5 +25,5 @@ app.use('/api/grade', authenticateToken, gradeController);
 app.use('/api/absence', authenticateToken, absenceController);
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT} ✅`);
+  console.log(`Server is running on port ${PORT} ✅`);
 });

@@ -1,24 +1,24 @@
-import express, { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { body, oneOf } from "express-validator";
-import prisma from "../../prisma/prisma-client";
-import { validate } from "../middleware/validator";
+import express, { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { body, oneOf } from 'express-validator';
+import prisma from '../../prisma/prisma-client';
+import { validate } from '../middleware/validator';
 
 const router = express.Router();
 
-const key = "your_secret_key";
+const key = 'your_secret_key';
 
 const loginValidator = [
   oneOf([
-    body("username").optional().isString(),
-    body("email").optional().isString(),
+    body('username').optional().isString(),
+    body('email').optional().isString()
   ]),
-  body("password").exists().isString(),
+  body('password').exists().isString()
 ];
 
 router.post(
-  "/login",
+  '/login',
   loginValidator,
   validate,
   (req: Request, res: Response) => {
@@ -26,39 +26,39 @@ router.post(
 
     prisma.user
       .findUnique({
-        where: username ? { username } : { email },
+        where: username ? { username } : { email }
       })
       .then((user) => {
-        if (!user) return res.status(404).json({ message: "User not found" });
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
         bcrypt
           .compare(password, user.password)
           .then((validPassword) => {
             if (!validPassword)
-              return res.status(401).json({ message: "Wrong password" });
+              return res.status(401).json({ message: 'Wrong password' });
 
             res.json({ token: jwt.sign({ id: user.id }, key) });
           })
           .catch((e) => {
-            res.status(500).send("Internal Server Error");
+            res.status(500).send('Internal Server Error');
           });
       })
       .catch((e) => {
-        res.status(500).send("Internal Server Error");
+        res.status(500).send('Internal Server Error');
       });
   }
 );
 
 const registerValidator = [
-  body("username").exists().isString().isLength({ min: 3, max: 255 }),
-  body("email").exists().isEmail(),
-  body("password").exists().isString().isLength({ min: 4, max: 255 }),
-  body("firstName").exists().isString().isLength({ min: 1, max: 255 }),
-  body("lastName").exists().isString().isLength({ min: 1, max: 255 }),
+  body('username').exists().isString().isLength({ min: 3, max: 255 }),
+  body('email').exists().isEmail(),
+  body('password').exists().isString().isLength({ min: 4, max: 255 }),
+  body('firstName').exists().isString().isLength({ min: 1, max: 255 }),
+  body('lastName').exists().isString().isLength({ min: 1, max: 255 })
 ];
 
 router.post(
-  "/register",
+  '/register',
   registerValidator,
   validate,
   async (req: Request, res: Response) => {
@@ -74,8 +74,8 @@ router.post(
               password: hashedPassword,
               email,
               firstName,
-              lastName,
-            },
+              lastName
+            }
           })
           .then((user) => {
             res.json({
@@ -83,15 +83,15 @@ router.post(
               email: user?.email,
               firstName: user?.firstName,
               lastName: user?.lastName,
-              id: user?.id,
+              id: user?.id
             });
           })
           .catch((e) => {
-            res.status(500).send("Internal Server Error");
+            res.status(500).send('Internal Server Error');
           });
       })
       .catch((e) => {
-        res.status(500).send("Internal Server Error");
+        res.status(500).send('Internal Server Error');
       });
   }
 );

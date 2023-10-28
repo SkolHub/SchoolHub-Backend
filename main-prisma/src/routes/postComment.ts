@@ -1,16 +1,16 @@
-import express, { Request, Response } from "express";
-import { body } from "express-validator";
-import prisma from "../../prisma/prisma-client";
-import { validate } from "../middleware/validator";
+import express, { Request, Response } from 'express';
+import { body } from 'express-validator';
+import prisma from '../../prisma/prisma-client';
+import { validate } from '../middleware/validator';
 
 const router = express.Router();
 
-router.get("/:postId", (req: Request, res: Response) => {
+router.get('/:postId', (req: Request, res: Response) => {
   prisma.postComment
     .findMany({
       where: {
-        postId: +req.params.postId,
-      },
+        postId: +req.params.postId
+      }
     })
     .then((comments) => {
       res.json(comments);
@@ -21,11 +21,11 @@ router.get("/:postId", (req: Request, res: Response) => {
 });
 
 const postCommentContentValidator = [
-  body("body").exists().isString().isLength({ min: 1 }),
+  body('body').exists().isString().isLength({ min: 1 })
 ];
 
 router.post(
-  "/:postId",
+  '/:postId',
   postCommentContentValidator,
   validate,
   (req: Request, res: Response) => {
@@ -36,8 +36,8 @@ router.post(
         data: {
           body,
           userId: +req.body.user,
-          postId: +req.params.postId,
-        },
+          postId: +req.params.postId
+        }
       })
       .then((comment) => {
         res.json(comment);
@@ -49,7 +49,7 @@ router.post(
 );
 
 router.put(
-  "/:id",
+  '/:id',
   postCommentContentValidator,
   validate,
   (req: Request, res: Response) => {
@@ -58,11 +58,11 @@ router.put(
     prisma.postComment
       .update({
         where: {
-          id: +req.params.id,
+          id: +req.params.id
         },
         data: {
-          body,
-        },
+          body
+        }
       })
       .then((comment) => {
         res.json(comment);
@@ -73,12 +73,12 @@ router.put(
   }
 );
 
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete('/:id', (req: Request, res: Response) => {
   prisma.postComment
     .delete({
       where: {
-        id: +req.params.id,
-      },
+        id: +req.params.id
+      }
     })
     .then((comment) => {
       res.json(comment);

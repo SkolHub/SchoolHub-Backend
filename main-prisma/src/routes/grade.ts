@@ -1,17 +1,17 @@
-import express, { Request, Response } from "express";
-import { body } from "express-validator";
-import prisma from "../../prisma/prisma-client";
-import { validate } from "../middleware/validator";
+import express, { Request, Response } from 'express';
+import { body } from 'express-validator';
+import prisma from '../../prisma/prisma-client';
+import { validate } from '../middleware/validator';
 
 const router = express.Router();
 
-router.get("/class/:classId/student", (req: Request, res: Response) => {
+router.get('/class/:classId/student', (req: Request, res: Response) => {
   prisma.grade
     .findMany({
       where: {
         schoolClassId: +req.params.classId,
-        userId: req.body.user,
-      },
+        userId: req.body.user
+      }
     })
     .then((grades) => {
       res.json(grades);
@@ -22,13 +22,13 @@ router.get("/class/:classId/student", (req: Request, res: Response) => {
 });
 
 router.get(
-  "/organization/:organizationId/student",
+  '/organization/:organizationId/student',
   (req: Request, res: Response) => {
     prisma.grade
       .findMany({
         where: {
-          organizationId: +req.params.organizationId,
-        },
+          organizationId: +req.params.organizationId
+        }
       })
       .then((grades) => {
         res.json(grades);
@@ -40,13 +40,13 @@ router.get(
 );
 
 const createGradeValidator = [
-  body("value").exists().isString().isLength({ min: 1, max: 255 }),
-  body("date").exists().isDate(),
-  body("User").exists().isInt(),
+  body('value').exists().isString().isLength({ min: 1, max: 255 }),
+  body('date').exists().isDate(),
+  body('User').exists().isInt()
 ];
 
 router.post(
-  "/:classId",
+  '/:classId',
   createGradeValidator,
   validate,
   (req: Request, res: Response) => {
@@ -55,12 +55,12 @@ router.post(
     prisma.schoolClass
       .findUnique({
         where: {
-          id: +req.params.classId,
-        },
+          id: +req.params.classId
+        }
       })
       .then((schoolClass) => {
         if (!schoolClass)
-          return res.status(404).json({ message: "Class not found." });
+          return res.status(404).json({ message: 'Class not found.' });
 
         prisma.grade
           .create({
@@ -69,8 +69,8 @@ router.post(
               value,
               userId: user,
               schoolClassId: schoolClass.id,
-              organizationId: schoolClass.organizationId,
-            },
+              organizationId: schoolClass.organizationId
+            }
           })
           .then((grade) => {
             res.json(grade);
@@ -86,12 +86,12 @@ router.post(
 );
 
 const updateGradeValidator = [
-  body("value").exists().isString().isLength({ min: 1, max: 255 }),
-  body("date").exists().isDate(),
+  body('value').exists().isString().isLength({ min: 1, max: 255 }),
+  body('date').exists().isDate()
 ];
 
 router.put(
-  "/:id",
+  '/:id',
   updateGradeValidator,
   validate,
   (req: Request, res: Response) => {
@@ -100,12 +100,12 @@ router.put(
     prisma.grade
       .update({
         where: {
-          id: +req.params.id,
+          id: +req.params.id
         },
         data: {
           date,
-          value,
-        },
+          value
+        }
       })
       .then((grade) => {
         res.json(grade);
@@ -116,12 +116,12 @@ router.put(
   }
 );
 
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete('/:id', (req: Request, res: Response) => {
   prisma.grade
     .delete({
       where: {
-        id: +req.params.id,
-      },
+        id: +req.params.id
+      }
     })
     .then((grade) => {
       res.json(grade);

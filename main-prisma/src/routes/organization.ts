@@ -1,19 +1,19 @@
-import express, { Request, Response } from "express";
-import { body } from "express-validator";
-import prisma from "../../prisma/prisma-client";
-import { validate } from "../middleware/validator";
+import express, { Request, Response } from 'express';
+import { body } from 'express-validator';
+import prisma from '../../prisma/prisma-client';
+import { validate } from '../middleware/validator';
 
 const router = express.Router();
 
 const organizationContentValidator = [
-  body("name").exists().isString().isLength({ min: 1, max: 255 }),
+  body('name').exists().isString().isLength({ min: 1, max: 255 })
 ];
 
-router.get("/", (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
   prisma.userOrganization
     .findMany({
       where: { userId: +req.body.user },
-      include: { organization: true },
+      include: { organization: true }
     })
     .then((organizations) => {
       res.json(organizations);
@@ -24,7 +24,7 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 router.post(
-  "/",
+  '/',
   organizationContentValidator,
   validate,
   (req: Request, res: Response) => {
@@ -34,8 +34,8 @@ router.post(
       .create({
         data: {
           name,
-          creatorId: req.body.user,
-        },
+          creatorId: req.body.user
+        }
       })
       .then((organization) => {
         res.json(organization);
@@ -47,7 +47,7 @@ router.post(
 );
 
 router.put(
-  "/:id",
+  '/:id',
   organizationContentValidator,
   validate,
   (req: Request, res: Response) => {
@@ -56,11 +56,11 @@ router.put(
     prisma.organization
       .update({
         where: {
-          id: +req.params.id,
+          id: +req.params.id
         },
         data: {
-          name,
-        },
+          name
+        }
       })
       .then((organization) => {
         res.json(organization);
@@ -71,12 +71,12 @@ router.put(
   }
 );
 
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete('/:id', (req: Request, res: Response) => {
   prisma.organization
     .delete({
       where: {
-        id: +req.params.id,
-      },
+        id: +req.params.id
+      }
     })
     .then((organization) => {
       res.json(organization);

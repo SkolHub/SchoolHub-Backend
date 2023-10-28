@@ -1,16 +1,17 @@
-import express, { Request, Response } from "express";
-import { body } from "express-validator";
-import prisma from "../../prisma/prisma-client";
-import { validate } from "../middleware/validator";
+import express, { Request, Response } from 'express';
+import { body } from 'express-validator';
+import prisma from '../../prisma/prisma-client';
+import { validate } from '../middleware/validator';
+import multer from 'multer';
 
 const router = express.Router();
 
-router.get("/class/:classId/student", (req: Request, res: Response) => {
+router.get('/class/:classId/student', (req: Request, res: Response) => {
   prisma.post
     .findMany({
       where: {
         schoolClassId: +req.params.classId
-      },
+      }
     })
     .then((posts) => {
       res.json(posts);
@@ -21,13 +22,13 @@ router.get("/class/:classId/student", (req: Request, res: Response) => {
 });
 
 router.get(
-  "/organization/:organizationId/student",
+  '/organization/:organizationId/student',
   (req: Request, res: Response) => {
     prisma.post
       .findMany({
         where: {
-          organizationId: +req.params.organizationId,
-        },
+          organizationId: +req.params.organizationId
+        }
       })
       .then((posts) => {
         res.json(posts);
@@ -39,13 +40,13 @@ router.get(
 );
 
 const createPostValidator = [
-  body("title").exists().isString().isLength({ min: 1, max: 255 }),
-  body("body").exists().isString().isLength({ min: 1 }),
-  body("type").exists().isIn(["announcement", "assignment"])
+  body('title').exists().isString().isLength({ min: 1, max: 255 }),
+  body('body').exists().isString().isLength({ min: 1 }),
+  body('type').exists().isIn(['announcement', 'assignment'])
 ];
 
 router.post(
-  "/:classId",
+  '/:classId',
   createPostValidator,
   validate,
   (req: Request, res: Response) => {
@@ -54,26 +55,29 @@ router.post(
     prisma.schoolClass
       .findUnique({
         where: {
-          id: +req.params.classId,
-        },
+          id: +req.params.classId
+        }
       })
       .then((schoolClass) => {
         if (!schoolClass)
-          return res.status(404).json({ message: "Class not found." });
+          return res.status(404).json({ message: 'Class not found.' });
 
-        prisma.post.create({
+        prisma.post
+          .create({
             data: {
-                body,
-                title,
-                type,
-                schoolClassId: schoolClass.id,
-                organizationId: schoolClass.id
+              body,
+              title,
+              type,
+              schoolClassId: schoolClass.id,
+              organizationId: schoolClass.id
             }
-        }).then((post) => {
+          })
+          .then((post) => {
             res.json(post);
-        }).catch((e) => {
+          })
+          .catch((e) => {
             res.status(500).json(e);
-        });
+          });
       })
       .catch((e) => {
         res.status(500).json(e);
@@ -82,12 +86,12 @@ router.post(
 );
 
 const updatePostValidator = [
-    body("title").exists().isString().isLength({ min: 1, max: 255 }),
-    body("body").exists().isString().isLength({ min: 1 })
-  ];
+  body('title').exists().isString().isLength({ min: 1, max: 255 }),
+  body('body').exists().isString().isLength({ min: 1 })
+];
 
 router.put(
-  "/:id",
+  '/:id',
   updatePostValidator,
   validate,
   (req: Request, res: Response) => {
@@ -96,12 +100,12 @@ router.put(
     prisma.post
       .update({
         where: {
-          id: +req.params.id,
+          id: +req.params.id
         },
         data: {
-            title,
-            body
-        },
+          title,
+          body
+        }
       })
       .then((post) => {
         res.json(post);
@@ -112,12 +116,12 @@ router.put(
   }
 );
 
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete('/:id', (req: Request, res: Response) => {
   prisma.post
     .delete({
       where: {
-        id: +req.params.id,
-      },
+        id: +req.params.id
+      }
     })
     .then((post) => {
       res.json(post);

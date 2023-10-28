@@ -1,17 +1,17 @@
-import express, { Request, Response } from "express";
-import { body } from "express-validator";
-import prisma from "../../prisma/prisma-client";
-import { validate } from "../middleware/validator";
+import express, { Request, Response } from 'express';
+import { body } from 'express-validator';
+import prisma from '../../prisma/prisma-client';
+import { validate } from '../middleware/validator';
 
 const router = express.Router();
 
-router.get("/class/:classId/student", (req: Request, res: Response) => {
+router.get('/class/:classId/student', (req: Request, res: Response) => {
   prisma.absence
     .findMany({
       where: {
         schoolClassId: +req.params.classId,
-        userId: req.body.user,
-      },
+        userId: req.body.user
+      }
     })
     .then((absences) => {
       res.json(absences);
@@ -22,13 +22,13 @@ router.get("/class/:classId/student", (req: Request, res: Response) => {
 });
 
 router.get(
-  "/organization/:organizationId/student",
+  '/organization/:organizationId/student',
   (req: Request, res: Response) => {
     prisma.absence
       .findMany({
         where: {
-          organizationId: +req.params.organizationId,
-        },
+          organizationId: +req.params.organizationId
+        }
       })
       .then((absences) => {
         res.json(absences);
@@ -40,12 +40,12 @@ router.get(
 );
 
 const createAbsenceValidator = [
-  body("date").exists().isDate(),
-  body("User").exists().isInt()
+  body('date').exists().isDate(),
+  body('user').exists().isInt()
 ];
 
 router.post(
-  "/:classId",
+  '/:classId',
   createAbsenceValidator,
   validate,
   (req: Request, res: Response) => {
@@ -54,12 +54,12 @@ router.post(
     prisma.absence
       .findUnique({
         where: {
-          id: +req.params.classId,
-        },
+          id: +req.params.classId
+        }
       })
       .then((schoolClass) => {
         if (!schoolClass)
-          return res.status(404).json({ message: "Class not found." });
+          return res.status(404).json({ message: 'Class not found.' });
 
         prisma.absence
           .create({
@@ -68,8 +68,8 @@ router.post(
               excused: false,
               userId: user,
               schoolClassId: schoolClass.id,
-              organizationId: schoolClass.organizationId,
-            },
+              organizationId: schoolClass.organizationId
+            }
           })
           .then((absence) => {
             res.json(absence);
@@ -84,12 +84,10 @@ router.post(
   }
 );
 
-const updateAbsenceValidator = [
-  body("excused").exists().isBoolean()
-];
+const updateAbsenceValidator = [body('excused').exists().isBoolean()];
 
 router.put(
-  "/:id",
+  '/:id',
   updateAbsenceValidator,
   validate,
   (req: Request, res: Response) => {
@@ -98,11 +96,11 @@ router.put(
     prisma.absence
       .update({
         where: {
-          id: +req.params.id,
+          id: +req.params.id
         },
         data: {
           excused
-        },
+        }
       })
       .then((absence) => {
         res.json(absence);
@@ -113,12 +111,12 @@ router.put(
   }
 );
 
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete('/:id', (req: Request, res: Response) => {
   prisma.absence
     .delete({
       where: {
-        id: +req.params.id,
-      },
+        id: +req.params.id
+      }
     })
     .then((absence) => {
       res.json(absence);
