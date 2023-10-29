@@ -17,7 +17,13 @@ const createOrganization = (req: Request, res: Response) => {
 	const promise = prisma.organization.create({
 		data: {
 			name,
-			creatorId: req.body.user
+			creatorId: req.body.user,
+			users: {
+				create: {
+					role: 'admin',
+					userId: req.body.user
+				}
+			}
 		}
 	});
 
