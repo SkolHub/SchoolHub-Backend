@@ -1,71 +1,52 @@
 import { Request, Response } from 'express';
 import prisma from '../../prisma/prisma-client';
+import { handleResponse } from '../handlers/responseHandler';
 
 const getOrganizations = (req: Request, res: Response) => {
-	prisma.userOrganization
-		.findMany({
-			where: { userId: +req.body.user },
-			include: { organization: true }
-		})
-		.then((organizations) => {
-			res.json(organizations);
-		})
-		.catch((e) => {
-			res.status(500).json(e);
-		});
+	const promise = prisma.userOrganization.findMany({
+		where: { userId: +req.body.user },
+		include: { organization: true }
+	});
+
+	handleResponse(promise, res);
 };
 
 const createOrganization = (req: Request, res: Response) => {
 	const { name } = req.body;
 
-	prisma.organization
-		.create({
-			data: {
-				name,
-				creatorId: req.body.user
-			}
-		})
-		.then((organization) => {
-			res.json(organization);
-		})
-		.catch((e) => {
-			res.status(500).json(e);
-		});
+	const promise = prisma.organization.create({
+		data: {
+			name,
+			creatorId: req.body.user
+		}
+	});
+
+	handleResponse(promise, res);
 };
 
 const updateOrganization = (req: Request, res: Response) => {
 	const { name } = req.body;
 
-	prisma.organization
-		.update({
-			where: {
-				id: +req.params.id
-			},
-			data: {
-				name
-			}
-		})
-		.then((organization) => {
-			res.json(organization);
-		})
-		.catch((e) => {
-			res.status(500).json(e);
-		});
+	const promise = prisma.organization.update({
+		where: {
+			id: +req.params.id
+		},
+		data: {
+			name
+		}
+	});
+
+	handleResponse(promise, res);
 };
 
 const deleteOrganization = (req: Request, res: Response) => {
-	prisma.organization
-		.delete({
-			where: {
-				id: +req.params.id
-			}
-		})
-		.then((organization) => {
-			res.json(organization);
-		})
-		.catch((e) => {
-			res.status(500).json(e);
-		});
+	const promise = prisma.organization.delete({
+		where: {
+			id: +req.params.id
+		}
+	});
+
+	handleResponse(promise, res);
 };
 
 export default {

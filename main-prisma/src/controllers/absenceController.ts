@@ -1,91 +1,67 @@
 import { Request, Response } from 'express';
 import prisma from '../../prisma/prisma-client';
+import { handleResponse } from '../handlers/responseHandler';
 
 const getClassAbsences = (req: Request, res: Response) => {
-	prisma.absence
-		.findMany({
-			where: {
-				schoolClassId: +req.params.classId,
-				userId: req.body.user
-			}
-		})
-		.then((absences) => {
-			res.json(absences);
-		})
-		.catch((e) => {
-			res.status(500).json(e);
-		});
+	const promise = prisma.absence.findMany({
+		where: {
+			schoolClassId: +req.params.classId,
+			userId: req.body.user
+		}
+	});
+
+	handleResponse(promise, res);
 };
 
 const getOrganizationAbsences = (req: Request, res: Response) => {
-	prisma.absence
-		.findMany({
-			where: {
-				organizationId: +req.params.organizationId
-			}
-		})
-		.then((absences) => {
-			res.json(absences);
-		})
-		.catch((e) => {
-			res.status(500).json(e);
-		});
+	const promise = prisma.absence.findMany({
+		where: {
+			organizationId: +req.params.organizationId
+		}
+	});
+
+	handleResponse(promise, res);
 };
 
 const createAbsence = (req: Request, res: Response) => {
 	const { date, user, schoolClass } = req.body;
 
-	prisma.absence
-		.create({
-			data: {
-				date,
-				excused: false,
-				userId: user,
-				schoolClassId: schoolClass.id,
-				organizationId: schoolClass.organizationId
-			}
-		})
-		.then((absence) => {
-			res.json(absence);
-		})
-		.catch((e) => {
-			res.status(500).json(e);
-		});
+	const promise = prisma.absence.create({
+		data: {
+			date,
+			excused: false,
+			userId: user,
+			schoolClassId: schoolClass.id,
+			organizationId: schoolClass.organizationId
+		}
+	});
+
+	handleResponse(promise, res);
 };
 
 const excuseAbsence = (req: Request, res: Response) => {
 	const { excused } = req.body;
 
-	prisma.absence
-		.update({
-			where: {
-				id: +req.params.id
-			},
-			data: {
-				excused
-			}
-		})
-		.then((absence) => {
-			res.json(absence);
-		})
-		.catch((e) => {
-			res.status(500).json(e);
-		});
+	const promise = prisma.absence.update({
+		where: {
+			id: +req.params.id
+		},
+		data: {
+			excused
+		}
+	});
+
+	handleResponse(promise, res);
 };
 
 const deleteAbsence = (req: Request, res: Response) => {
-	prisma.absence
-		.delete({
-			where: {
-				id: +req.params.id
-			}
-		})
-		.then((absence) => {
-			res.json(absence);
-		})
-		.catch((e) => {
-			res.status(500).json(e);
-		});
+	const promise = prisma.absence.delete({
+		where: {
+			id: +req.params.id
+		}
+	});
+
+	handleResponse(promise, res);
 };
 
 export default {
