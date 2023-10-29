@@ -10,7 +10,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 
 	jwt.verify(token, SECRET_KEY, (err, user) => {
 		if (err) return res.status(403).json({ message: 'Forbidden' });
-		req.body.user = user;
+		req.body.user = (user as jwt.JwtPayload).id;
 		next();
 	});
 };

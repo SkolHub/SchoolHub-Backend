@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import prisma from '../../prisma/prisma-client';
 
 const getAccount = (req: Request, res: Response) => {
+	console.log(333)
 	prisma.user
 		.findUnique({
 			where: {
@@ -9,6 +10,7 @@ const getAccount = (req: Request, res: Response) => {
 			}
 		})
 		.then((account) => {
+			console.log(555)
 			res.json({
 				username: account?.username,
 				email: account?.email,
@@ -18,6 +20,7 @@ const getAccount = (req: Request, res: Response) => {
 			});
 		})
 		.catch((e) => {
+			console.log(e)
 			res.status(500).json(e);
 		});
 };
