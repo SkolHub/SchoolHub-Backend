@@ -5,7 +5,8 @@ import { handleResponse } from '../handlers/responseHandler';
 const getClassPosts = (req: Request, res: Response) => {
 	const promise = prisma.post.findMany({
 		where: {
-			schoolClassId: +req.params.classId
+			schoolClassId: +req.params.classId,
+			type: (req.query.type as string | undefined)
 		},
 		include: {
 			attachments: true,
@@ -19,7 +20,8 @@ const getClassPosts = (req: Request, res: Response) => {
 const getOrganizationPosts = (req: Request, res: Response) => {
 	const promise = prisma.post.findMany({
 		where: {
-			organizationId: +req.params.organizationId
+			organizationId: +req.params.organizationId,
+			type: (req.query.type as string | undefined)
 		},
 		include: {
 			attachments: true,

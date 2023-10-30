@@ -7,7 +7,7 @@ const router = express.Router();
 
 const schoolClassContentValidator = [
 	body('name').exists().isString().isLength({ min: 3, max: 255 }),
-	body('identifier').exists().isString().isLength({ min: 3, max: 255 }),
+	body('identifier').exists().isString().isLength({ min: 1, max: 255 }),
 	body('subject').exists().isString().isLength({ min: 3, max: 255 }),
 	body('icon').exists().isString().isLength({ min: 3, max: 255 }),
 	body('theme').exists().isString().isLength({ min: 3, max: 255 })

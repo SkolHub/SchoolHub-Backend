@@ -14,7 +14,7 @@ router.get(
 );
 
 const createAbsenceValidator = [
-	body('date').exists().isDate(),
+	body('date').exists().isISO8601(),
 	body('user').exists().isInt()
 ];
 

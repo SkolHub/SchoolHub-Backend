@@ -5,7 +5,8 @@ const handleResponse = (promise: Promise<any>, res: Response) => {
 		.then((data) => {
 			res.json(data);
 		})
-		.catch(() => {
+		.catch((e) => {
+			console.log(e);
 			res.status(500).json({ message: 'Internal server error' });
 		});
 };

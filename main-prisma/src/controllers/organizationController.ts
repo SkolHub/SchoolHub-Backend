@@ -5,7 +5,15 @@ import { handleResponse } from '../handlers/responseHandler';
 const getOrganizations = (req: Request, res: Response) => {
 	const promise = prisma.userOrganization.findMany({
 		where: { userId: +req.body.user },
-		include: { organization: true }
+		select: {
+			organization: {
+				select: {
+					id: true,
+					name: true
+				}
+			},
+			role: true
+		}
 	});
 
 	handleResponse(promise, res);

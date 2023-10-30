@@ -1,6 +1,5 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import { body } from 'express-validator';
-import prisma from '../../prisma/prisma-client';
 import { validate } from '../middleware/validatorMiddleware';
 import upload from '../../multer/upload';
 import { schoolClassExists } from '../middleware/existsMiddleware';
