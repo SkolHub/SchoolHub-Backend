@@ -26,7 +26,7 @@ model Organization {
   name          String
   creatorId     Int
   users         UserOrganization[]
-  schoolClasses SchoolClass[]
+  schoolClasses UserSchoolClass[]
   grades        Grade[]
   absences      Absence[]
   posts         Post[]
@@ -53,7 +53,6 @@ model SchoolClass {
   grades         Grade[]
   absences       Absence[]
   posts          Post[]
-  organization   Organization      @relation(fields: [organizationId], references: [id])
   organizationId Int
 }
 
@@ -63,6 +62,8 @@ model UserSchoolClass {
   userId        Int
   schoolClass   SchoolClass @relation(fields: [schoolClassId], references: [id])
   schoolClassId Int
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  organizationId Int
 }
 
 model Grade {

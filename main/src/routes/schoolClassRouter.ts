@@ -5,6 +5,8 @@ import schoolClassController from '../controllers/schoolClassController';
 
 const router = express.Router();
 
+router.get('/:organizationId', schoolClassController.getClasses);
+
 const schoolClassContentValidator = [
 	body('name').exists().isString().isLength({ min: 3, max: 255 }),
 	body('identifier').exists().isString().isLength({ min: 1, max: 255 }),

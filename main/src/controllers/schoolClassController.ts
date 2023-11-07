@@ -2,6 +2,20 @@ import { Request, Response } from 'express';
 import prisma from '../../prisma/prisma-client';
 import { handleResponse } from '../handlers/responseHandler';
 
+const getClasses = (req: Request, res: Response) => {
+	const promise = prisma.userSchoolClass.findMany({
+		where: {
+			userId: req.body.user,
+			organizationId: +req.params.organizationId
+		},
+		select: {
+			schoolClass: true
+		}
+	});
+
+	handleResponse(promise, res);
+};
+
 const createSchoolClass = (req: Request, res: Response) => {
 	const { name, identifier, subject, icon, theme } = req.body;
 
@@ -13,7 +27,13 @@ const createSchoolClass = (req: Request, res: Response) => {
 			icon,
 			theme,
 			creatorId: +req.body.user,
-			organizationId: +req.params.organizationId
+			organizationId: +req.params.organizationId,
+			users: {
+				create: {
+					organizationId: +req.params.organizationId,
+					userId: +req.body.user
+				}
+			}
 		}
 	});
 
@@ -49,4 +69,9 @@ const deleteSchoolClass = (req: Request, res: Response) => {
 	handleResponse(promise, res);
 };
 
-export default { createSchoolClass, updateSchoolClass, deleteSchoolClass };
+export default {
+	getClasses,
+	createSchoolClass,
+	updateSchoolClass,
+	deleteSchoolClass
+};
