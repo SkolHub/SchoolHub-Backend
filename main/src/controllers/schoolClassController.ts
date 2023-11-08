@@ -9,7 +9,18 @@ const getClasses = (req: Request, res: Response) => {
 			organizationId: +req.params.organizationId
 		},
 		select: {
-			schoolClass: true
+			schoolClass: { 
+				include: {
+					creator: {
+						select: {
+							firstName: true,
+							lastName: true,
+							username: true,
+							email: true
+						}
+					}
+				}
+			}
 		}
 	});
 

@@ -19,6 +19,7 @@ model User {
   grades        Grade[]
   absences      Absence[]
   submissions   Submission[]
+  SchoolClass   SchoolClass[]
 }
 
 model Organization {
@@ -48,21 +49,22 @@ model SchoolClass {
   subject        String
   icon           String
   theme          String
-  creatorId      Int
   users          UserSchoolClass[]
   grades         Grade[]
   absences       Absence[]
   posts          Post[]
+  creator        User              @relation(fields: [creatorId], references: [id])
+  creatorId      Int
   organizationId Int
 }
 
 model UserSchoolClass {
-  id            Int         @id @default(autoincrement())
-  user          User        @relation(fields: [userId], references: [id])
-  userId        Int
-  schoolClass   SchoolClass @relation(fields: [schoolClassId], references: [id])
-  schoolClassId Int
-  organization   Organization      @relation(fields: [organizationId], references: [id])
+  id             Int          @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  schoolClass    SchoolClass  @relation(fields: [schoolClassId], references: [id])
+  schoolClassId  Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId Int
 }
 

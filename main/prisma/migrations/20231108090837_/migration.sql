@@ -48,6 +48,7 @@ CREATE TABLE "UserSchoolClass" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "schoolClassId" INTEGER NOT NULL,
+    "organizationId" INTEGER NOT NULL,
 
     CONSTRAINT "UserSchoolClass_pkey" PRIMARY KEY ("id")
 );
@@ -143,13 +144,16 @@ ALTER TABLE "UserOrganization" ADD CONSTRAINT "UserOrganization_userId_fkey" FOR
 ALTER TABLE "UserOrganization" ADD CONSTRAINT "UserOrganization_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SchoolClass" ADD CONSTRAINT "SchoolClass_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SchoolClass" ADD CONSTRAINT "SchoolClass_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserSchoolClass" ADD CONSTRAINT "UserSchoolClass_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserSchoolClass" ADD CONSTRAINT "UserSchoolClass_schoolClassId_fkey" FOREIGN KEY ("schoolClassId") REFERENCES "SchoolClass"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserSchoolClass" ADD CONSTRAINT "UserSchoolClass_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Grade" ADD CONSTRAINT "Grade_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
