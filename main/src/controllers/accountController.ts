@@ -24,6 +24,33 @@ const getAccount = (req: Request, res: Response) => {
 		});
 };
 
+const updateAccount = (req: Request, res: Response) => {
+	prisma.user
+		.update({
+			where: {
+				id: req.user!
+			},
+			data: {
+				username: req.body.username,
+				email: req.body.email,
+				firstName: req.body.firstName,
+				lastName: req.body.lastName
+			}
+		})
+		.then((account) => {
+			res.json({
+				username: account?.username,
+				email: account?.email,
+				firstName: account?.firstName,
+				lastName: account?.lastName,
+				id: account?.id
+			});
+		})
+		.catch(() => {
+			res.status(500).json({ message: 'Internal server error' });
+		});
+};
+
 const updateProfilePicture = (req: Request, res: Response) => {
 	if (!req.file) return res.status(400).json({ message: 'No picture' });
 
@@ -44,4 +71,4 @@ const updateProfilePicture = (req: Request, res: Response) => {
 		});
 };
 
-export default { getAccount, updateProfilePicture };
+export default { getAccount, updateAccount, updateProfilePicture };
