@@ -1,12 +1,11 @@
 import multer from 'multer';
+import path from 'path';
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    console.log(222)
-    cb(null, '/uploads');
+    cb(null, path.join(__dirname, '/uploads'));
   },
   filename(req, file, cb) {
-    console.log(111)
     cb(
       null,
       `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`

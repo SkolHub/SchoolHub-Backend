@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { Request } from '../models/requestModel';
 import prisma from '../../prisma/prisma-client';
 
 const isStudentInOrganization = (
@@ -10,7 +11,7 @@ const isStudentInOrganization = (
 		.findFirst({
 			where: {
 				organizationId: +req.params.organizationId,
-				userId: req.body.user
+				userId: req.user!
 			}
 		})
 		.then((userOrganization) => {
@@ -39,7 +40,7 @@ const isTeacherInOrganization = (
 		.findFirst({
 			where: {
 				organizationId: +req.params.organizationId,
-				userId: req.body.user
+				userId: req.user!
 			}
 		})
 		.then((userOrganization) => {
@@ -68,7 +69,7 @@ const isAdminInOrganization = (
 		.findFirst({
 			where: {
 				organizationId: +req.params.organizationId,
-				userId: req.body.user
+				userId: req.user!
 			}
 		})
 		.then((userOrganization) => {

@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { Request } from '../models/requestModel';
 import prisma from '../../prisma/prisma-client';
 import { handleResponse } from '../handlers/responseHandler';
 
@@ -6,7 +7,7 @@ const getSubmission = (req: Request, res: Response) => {
 	const promise = prisma.submission.findFirst({
 		where: {
 			postId: +req.params.postId,
-			userId: +req.body.user
+			userId: +req.user!
 		},
 		include: {
 			attachments: true

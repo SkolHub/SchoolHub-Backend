@@ -1,10 +1,11 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { Request } from '../models/requestModel';
 import prisma from '../../prisma/prisma-client';
 import { handleResponse } from '../handlers/responseHandler';
 
 const getOrganizations = (req: Request, res: Response) => {
 	const promise = prisma.userOrganization.findMany({
-		where: { userId: +req.body.user },
+		where: { userId: +req.user! },
 		select: {
 			organization: {
 				select: {
@@ -25,11 +26,11 @@ const createOrganization = (req: Request, res: Response) => {
 	const promise = prisma.organization.create({
 		data: {
 			name,
-			creatorId: req.body.user,
+			creatorId: req.user!,
 			users: {
 				create: {
 					role: 'admin',
-					userId: req.body.user
+					userId: req.user!
 				}
 			}
 		}

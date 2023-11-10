@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { Request } from '../models/requestModel';
 import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = 'your_secret_key';
@@ -10,7 +11,8 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 
 	jwt.verify(token.slice(7), SECRET_KEY, (err, user) => {
 		if (err) return res.status(403).json({ message: 'Forbidden' });
-		req.body.user = (user as jwt.JwtPayload).id;
+
+		req.user! = (user as jwt.JwtPayload).id;
 		next();
 	});
 };

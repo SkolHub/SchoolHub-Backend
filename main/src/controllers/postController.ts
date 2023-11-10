@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { Request } from '../models/requestModel';
 import prisma from '../../prisma/prisma-client';
 import { handleResponse } from '../handlers/responseHandler';
 

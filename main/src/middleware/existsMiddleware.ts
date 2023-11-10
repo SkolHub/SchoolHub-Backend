@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { Request } from '../models/requestModel';
 import prisma from '../../prisma/prisma-client';
 
 const schoolClassExists = (req: Request, res: Response, next: NextFunction) => {
@@ -47,7 +48,7 @@ const submissionExists = (req: Request, res: Response, next: NextFunction) => {
 		.findFirst({
 			where: {
 				postId: +req.params.postId,
-				userId: +req.body.user
+				userId: +req.user!
 			}
 		})
 		.then((submission) => {
@@ -58,7 +59,7 @@ const submissionExists = (req: Request, res: Response, next: NextFunction) => {
 							submitted: false,
 							submittedAt: new Date(),
 							postId: +req.params.postId,
-							userId: +req.body.user
+							userId: +req.user!
 						}
 					})
 					.then((createdSubmission) => {
