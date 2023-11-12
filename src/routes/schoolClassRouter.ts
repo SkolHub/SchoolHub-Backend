@@ -1,11 +1,8 @@
-import express from 'express';
-import { body } from 'express-validator';
-import { validate } from '../middleware/validatorMiddleware';
-import schoolClassController from '../controllers/schoolClassController';
+import {express, body, validate, schoolClassController} from '../modules/routerModule';
 
 const router = express.Router();
 
-router.get('/:organizationId', schoolClassController.getClasses);
+router.get('/:organizationId', schoolClassController.getSchoolClasses);
 
 const schoolClassContentValidator = [
 	body('name').exists().isString().isLength({ min: 3, max: 255 }),

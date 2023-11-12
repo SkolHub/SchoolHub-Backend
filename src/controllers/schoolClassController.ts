@@ -1,9 +1,6 @@
-import { Response } from 'express';
-import { Request } from '../models/requestModel';
-import prisma from '../../prisma/prisma-client';
-import { handleResponse } from '../handlers/responseHandler';
+import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
 
-const getClasses = (req: Request, res: Response) => {
+const getSchoolClasses = (req: Request, res: Response) => {
 	const promise = prisma.userSchoolClass.findMany({
 		where: {
 			userId: req.user!,
@@ -82,7 +79,7 @@ const deleteSchoolClass = (req: Request, res: Response) => {
 };
 
 export default {
-	getClasses,
+	getSchoolClasses,
 	createSchoolClass,
 	updateSchoolClass,
 	deleteSchoolClass

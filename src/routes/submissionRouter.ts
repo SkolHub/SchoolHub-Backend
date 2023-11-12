@@ -1,9 +1,4 @@
-import express from 'express';
-import { body } from 'express-validator';
-import upload from '../../multer/upload';
-import { validate } from '../middleware/validatorMiddleware';
-import { submissionExists } from '../middleware/existsMiddleware';
-import submissionController from '../controllers/submissionController';
+import {express, body, validate, upload, submissionExists, submissionController} from '../modules/routerModule';
 
 const router = express.Router();
 

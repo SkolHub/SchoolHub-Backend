@@ -1,10 +1,12 @@
-import express from 'express';
-import { body } from 'express-validator';
-import { validate } from '../middleware/validatorMiddleware';
-import upload from '../../multer/upload';
-import { schoolClassExists } from '../middleware/existsMiddleware';
-import postController from '../controllers/postController';
-import { saveFormData } from '../middleware/formDataMiddleware';
+import {
+	express,
+	body,
+	validate,
+	schoolClassExists,
+	upload,
+	postController,
+	saveFormData
+} from '../modules/routerModule';
 
 const router = express.Router();
 

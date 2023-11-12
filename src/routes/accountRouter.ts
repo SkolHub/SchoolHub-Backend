@@ -1,8 +1,10 @@
-import express from 'express';
-import accountController from '../controllers/accountController';
-import upload from '../../multer/upload';
-import { body } from 'express-validator';
-import { validate } from '../middleware/validatorMiddleware';
+import {
+	express,
+	body,
+	validate,
+	upload,
+	accountController
+} from '../modules/routerModule';
 
 const router = express.Router();
 

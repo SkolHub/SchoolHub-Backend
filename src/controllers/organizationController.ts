@@ -1,7 +1,4 @@
-import { Response } from 'express';
-import { Request } from '../models/requestModel';
-import prisma from '../../prisma/prisma-client';
-import { handleResponse } from '../handlers/responseHandler';
+import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
 
 const getOrganizations = (req: Request, res: Response) => {
 	const promise = prisma.userOrganization.findMany({
@@ -30,7 +27,8 @@ const createOrganization = (req: Request, res: Response) => {
 			users: {
 				create: {
 					role: 'admin',
-					userId: req.user!
+					userId: req.user!,
+					organizationName: 'admin'
 				}
 			}
 		}

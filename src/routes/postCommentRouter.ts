@@ -1,7 +1,9 @@
-import express from 'express';
-import { body } from 'express-validator';
-import { validate } from '../middleware/validatorMiddleware';
-import postCommentController from '../controllers/postCommentController';
+import {
+	express,
+	body,
+	validate,
+	postCommentController
+} from '../modules/routerModule';
 
 const router = express.Router();
 

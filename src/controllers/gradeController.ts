@@ -1,7 +1,4 @@
-import { Response } from 'express';
-import { Request } from '../models/requestModel';
-import prisma from '../../prisma/prisma-client';
-import { handleResponse } from '../handlers/responseHandler';
+import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
 
 const getClassGrades = (req: Request, res: Response) => {
 	const promise = prisma.grade.findMany({

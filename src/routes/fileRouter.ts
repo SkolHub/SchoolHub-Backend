@@ -1,5 +1,4 @@
-import express from 'express';
-import attachmentController from '../controllers/attachmentController';
+import { express, attachmentController } from '../modules/routerModule';
 
 const router = express.Router();
 

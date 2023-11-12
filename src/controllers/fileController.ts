@@ -1,5 +1,4 @@
-import { Response } from 'express';
-import { Request } from '../models/requestModel';
+import { Request, Response } from '../modules/controllerModule';
 import path from 'path';
 
 const getFile = (req: Request, res: Response) => {

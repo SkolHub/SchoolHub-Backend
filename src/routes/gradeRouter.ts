@@ -1,8 +1,10 @@
-import express from 'express';
-import { body } from 'express-validator';
-import { validate } from '../middleware/validatorMiddleware';
-import { schoolClassExists } from '../middleware/existsMiddleware';
-import gradeController from '../controllers/gradeController';
+import {
+	express,
+	body,
+	validate,
+	schoolClassExists,
+	gradeController
+} from '../modules/routerModule';
 
 const router = express.Router();
 

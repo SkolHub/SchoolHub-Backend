@@ -1,8 +1,6 @@
-import { Response } from 'express';
-import { Request } from '../models/requestModel';
+import { Request, Response, prisma } from '../modules/controllerModule';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import prisma from '../../prisma/prisma-client';
 
 const key = 'your_secret_key';
 

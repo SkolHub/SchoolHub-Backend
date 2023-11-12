@@ -5,7 +5,7 @@ Backend for SchoolHub
 
 To initialize the database, run
 
-`npx prisma migrate dev`
+`npx run init`
 
 
 To start the backend, run

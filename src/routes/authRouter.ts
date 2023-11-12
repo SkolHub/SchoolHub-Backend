@@ -1,7 +1,10 @@
-import express from 'express';
-import { body, oneOf } from 'express-validator';
-import { validate } from '../middleware/validatorMiddleware';
-import authController from '../controllers/authController';
+import {
+	express,
+	body,
+	oneOf,
+	validate,
+	authController
+} from '../modules/routerModule';
 
 const router = express.Router();
 
