@@ -17,6 +17,7 @@ model User {
   picturePath   String?
   organizations UserOrganization[]
   schoolClasses UserSchoolClass[]
+  classGroups   UserClassGroup[]
   grades        Grade[]
   absences      Absence[]
   submissions   Submission[]
@@ -61,6 +62,14 @@ model SchoolClass {
   organizationId Int
 }
 
+model ClassGroup {
+  id             Int                     @id @default(autoincrement())
+  name           String
+  organizationId Int
+  schoolClasses  ClassGroupSchoolClass[]
+  users UserClassGroup[]
+}
+
 model UserSchoolClass {
   id             Int          @id @default(autoincrement())
   user           User         @relation(fields: [userId], references: [id])
@@ -69,6 +78,22 @@ model UserSchoolClass {
   schoolClassId  Int
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId Int
+}
+
+model ClassGroupSchoolClass {
+  id            Int         @id @default(autoincrement())
+  schoolClass   SchoolClass @relation(fields: [schoolClassId], references: [id])
+  schoolClassId Int
+  classGroup    ClassGroup  @relation(fields: [classGroupId], references: [id])
+  classGroupId  Int
+}
+
+model UserClassGroup {
+  id            Int         @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  classGroup    ClassGroup  @relation(fields: [classGroupId], references: [id])
+  classGroupId  Int
 }
 
 model Grade {
@@ -143,21 +168,6 @@ model PostComment {
   createdAt DateTime @default(now())
   post      Post     @relation(fields: [postId], references: [id])
   postId    Int
-}
-
-model ClassGroup {
-  id             Int                     @id @default(autoincrement())
-  name           String
-  organizationId Int
-  schoolClasses  ClassGroupSchoolClass[]
-}
-
-model ClassGroupSchoolClass {
-  id            Int         @id @default(autoincrement())
-  schoolClass   SchoolClass @relation(fields: [schoolClassId], references: [id])
-  schoolClassId Int
-  classGroup    ClassGroup  @relation(fields: [classGroupId], references: [id])
-  classGroupId  Int
 }
 
 model OrganizationInvitations {

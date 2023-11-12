@@ -11,6 +11,7 @@ import {
 	fileRouter,
 	gradeRouter,
 	inviteLinkRouter,
+	isAdminInOrganization,
 	organizationRouter,
 	postCommentRouter,
 	postRouter,
