@@ -4,6 +4,7 @@ import { validate } from '../middleware/validatorMiddleware';
 import upload from '../../multer/upload';
 import { schoolClassExists } from '../middleware/existsMiddleware';
 import postController from '../controllers/postController';
+import { saveFormData } from '../middleware/formDataMiddleware';
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ const createPostValidator = [
 
 router.post(
 	'/:classId',
+	saveFormData,
 	createPostValidator,
 	validate,
 	schoolClassExists,

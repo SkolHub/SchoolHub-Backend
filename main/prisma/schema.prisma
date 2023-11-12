@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgres://postgres:test12345@localhost:5432/schoolhub"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -35,26 +35,28 @@ model Organization {
 }
 
 model UserOrganization {
-  id             Int          @id @default(autoincrement())
-  userId         Int
-  organizationId Int
-  role           String
-  user           User         @relation(fields: [userId], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  id               Int          @id @default(autoincrement())
+  userId           Int
+  organizationId   Int
+  role             String
+  organizationName String
+  user             User         @relation(fields: [userId], references: [id])
+  organization     Organization @relation(fields: [organizationId], references: [id])
 }
 
 model SchoolClass {
-  id             Int               @id @default(autoincrement())
+  id             Int                     @id @default(autoincrement())
   name           String
   identifier     String
   subject        String
   icon           String
   theme          String
   users          UserSchoolClass[]
+  classGroups    ClassGroupSchoolClass[]
   grades         Grade[]
   absences       Absence[]
   posts          Post[]
-  creator        User              @relation(fields: [creatorId], references: [id])
+  creator        User                    @relation(fields: [creatorId], references: [id])
   creatorId      Int
   organizationId Int
 }
@@ -141,4 +143,26 @@ model PostComment {
   createdAt DateTime @default(now())
   post      Post     @relation(fields: [postId], references: [id])
   postId    Int
+}
+
+model ClassGroup {
+  id             Int                     @id @default(autoincrement())
+  name           String
+  organizationId Int
+  schoolClasses  ClassGroupSchoolClass[]
+}
+
+model ClassGroupSchoolClass {
+  id            Int         @id @default(autoincrement())
+  schoolClass   SchoolClass @relation(fields: [schoolClassId], references: [id])
+  schoolClassId Int
+  classGroup    ClassGroup  @relation(fields: [classGroupId], references: [id])
+  classGroupId  Int
+}
+
+model OrganizationInvitations {
+  id               Int    @id @default(autoincrement())
+  organizationId   Int
+  organizationName String
+  role             String
 }

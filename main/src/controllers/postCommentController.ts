@@ -58,3 +58,7 @@ export default {
 	updatePostComment,
 	deletePostComment
 };
+
+function x(y: number) {
+	return 69;
+}

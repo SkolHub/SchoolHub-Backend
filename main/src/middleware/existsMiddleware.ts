@@ -13,7 +13,7 @@ const schoolClassExists = (req: Request, res: Response, next: NextFunction) => {
 			if (!schoolClass)
 				return res.status(404).json({ message: 'Class not found.' });
 
-			req.body.schoolClass = schoolClass;
+			req.schoolClass = schoolClass;
 
 			next();
 		});
@@ -34,7 +34,7 @@ const organizationExists = (
 			if (!organization)
 				return res.status(404).json({ message: 'Organization not found.' });
 
-			req.body.schoolClass = organization;
+			req.organization = organization;
 
 			next();
 		})
@@ -63,13 +63,13 @@ const submissionExists = (req: Request, res: Response, next: NextFunction) => {
 						}
 					})
 					.then((createdSubmission) => {
-						req.body.submission = createdSubmission;
+						req.submission = createdSubmission;
 					})
 					.catch((e) => {
 						res.json(e);
 					});
 			} else {
-				req.body.submission = submission;
+				req.submission = submission;
 			}
 
 			next();

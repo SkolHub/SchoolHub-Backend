@@ -7,6 +7,8 @@ interface Request extends ExpressRequest {
 
 	file?: Express.Multer.File;
 
+	formData?: any;
+
 	schoolClass?: SchoolClass;
 	organization?: Organization;
 	submission?: Submission;
