@@ -17,8 +17,8 @@ router.get(
 
 const createGradeValidator = [
 	body('value').exists().isString().isLength({ min: 1, max: 255 }),
-	body('date').exists().isDate(),
-	body('User').exists().isInt()
+	body('date').exists().isISO8601(),
+	body('user').exists().isInt()
 ];
 
 router.post(
@@ -31,7 +31,7 @@ router.post(
 
 const updateGradeValidator = [
 	body('value').exists().isString().isLength({ min: 1, max: 255 }),
-	body('date').exists().isDate()
+	body('date').exists().isISO8601()
 ];
 
 router.put('/:id', updateGradeValidator, validate, gradeController.updateGrade);

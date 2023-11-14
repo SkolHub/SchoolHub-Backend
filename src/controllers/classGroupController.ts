@@ -1,52 +1,59 @@
-import {
-	Request,
-	Response,
-	prisma
-} from '../modules/controllerModule';
+import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
 
 const getGroupClass = (req: Request, res: Response) => {
-	req.promise = prisma.classGroup.findUnique({
+	const promise = prisma.classGroup.findUnique({
 		where: {
 			id: +req.params.groupId
+		},
+		include: {
+			schoolClasses: true
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const getGroupClasses = (req: Request, res: Response) => {
-	req.promise = prisma.classGroup.findMany({
+	const promise = prisma.classGroup.findMany({
 		where: {
 			organizationId: +req.params.organizationId
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const createClassGroup = (req: Request, res: Response) => {
 	const { name } = req.body;
 
-	req.promise = prisma.classGroup.create({
+	const promise = prisma.classGroup.create({
 		data: {
 			name,
 			organizationId: +req.params.organizationId
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const addClassesToGroup = (req: Request, res: Response) => {
 	const classes: number[] = req.body.classes;
 
-	req.promise = prisma.classGroupSchoolClass.createMany({
+	const promise = prisma.classGroupSchoolClass.createMany({
 		data: classes.map((schoolClassId) => ({
 			schoolClassId,
 			classGroupId: +req.params.groupId
 		})),
 		skipDuplicates: true
 	});
+
+	handleResponse(promise, res);
 };
 
 const updateClassGroup = (req: Request, res: Response) => {
 	const { name } = req.body;
 
-	req.promise = prisma.classGroup.update({
+	const promise = prisma.classGroup.update({
 		where: {
 			id: +req.params.groupId
 		},
@@ -54,23 +61,29 @@ const updateClassGroup = (req: Request, res: Response) => {
 			name
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const deleteClassGroup = (req: Request, res: Response) => {
-	req.promise = prisma.classGroup.delete({
+	const promise = prisma.classGroup.delete({
 		where: {
 			id: +req.params.groupId
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const removeClassFromGroup = (req: Request, res: Response) => {
-	req.promise = prisma.classGroupSchoolClass.deleteMany({
+	const promise = prisma.classGroupSchoolClass.deleteMany({
 		where: {
 			classGroupId: +req.params.groupId,
 			schoolClassId: +req.params.classId
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 export default {

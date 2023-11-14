@@ -1,7 +1,7 @@
-import { Request, Response, prisma } from '../modules/controllerModule';
+import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
 
 const getClassPosts = (req: Request, res: Response) => {
-	req.promise = prisma.post.findMany({
+	const promise = prisma.post.findMany({
 		where: {
 			schoolClassId: +req.params.classId,
 			type: (req.query.type as string | undefined)
@@ -11,10 +11,12 @@ const getClassPosts = (req: Request, res: Response) => {
 			comments: true
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const getOrganizationPosts = (req: Request, res: Response) => {
-	req.promise = prisma.post.findMany({
+	const promise = prisma.post.findMany({
 		where: {
 			organizationId: +req.params.organizationId,
 			type: (req.query.type as string | undefined)
@@ -24,13 +26,15 @@ const getOrganizationPosts = (req: Request, res: Response) => {
 			comments: true
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const createPost = (req: Request, res: Response) => {
 	console.log(req.formData)
 	const { title, body, type, schoolClass } = req.formData;
 
-	req.promise = prisma.post.create({
+	const promise = prisma.post.create({
 		data: {
 			body,
 			title,
@@ -49,12 +53,14 @@ const createPost = (req: Request, res: Response) => {
 			attachments: true
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const updatePost = (req: Request, res: Response) => {
 	const { title, body } = req.body;
 
-	req.promise = prisma.post.update({
+	const promise = prisma.post.update({
 		where: {
 			id: +req.params.id
 		},
@@ -63,14 +69,18 @@ const updatePost = (req: Request, res: Response) => {
 			body
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const deletePost = (req: Request, res: Response) => {
-	req.promise = prisma.post.delete({
+	const promise = prisma.post.delete({
 		where: {
 			id: +req.params.id
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 export default {

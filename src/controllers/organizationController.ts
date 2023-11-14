@@ -1,7 +1,7 @@
-import { Request, Response, prisma } from '../modules/controllerModule';
+import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
 
 const getOrganizations = (req: Request, res: Response) => {
-	req.promise = prisma.userOrganization.findMany({
+	const promise = prisma.userOrganization.findMany({
 		where: { userId: +req.user! },
 		select: {
 			organization: {
@@ -13,12 +13,14 @@ const getOrganizations = (req: Request, res: Response) => {
 			role: true
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const createOrganization = (req: Request, res: Response) => {
 	const { name } = req.body;
 
-	req.promise = prisma.organization.create({
+	const promise = prisma.organization.create({
 		data: {
 			name,
 			creatorId: req.user!,
@@ -31,12 +33,14 @@ const createOrganization = (req: Request, res: Response) => {
 			}
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const updateOrganization = (req: Request, res: Response) => {
 	const { name } = req.body;
 
-	req.promise = prisma.organization.update({
+	const promise = prisma.organization.update({
 		where: {
 			id: +req.params.id
 		},
@@ -44,14 +48,18 @@ const updateOrganization = (req: Request, res: Response) => {
 			name
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 const deleteOrganization = (req: Request, res: Response) => {
-	req.promise = prisma.organization.delete({
+	const promise = prisma.organization.delete({
 		where: {
 			id: +req.params.id
 		}
 	});
+
+	handleResponse(promise, res);
 };
 
 export default {

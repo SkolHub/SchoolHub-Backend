@@ -1,26 +1,29 @@
-import { Request, Response, prisma } from '../modules/controllerModule';
+import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
 
 const getInviteLinks = (req: Request, res: Response) => {
-	req.promise = prisma.organizationInvitations.findMany({
+	const promise  = prisma.organizationInvitations.findMany({
 		where: {
 			organizationId: +req.params.organizationId
 		}
 	});
+
+    handleResponse(promise, res);
 };
 
 const createInviteLinks = (req: Request, res: Response) => {
-	const invites: { organizationName: string; role: string }[] =
-		req.body.invites;
+	const invites: { organizationName: string; role: string }[] = req.body;
 
-	req.promise = prisma.organizationInvitations.createMany({
+	const promise  = prisma.organizationInvitations.createMany({
 		data: invites.map((invite) => ({ ...invite, organizationId: 1 }))
 	});
+
+    handleResponse(promise, res);
 };
 
 const updateInviteLink = (req: Request, res: Response) => {
 	const { organizationName, role } = req.body;
 
-	req.promise = prisma.organizationInvitations.update({
+	const promise  = prisma.organizationInvitations.update({
 		where: {
 			id: +req.params.inviteId
 		},
@@ -29,6 +32,8 @@ const updateInviteLink = (req: Request, res: Response) => {
 			role
 		}
 	});
+
+    handleResponse(promise, res);
 };
 
 const joinOrganization = async (req: Request, res: Response) => {
@@ -40,7 +45,7 @@ const joinOrganization = async (req: Request, res: Response) => {
 				}
 			});
 
-		req.promise = prisma.userOrganization.create({
+		const promise  = prisma.userOrganization.create({
 			data: {
 				userId: req.user!,
 				organizationId,
@@ -48,25 +53,30 @@ const joinOrganization = async (req: Request, res: Response) => {
 				role
 			}
 		});
+
+        handleResponse(promise, res);
 	} catch (e) {
 		res.status(500).json(e);
 	}
 };
 
 const deleteInviteLinks = (req: Request, res: Response) => {
-	const invites: number[] = req.body.invites;
+	const invites: number[] = req.body;
 
-	req.promise = prisma.organizationInvitations.deleteMany({
+	const promise  = prisma.organizationInvitations.deleteMany({
 		where: {
 			id: {
 				in: invites
-			}
+			},
+			organizationId: +req.params.organizationId
 		}
 	});
+
+    handleResponse(promise, res);
 };
 
 export default {
-    getInviteLinks,
+	getInviteLinks,
 	createInviteLinks,
 	joinOrganization,
 	updateInviteLink,

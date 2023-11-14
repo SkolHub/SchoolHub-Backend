@@ -1,5 +1,5 @@
 export { default as express } from 'express';
-export { body, oneOf } from 'express-validator';
+export { body, oneOf, check } from 'express-validator';
 export { validate } from '../middleware/validatorMiddleware';
 export { default as upload } from '../../multer/upload';
 export { saveFormData } from '../middleware/formDataMiddleware';

@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get('/:organizationId', inviteLinkController.getInviteLinks);
 
-const inviteListValidator = [body('invites').exists().isArray()];
+const inviteListValidator = [body().isArray()];
 
 router.post(
 	'/:organizationId',
@@ -33,7 +33,7 @@ router.put(
 );
 
 router.delete(
-	'/:inviteId',
+	'/:organizationId',
 	inviteListValidator,
 	validate,
 	inviteLinkController.deleteInviteLinks

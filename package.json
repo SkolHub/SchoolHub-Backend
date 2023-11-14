@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/main.ts",
-    "init": "npx prisma migrate --skip-migrate dev && ts-node src/seed.ts"
+    "init": "npx prisma migrate dev && ts-node src/seed.ts"
   },
   "keywords": [],
   "author": "",

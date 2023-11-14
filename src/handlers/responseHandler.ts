@@ -1,9 +1,8 @@
 import { Response } from 'express';
-import { Request } from '../models/requestModel';
 
-const handleResponse = (req: Request, res: Response) => {
-	req.promise
-		?.then((data) => {
+const handleResponse = (promise: Promise<any>, res: Response) => {
+	promise
+		.then((data) => {
 			res.json(data);
 		})
 		.catch((e) => {
