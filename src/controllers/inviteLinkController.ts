@@ -1,9 +1,15 @@
 import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
 
 const getInviteLinks = (req: Request, res: Response) => {
-	const promise  = prisma.organizationInvitations.findMany({
+	const promise = prisma.organizationInvitation.findMany({
 		where: {
 			organizationId: +req.params.organizationId
+		},
+		select: {
+			id: true,
+			code: true,
+			organizationName: true,
+			role: true
 		}
 	});
 
@@ -13,7 +19,7 @@ const getInviteLinks = (req: Request, res: Response) => {
 const createInviteLinks = (req: Request, res: Response) => {
 	const invites: { organizationName: string; role: string }[] = req.body;
 
-	const promise  = prisma.organizationInvitations.createMany({
+	const promise = prisma.organizationInvitation.createMany({
 		data: invites.map((invite) => ({ ...invite, organizationId: 1 }))
 	});
 
@@ -23,7 +29,7 @@ const createInviteLinks = (req: Request, res: Response) => {
 const updateInviteLink = (req: Request, res: Response) => {
 	const { organizationName, role } = req.body;
 
-	const promise  = prisma.organizationInvitations.update({
+	const promise = prisma.organizationInvitation.update({
 		where: {
 			id: +req.params.inviteId
 		},
@@ -39,13 +45,13 @@ const updateInviteLink = (req: Request, res: Response) => {
 const joinOrganization = async (req: Request, res: Response) => {
 	try {
 		const { organizationName, organizationId, role } =
-			await prisma.organizationInvitations.delete({
+			await prisma.organizationInvitation.delete({
 				where: {
 					id: +req.params.inviteCode
 				}
 			});
 
-		const promise  = prisma.userOrganization.create({
+		const promise = prisma.userOrganization.create({
 			data: {
 				userId: req.user!,
 				organizationId,
@@ -63,7 +69,7 @@ const joinOrganization = async (req: Request, res: Response) => {
 const deleteInviteLinks = (req: Request, res: Response) => {
 	const invites: number[] = req.body;
 
-	const promise  = prisma.organizationInvitations.deleteMany({
+	const promise = prisma.organizationInvitation.deleteMany({
 		where: {
 			id: {
 				in: invites

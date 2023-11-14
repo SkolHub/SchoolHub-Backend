@@ -170,10 +170,10 @@ model PostComment {
   postId    Int
 }
 
-model OrganizationInvitations {
-  id               Int    @id @default(autoincrement())
+model OrganizationInvitation {
+  id               Int     @id @default(autoincrement())
   organizationId   Int
   organizationName String
   role             String
-  code             String @default(dbgenerated())
+  code             String? @default(uuid())
 }
