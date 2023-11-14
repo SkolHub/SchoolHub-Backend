@@ -17,3 +17,4 @@ export { default as inviteLinkRouter } from '../routes/inviteLinkController';
 
 export { authenticateToken } from '../middleware/authMiddleware';
 export { isAdminInOrganization } from '../middleware/userMiddleware';
+export { handleResponse } from '../middleware/responseMiddleware';

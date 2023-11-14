@@ -67,7 +67,7 @@ model ClassGroup {
   name           String
   organizationId Int
   schoolClasses  ClassGroupSchoolClass[]
-  users UserClassGroup[]
+  users          UserClassGroup[]
 }
 
 model UserSchoolClass {
@@ -89,11 +89,11 @@ model ClassGroupSchoolClass {
 }
 
 model UserClassGroup {
-  id            Int         @id @default(autoincrement())
-  user           User         @relation(fields: [userId], references: [id])
-  userId         Int
-  classGroup    ClassGroup  @relation(fields: [classGroupId], references: [id])
-  classGroupId  Int
+  id           Int        @id @default(autoincrement())
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  classGroup   ClassGroup @relation(fields: [classGroupId], references: [id])
+  classGroupId Int
 }
 
 model Grade {
@@ -175,4 +175,5 @@ model OrganizationInvitations {
   organizationId   Int
   organizationName String
   role             String
+  code             String @default(dbgenerated())
 }

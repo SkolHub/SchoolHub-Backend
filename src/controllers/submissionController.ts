@@ -1,7 +1,7 @@
-import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
+import { Request, Response, prisma } from '../modules/controllerModule';
 
 const getSubmission = (req: Request, res: Response) => {
-	const promise = prisma.submission.findFirst({
+	req.promise = prisma.submission.findFirst({
 		where: {
 			postId: +req.params.postId,
 			userId: +req.user!
@@ -10,28 +10,24 @@ const getSubmission = (req: Request, res: Response) => {
 			attachments: true
 		}
 	});
-
-	handleResponse(promise, res);
 };
 
 const addSubmissionAttachment = (req: Request, res: Response) => {
 	const { submission } = req.body;
 
-	const promise = prisma.submissionAttachment.create({
+	req.promise = prisma.submissionAttachment.create({
 		data: {
 			filename: (req as any).file!.filename,
 			filepath: (req as any).file!.path,
 			submissionId: submission.id
 		}
 	});
-
-	handleResponse(promise, res);
 };
 
 const submitSubmission = (req: Request, res: Response) => {
 	const { submitted, submission } = req.body;
 
-	const promise = prisma.submission.update({
+	req.promise = prisma.submission.update({
 		data: {
 			submitted,
 			submittedAt: new Date()
@@ -40,18 +36,14 @@ const submitSubmission = (req: Request, res: Response) => {
 			id: +submission.id
 		}
 	});
-
-	handleResponse(promise, res);
 };
 
 const deleteSubmissionAttachment = (req: Request, res: Response) => {
-	const promise = prisma.submissionAttachment.delete({
+	req.promise = prisma.submissionAttachment.delete({
 		where: {
 			id: +req.params.submissionAttachmentId
 		}
 	});
-
-	handleResponse(promise, res);
 };
 
 export default {

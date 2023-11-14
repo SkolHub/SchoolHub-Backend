@@ -1,3 +1,3 @@
-import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
+import { Request, Response, prisma } from '../modules/controllerModule';
 
 export default { };

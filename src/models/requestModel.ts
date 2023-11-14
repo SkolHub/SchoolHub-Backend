@@ -12,6 +12,8 @@ interface Request extends ExpressRequest {
 	schoolClass?: SchoolClass;
 	organization?: Organization;
 	submission?: Submission;
+
+	promise?: Promise<any>;
 }
 
 export { Request };
