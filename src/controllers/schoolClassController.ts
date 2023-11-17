@@ -43,6 +43,16 @@ const createSchoolClass = (req: Request, res: Response) => {
 					userId: +req.user!
 				}
 			}
+		},
+		include: {
+			creator: {
+				select: {
+					firstName: true,
+					lastName: true,
+					username: true,
+					email: true
+				}
+			}
 		}
 	});
 
