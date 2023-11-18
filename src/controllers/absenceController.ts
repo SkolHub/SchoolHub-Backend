@@ -22,15 +22,15 @@ const getOrganizationAbsences = (req: Request, res: Response) => {
 };
 
 const createAbsence = (req: Request, res: Response) => {
-	const { date, user, schoolClass } = req.body;
+	const { date, user } = req.body;
 
 	const promise = prisma.absence.create({
 		data: {
 			date,
 			excused: false,
 			userId: user,
-			schoolClassId: schoolClass.id,
-			organizationId: schoolClass.organizationId
+			schoolClassId: req.schoolClass!.id,
+			organizationId: req.schoolClass!.organizationId
 		}
 	});
 
