@@ -32,15 +32,15 @@ const getOrganizationPosts = (req: Request, res: Response) => {
 
 const createPost = (req: Request, res: Response) => {
 	console.log(req.formData)
-	const { title, body, type, schoolClass } = req.formData;
+	const { title, body, type } = req.formData;
 
 	const promise = prisma.post.create({
 		data: {
 			body,
 			title,
 			type,
-			schoolClassId: schoolClass.id,
-			organizationId: schoolClass.organizationId,
+			schoolClassId: req.schoolClass!.id,
+			organizationId: req.schoolClass!.organizationId,
 			attachments: {
 				create:
 					((req as any).files as Array<any>)?.map((file) => ({
