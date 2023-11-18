@@ -26,10 +26,10 @@ const createPostValidator = [
 router.post(
 	'/:classId',
 	saveFormData,
-	createPostValidator,
-	validate,
 	schoolClassExists,
 	upload.array('attachments', 5),
+	createPostValidator,
+	validate,
 	postController.createPost
 );
 

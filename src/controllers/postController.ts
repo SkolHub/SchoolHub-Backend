@@ -31,8 +31,7 @@ const getOrganizationPosts = (req: Request, res: Response) => {
 };
 
 const createPost = (req: Request, res: Response) => {
-	console.log(req.formData)
-	const { title, body, type } = req.formData;
+	const { title, body, type } = req.body;
 
 	const promise = prisma.post.create({
 		data: {
