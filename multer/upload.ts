@@ -6,6 +6,7 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, '/uploads'));
   },
   filename(req, file, cb) {
+    console.log(3333)
     cb(
       null,
       `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
