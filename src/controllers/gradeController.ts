@@ -14,7 +14,8 @@ const getClassGrades = (req: Request, res: Response) => {
 const getOrganizationGrades = (req: Request, res: Response) => {
 	const promise = prisma.grade.findMany({
 		where: {
-			organizationId: +req.params.organizationId
+			organizationId: +req.params.organizationId,
+			userId: req.user!
 		}
 	});
 
