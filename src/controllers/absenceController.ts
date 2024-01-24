@@ -14,7 +14,8 @@ const getClassAbsences = (req: Request, res: Response) => {
 const getOrganizationAbsences = (req: Request, res: Response) => {
 	const promise = prisma.absence.findMany({
 		where: {
-			organizationId: +req.params.organizationId
+			organizationId: +req.params.organizationId,
+			userId: req.user!
 		}
 	});
 
