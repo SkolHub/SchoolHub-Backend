@@ -17,7 +17,7 @@ const getSubmission = (req: Request, res: Response) => {
 const addSubmissionAttachment = (req: Request, res: Response) => {
 	const promise = prisma.submissionAttachment.create({
 		data: {
-			filename: (req as any).file!.filename,
+			filename: (req as any).file!.originalname,
 			filepath: (req as any).file!.path,
 			submissionId: req.submission!.id
 		}
