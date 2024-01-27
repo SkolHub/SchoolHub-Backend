@@ -4,6 +4,18 @@ const getPost = (req: Request, res: Response) => {
 	const promise = prisma.post.findUnique({
 		where: {
 			id: +req.params.postId
+		},
+		include: {
+			attachments: true,
+			comments: true,
+			author: {
+				select: {
+					email: true,
+					firstName: true,
+					lastName: true,
+					id: true
+				}
+			}
 		}
 	});
 
