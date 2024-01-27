@@ -15,13 +15,11 @@ const getSubmission = (req: Request, res: Response) => {
 };
 
 const addSubmissionAttachment = (req: Request, res: Response) => {
-	const { submission } = req.body;
-
 	const promise = prisma.submissionAttachment.create({
 		data: {
 			filename: (req as any).file!.filename,
 			filepath: (req as any).file!.path,
-			submissionId: submission.id
+			submissionId: req.submission!.id
 		}
 	});
 
@@ -29,7 +27,7 @@ const addSubmissionAttachment = (req: Request, res: Response) => {
 };
 
 const submitSubmission = (req: Request, res: Response) => {
-	const { submitted, submission } = req.body;
+	const { submitted } = req.body;
 
 	const promise = prisma.submission.update({
 		data: {
@@ -37,7 +35,7 @@ const submitSubmission = (req: Request, res: Response) => {
 			submittedAt: new Date()
 		},
 		where: {
-			id: +submission.id
+			id: +req.submission!.id
 		}
 	});
 

@@ -64,15 +64,15 @@ const submissionExists = (req: Request, res: Response, next: NextFunction) => {
 					})
 					.then((createdSubmission) => {
 						req.submission = createdSubmission;
+						next();
 					})
 					.catch((e) => {
 						res.json(e);
 					});
 			} else {
 				req.submission = submission;
+				next();
 			}
-
-			next();
 		})
 		.catch((e) => {
 			res.json(e);
