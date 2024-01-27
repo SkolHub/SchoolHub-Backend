@@ -30,7 +30,15 @@ const getClassPosts = (req: Request, res: Response) => {
 		},
 		include: {
 			attachments: true,
-			comments: true
+			comments: true,
+			author: {
+				select: {
+					email: true,
+					firstName: true,
+					lastName: true,
+					id: true
+				}
+			}
 		}
 	});
 
@@ -45,7 +53,15 @@ const getOrganizationPosts = (req: Request, res: Response) => {
 		},
 		include: {
 			attachments: true,
-			comments: true
+			comments: true,
+			author: {
+				select: {
+					email: true,
+					firstName: true,
+					lastName: true,
+					id: true
+				}
+			}
 		}
 	});
 
