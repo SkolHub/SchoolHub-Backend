@@ -50,6 +50,7 @@ const createPost = (req: Request, res: Response) => {
 			type,
 			schoolClassId: req.schoolClass!.id,
 			organizationId: req.schoolClass!.organizationId,
+			authorId: +req.user!,
 			attachments: {
 				create:
 					((req as any).files as Array<any>)?.map((file) => ({
