@@ -112,6 +112,7 @@ CREATE TABLE "Post" (
     "title" TEXT NOT NULL,
     "body" TEXT NOT NULL,
     "type" TEXT NOT NULL,
+    "authorId" INTEGER NOT NULL,
     "schoolClassId" INTEGER NOT NULL,
     "organizationId" INTEGER NOT NULL,
 
@@ -224,6 +225,9 @@ ALTER TABLE "Absence" ADD CONSTRAINT "Absence_schoolClassId_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "Absence" ADD CONSTRAINT "Absence_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Post" ADD CONSTRAINT "Post_schoolClassId_fkey" FOREIGN KEY ("schoolClassId") REFERENCES "SchoolClass"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

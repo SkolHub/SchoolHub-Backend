@@ -8,6 +8,10 @@ const getAccount = (req: Request, res: Response) => {
 			}
 		})
 		.then((account) => {
+			if (!account) return res.status(500).json({
+				message: "Account not found."
+			})
+
 			res.json({
 				username: account?.username,
 				email: account?.email,
