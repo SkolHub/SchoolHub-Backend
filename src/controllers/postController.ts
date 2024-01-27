@@ -3,7 +3,7 @@ import { Request, Response, handleResponse, prisma } from '../modules/controller
 const getPost = (req: Request, res: Response) => {
 	const promise = prisma.post.findUnique({
 		where: {
-			id: +req.params.id
+			id: +req.params.postId
 		}
 	});
 
