@@ -20,6 +20,7 @@ model User {
   classGroups   UserClassGroup[]
   grades        Grade[]
   absences      Absence[]
+  posts         Post[]
   submissions   Submission[]
   SchoolClass   SchoolClass[]
 }
@@ -125,6 +126,8 @@ model Post {
   title          String
   body           String
   type           String
+  author         User             @relation(fields: [authorId], references: [id])
+  authorId       Int
   schoolClass    SchoolClass      @relation(fields: [schoolClassId], references: [id])
   schoolClassId  Int
   organization   Organization     @relation(fields: [organizationId], references: [id])
