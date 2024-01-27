@@ -10,6 +10,8 @@ import {
 
 const router = express.Router();
 
+router.get('/:postId', postController.getPost);
+
 router.get('/class/:classId/student', postController.getClassPosts);
 
 router.get(

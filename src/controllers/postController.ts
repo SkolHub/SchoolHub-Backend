@@ -1,5 +1,15 @@
 import { Request, Response, handleResponse, prisma } from '../modules/controllerModule';
 
+const getPost = (req: Request, res: Response) => {
+	const promise = prisma.post.findUnique({
+		where: {
+			id: +req.params.id
+		}
+	});
+
+	handleResponse(promise, res);
+};
+
 const getClassPosts = (req: Request, res: Response) => {
 	const promise = prisma.post.findMany({
 		where: {
@@ -87,5 +97,6 @@ export default {
 	getOrganizationPosts,
 	createPost,
 	updatePost,
-	deletePost
+	deletePost,
+	getPost
 };
