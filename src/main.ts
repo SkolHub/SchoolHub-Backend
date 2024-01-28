@@ -33,7 +33,7 @@ app.use('/api/grade', authenticateToken, gradeRouter);
 app.use('/api/absence', authenticateToken, absenceRouter);
 app.use('/api/post', authenticateToken, postRouter);
 app.use('/api/post-comment', authenticateToken, postCommentRouter);
-app.use('/api/attachment', authenticateToken, fileRouter);
+app.use('/api/attachment', fileRouter);
 app.use('/api/submission', authenticateToken, submissionRouter);
 app.use('/api/english-whiteboard', authenticateToken, englishWhiteboardRouter);
 app.use('/api/class-group', authenticateToken, classGroupRouter);
