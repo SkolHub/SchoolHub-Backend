@@ -69,13 +69,15 @@ const getOrganizationPosts = (req: Request, res: Response) => {
 };
 
 const createPost = (req: Request, res: Response) => {
-	const { title, body, type } = req.body;
+	const { title, body, type, dueDate } = req.body;
 
 	const promise = prisma.post.create({
 		data: {
 			body,
 			title,
 			type,
+			date: new Date(),
+			dueDate,
 			schoolClassId: req.schoolClass!.id,
 			organizationId: req.schoolClass!.organizationId,
 			authorId: +req.user!,

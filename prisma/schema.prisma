@@ -126,6 +126,8 @@ model Post {
   title          String
   body           String
   type           String
+  dueDate        DateTime?
+  date           DateTime
   author         User             @relation(fields: [authorId], references: [id])
   authorId       Int
   schoolClass    SchoolClass      @relation(fields: [schoolClassId], references: [id])
