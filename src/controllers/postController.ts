@@ -85,7 +85,7 @@ const createPost = (req: Request, res: Response) => {
 				create:
 					((req as any).files as Array<any>)?.map((file) => ({
 						filepath: file.path,
-						filename: file.filename
+						filename: file.originalname
 					})) || []
 			}
 		},
