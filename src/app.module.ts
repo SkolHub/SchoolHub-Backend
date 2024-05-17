@@ -6,6 +6,13 @@ import { ClsModule } from 'nestjs-cls';
 import * as schema from './core/schema';
 import { AuthGuard } from './routes/auth/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { AccountModule } from './routes/account/account.module';
+import { OrganizationModule } from './routes/organization/organization.module';
+import { SchoolClassModule } from './routes/school-class/school-class.module';
+import { SubjectModule } from './routes/subject/subject.module';
+import { GradeModule } from './routes/grade/grade.module';
+import { AbsenceModule } from './routes/absence/absence.module';
+import { PostModule } from './routes/post/post.module';
 
 @Module({
 	imports: [
@@ -25,7 +32,14 @@ import { APP_GUARD } from '@nestjs/core';
 			middleware: {
 				mount: true
 			}
-		})
+		}),
+		AccountModule,
+		OrganizationModule,
+		SchoolClassModule,
+		SubjectModule,
+		GradeModule,
+		AbsenceModule,
+		PostModule
 	],
 	providers: [
 		{
