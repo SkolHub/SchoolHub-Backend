@@ -6,6 +6,8 @@ import {
 	timestamp
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { users } from './users/users';
+import { subjects } from './subjects/subjects';
 
 export const absences = pgTable('absences', {
 	id: serial('id').primaryKey(),
@@ -16,4 +18,19 @@ export const absences = pgTable('absences', {
 	teacherID: integer('teacherID')
 });
 
-export const absencesRelations = relations(absences, () => ({}));
+export const absencesRelations = relations(absences, ({ one }) => ({
+	student: one(users, {
+		fields: [absences.studentID],
+		references: [users.id],
+		relationName: 'student'
+	}),
+	teacher: one(users, {
+		fields: [absences.teacherID],
+		references: [users.id],
+		relationName: 'teacher'
+	}),
+	subject: one(subjects, {
+		fields: [absences.subjectID],
+		references: [subjects.id]
+	})
+}));
