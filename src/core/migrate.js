@@ -6,22 +6,22 @@ const { config } = require('dotenv');
 config();
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL
+	connectionString: process.env.DB_URL
 });
 
 const db = drizzle(pool);
 
 async function main() {
-    console.log('migration started...');
+	console.log('migration started...');
 
-    await migrate(db, { migrationsFolder: 'drizzle' });
+	await migrate(db, { migrationsFolder: 'drizzle' });
 
-    console.log('migration successful!');
+	console.log('migration successful!');
 
-    process.exit(0);
+	process.exit(0);
 }
 
 main().catch((err) => {
-    console.log(err);
-    process.exit(0);
+	console.log(err);
+	process.exit(0);
 });

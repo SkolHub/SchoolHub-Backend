@@ -1,23 +1,25 @@
-import { integer, pgTable, serial, varchar } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { users } from '../users/users';
-import { classes } from '../classes/classes';
-import { admins } from './admins';
+import { admins } from './members/admins';
+import { parents } from './members/parents';
+import { schoolClasses } from '../school-classes/school-classes';
+import { subjects } from '../subjects/subjects';
+import { members } from './members/members';
 
-export const organizations = pgTable('Organization', {
+export const organizations = pgTable('Organizations', {
 	id: serial('id').primaryKey(),
-	name: varchar('name'),
-	ownerID: integer('ownerID')
+	name: text('name').notNull()
 });
 
-export const organizationRelations = relations(
-	organizations,
-	({ one, many }) => ({
-		owner: one(users, {
-			fields: [organizations.ownerID],
-			references: [users.id]
-		}),
-		classes: many(classes),
-		admins: many(admins)
-	})
-);
+export const organizationsRelations = relations(organizations, ({ many }) => ({
+	admins: many(admins),
+	parents: many(parents),
+	students: many(members, {
+		relationName: 'students'
+	}),
+	teachers: many(members, {
+		relationName: 'teachers'
+	}),
+	schoolClasses: many(schoolClasses),
+	subjects: many(subjects)
+}));

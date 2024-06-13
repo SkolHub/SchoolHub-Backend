@@ -1,11 +1,11 @@
-import {defineConfig} from 'drizzle-kit';
+import { defineConfig } from 'drizzle-kit';
+import config from 'src/core/config';
 
 export default defineConfig({
-    dialect: "postgresql",
-    schema: "./schema.ts",
-    out: "./drizzle",
-    dbCredentials: {
-        url: 'postgresql://postgres:test12345@localhost:5432/fiicode',
-
-    }
+	dialect: 'postgresql',
+	schema: './src/schema/**/*',
+	out: './drizzle',
+	dbCredentials: {
+		url: config.DB_URL
+	}
 });

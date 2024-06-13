@@ -1,27 +1,24 @@
-import { integer, pgTable, serial, varchar } from 'drizzle-orm/pg-core';
+import { jsonb, pgTable, serial, text } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { classes } from '../classes/classes';
-import { grades } from '../grades';
-import { absences } from '../absences';
-import { posts } from '../posts';
-import { subjectStudents } from './subject-students';
-import { subjectTeachers } from './subject-teachers';
+import { grades } from './objects/grades';
+import { absences } from './objects/absences';
+import { observations } from './objects/observations';
+import { schoolClassesToSubjects } from '../school-classes/school-classes-to-subjects';
+import { posts } from './objects/posts';
 
-export const subjects = pgTable('subjects', {
+export const subjects = pgTable('Subjects', {
 	id: serial('id').primaryKey(),
-	name: varchar('name'),
-	icon: varchar('icon'),
-	classID: integer('classID')
+	name: text('name').notNull(),
+	icon: text('icon').notNull(),
+	tags: text('tags').array().notNull().default([]),
+	permissions: jsonb('permissions').notNull().default({}),
+	metadata: jsonb('metadata').notNull().default({})
 });
 
-export const subjectsRelations = relations(subjects, ({ one, many }) => ({
-	schoolClass: one(classes, {
-		fields: [subjects.classID],
-		references: [classes.id]
-	}),
+export const subjectsRelations = relations(subjects, ({ many }) => ({
 	grades: many(grades),
 	absences: many(absences),
+	observations: many(observations),
 	posts: many(posts),
-	students: many(subjectStudents),
-	teachers: many(subjectTeachers)
+	schoolClasses: many(schoolClassesToSubjects)
 }));
