@@ -1,21 +1,11 @@
 import { Module } from '@nestjs/common';
-import { RouterModule } from '@nestjs/core';
-import { OrganizationCommonModule } from './organization-common/organization-common.module';
+import { OrganizationCommonController } from './common/organization-common.controller';
+import { OrganizationCommonService } from './common/organization-common.service';
+import { OrganizationAdminController } from './admin/organization-admin.controller';
+import { OrganizationAdminService } from './admin/organization-admin.service';
 
 @Module({
-	imports: [
-		OrganizationCommonModule,
-		RouterModule.register([
-			{
-				path: 'organization',
-				children: [
-					{
-						path: '',
-						module: OrganizationCommonModule
-					}
-				]
-			}
-		])
-	]
+	controllers: [OrganizationCommonController, OrganizationAdminController],
+	providers: [OrganizationCommonService, OrganizationAdminService]
 })
 export class OrganizationModule {}

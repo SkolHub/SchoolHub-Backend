@@ -3,7 +3,7 @@ import { OrganizationCommonService } from './organization-common.service';
 import { CreateOrganizationCommonDto } from './dto/create-organization-common.dto';
 import { Public } from '../../../common/decorators/public.decorator';
 
-@Controller('organization-common')
+@Controller()
 export class OrganizationCommonController {
 	constructor(
 		private readonly organizationCommonService: OrganizationCommonService
