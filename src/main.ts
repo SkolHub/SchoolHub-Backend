@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
-import env from './core/env';
+import env from './config/config';
 import * as passport from 'passport';
 
 async function bootstrap() {
@@ -19,7 +19,7 @@ async function bootstrap() {
 	app.use(passport.initialize());
 	app.use(passport.session());
 
-	await app.listen(3000);
+	await app.listen(8000);
 }
 
 void bootstrap();

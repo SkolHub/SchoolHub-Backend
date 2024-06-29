@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
 import { DrizzlePGModule } from '@knaadh/nestjs-drizzle-pg';
-import config from './core/env';
+import config from './config/config';
 import { ClsModule } from 'nestjs-cls';
-import { AuthModule } from './routes/auth/auth.module';
-import { OrganizationModule } from './routes/organization/organization.module';
-import { SchoolClassModule } from './routes/school-class/school-class.module';
-import { SubjectModule } from './routes/subject/subject.module';
-import * as schema from './core/schema';
+import * as schema from './database/schema';
 import { PassportModule } from '@nestjs/passport';
-import { AuthenticatedGuard } from './routes/auth/guards/auth.guard';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, RouterModule } from '@nestjs/core';
+import { AuthModule } from './modules/auth/auth.module';
+import { OrganizationModule } from './modules/organization/organization.module';
+import { AuthenticatedGuard } from './shared/guards/auth.guard';
 
 @Module({
 	imports: [
@@ -32,10 +30,18 @@ import { APP_GUARD } from '@nestjs/core';
 		PassportModule.register({
 			session: true
 		}),
+		RouterModule.register([
+			{
+				path: 'auth',
+				module: AuthModule
+			},
+			{
+				path: 'organization',
+				module: OrganizationModule
+			}
+		]),
 		AuthModule,
-		OrganizationModule,
-		SchoolClassModule,
-		SubjectModule
+		OrganizationModule
 	],
 	providers: [
 		{
