@@ -14,11 +14,9 @@ export const roleEnum = pgEnum('role', [
 
 export const members = pgTable('Members', {
 	id: serial('id').primaryKey(),
-	organizationID: integer('organizationID')
-		.notNull()
-		.references(() => organizations.id, {
-			onDelete: 'cascade'
-		}),
+	organizationID: integer('organizationID').references(() => organizations.id, {
+		onDelete: 'cascade'
+	}),
 	userID: integer('userID'),
 	role: roleEnum('role').notNull(),
 	username: text('username').notNull().unique(),

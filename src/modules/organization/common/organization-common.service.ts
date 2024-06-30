@@ -11,7 +11,6 @@ export class OrganizationCommonService extends DBService {
 		const member = await this.db
 			.insert(members)
 			.values({
-				organizationID: 0,
 				role: 'admin',
 				name: createOrganizationDto.displayName,
 				username: createOrganizationDto.email,

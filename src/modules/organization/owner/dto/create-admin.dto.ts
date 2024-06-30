@@ -1,5 +1,5 @@
 import { IsEmail, IsString, Length, Validate } from 'class-validator';
-import { IsPasswordStrong } from '../../../auth/dto/password.constraint';
+import { IsPasswordStrong } from '../../../../common/constraints/password.constraint';
 
 export class CreateAdminDto {
 	@IsEmail()

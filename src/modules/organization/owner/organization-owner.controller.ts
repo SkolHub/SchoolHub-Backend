@@ -46,7 +46,8 @@ export class OrganizationOwnerController {
 	) {
 		return this.organizationOwnerService.deleteAdmin(
 			id,
-			session.passport.user.organizationID
+			session.passport.user.organizationID,
+			session.passport.user.userID
 		);
 	}
 

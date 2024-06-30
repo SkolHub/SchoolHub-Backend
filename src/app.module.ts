@@ -1,14 +1,32 @@
 import { Module } from '@nestjs/common';
 import { DrizzlePGModule } from '@knaadh/nestjs-drizzle-pg';
 import config from './config/config';
-import { ClsModule } from 'nestjs-cls';
 import * as schema from './database/schema';
 import { PassportModule } from '@nestjs/passport';
-import {APP_FILTER, APP_GUARD, RouterModule} from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, RouterModule, Routes } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { AuthenticatedGuard } from './shared/guards/auth.guard';
-import {DrizzleFilter} from "./common/filters/drizzle.filter";
+import { DrizzleFilter } from './common/filters/drizzle.filter';
+import { AccountsModule } from './modules/accounts/accounts.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import { SubjectModule } from './modules/subject/subject.module';
+import { SchoolClassModule } from './modules/school-class/school-class.module';
+
+const routes: Routes = [
+	{
+		path: 'auth',
+		module: AuthModule
+	},
+	{
+		path: 'organization',
+		module: OrganizationModule
+	},
+	{
+		path: 'profile',
+		module: ProfileModule
+	}
+];
 
 @Module({
 	imports: [
@@ -22,27 +40,16 @@ import {DrizzleFilter} from "./common/filters/drizzle.filter";
 				}
 			}
 		}),
-		ClsModule.forRoot({
-			global: true,
-			middleware: {
-				mount: true
-			}
-		}),
 		PassportModule.register({
 			session: true
 		}),
-		RouterModule.register([
-			{
-				path: 'auth',
-				module: AuthModule
-			},
-			{
-				path: 'organization',
-				module: OrganizationModule
-			}
-		]),
+		RouterModule.register(routes),
 		AuthModule,
-		OrganizationModule
+		OrganizationModule,
+		AccountsModule,
+		ProfileModule,
+		SubjectModule,
+		SchoolClassModule
 	],
 	providers: [
 		{
@@ -51,7 +58,7 @@ import {DrizzleFilter} from "./common/filters/drizzle.filter";
 		},
 		{
 			provide: APP_FILTER,
-			useClass: DrizzleFilter,
+			useClass: DrizzleFilter
 		}
 	]
 })

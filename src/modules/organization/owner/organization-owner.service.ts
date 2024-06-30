@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { organizations } from '../../../database/schema/organizations';
 import { and, eq } from 'drizzle-orm';
 import { DBService } from '../../../common/db.service';
@@ -24,7 +24,11 @@ export class OrganizationOwnerService extends DBService {
 		});
 	}
 
-	async deleteAdmin(id: number, organizationID: number) {
+	async deleteAdmin(id: number, organizationID: number, ownerID: number) {
+		if (id === ownerID) {
+			throw new ForbiddenException("Owner account can't be deleted");
+		}
+
 		await this.db
 			.delete(members)
 			.where(
