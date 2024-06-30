@@ -10,13 +10,20 @@ export const roleEnum = pgEnum('role', [
 	'parent'
 ]);
 
+// TODO: Add password resetting on first login
+
 export const members = pgTable('Members', {
 	id: serial('id').primaryKey(),
-	organizationID: integer('organizationID').notNull(),
+	organizationID: integer('organizationID')
+		.notNull()
+		.references(() => organizations.id, {
+			onDelete: 'cascade'
+		}),
 	userID: integer('userID'),
 	role: roleEnum('role').notNull(),
-	username: text('username').notNull(),
-	password: text('password').notNull()
+	username: text('username').notNull().unique(),
+	password: text('password').notNull(),
+	name: text('name').notNull()
 });
 
 export const membersRelations = relations(members, ({ one }) => ({

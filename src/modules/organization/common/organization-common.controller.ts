@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { OrganizationCommonService } from './organization-common.service';
-import { CreateOrganizationCommonDto } from './dto/create-organization-common.dto';
+import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { Public } from '../../../common/decorators/public.decorator';
 
 @Controller()
@@ -11,7 +11,7 @@ export class OrganizationCommonController {
 
 	@Post()
 	@Public()
-	create(@Body() createOrganizationCommonDto: CreateOrganizationCommonDto) {
+	create(@Body() createOrganizationCommonDto: CreateOrganizationDto) {
 		return this.organizationCommonService.create(createOrganizationCommonDto);
 	}
 }

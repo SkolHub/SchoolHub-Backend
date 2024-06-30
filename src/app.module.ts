@@ -4,10 +4,11 @@ import config from './config/config';
 import { ClsModule } from 'nestjs-cls';
 import * as schema from './database/schema';
 import { PassportModule } from '@nestjs/passport';
-import { APP_GUARD, RouterModule } from '@nestjs/core';
+import {APP_FILTER, APP_GUARD, RouterModule} from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { AuthenticatedGuard } from './shared/guards/auth.guard';
+import {DrizzleFilter} from "./common/filters/drizzle.filter";
 
 @Module({
 	imports: [
@@ -47,6 +48,10 @@ import { AuthenticatedGuard } from './shared/guards/auth.guard';
 		{
 			provide: APP_GUARD,
 			useClass: AuthenticatedGuard
+		},
+		{
+			provide: APP_FILTER,
+			useClass: DrizzleFilter,
 		}
 	]
 })

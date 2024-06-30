@@ -1,5 +1,4 @@
 import {
-	Body,
 	Controller,
 	Get,
 	Post,
@@ -13,28 +12,22 @@ import { FacebookAuthGuard } from './guards/facebook.guard';
 import { GoogleAuthGuard } from './guards/google.guard';
 import { AppleAuthGuard } from './guards/apple.guard';
 import env from '../../config/config';
-import { AuthDto } from './dto/auth.dto';
 import { Public } from '../../common/decorators/public.decorator';
 
 @Controller()
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
-	@Post('login/global')
+	@Post('login')
 	@Public()
 	@UseGuards(LocalAuthGuard)
-	async globalLogin() {}
-
-	@Post('login/organization')
-	@Public()
-	@UseGuards()
 	async organizationLogin() {}
 
-	@Post('register')
-	@Public()
-	async register(@Body() authDto: AuthDto) {
-		return this.authService.create(authDto);
-	}
+	// @Post('register')
+	// @Public()
+	// async register(@Body() authDto: AuthDto) {
+	// 	return this.authService.create(authDto);
+	// }
 
 	@Get('facebook')
 	@Public()

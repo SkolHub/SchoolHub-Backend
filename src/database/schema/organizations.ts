@@ -5,12 +5,12 @@ import { members } from './members/members';
 export const organizations = pgTable('Organizations', {
 	id: serial('id').primaryKey(),
 	name: text('name').notNull(),
-	creatorID: integer('creatorID').notNull()
+	ownerID: integer('ownerID').notNull()
 });
 
 export const organizationsRelations = relations(organizations, ({ one }) => ({
 	creator: one(members, {
-		fields: [organizations.creatorID],
+		fields: [organizations.ownerID],
 		references: [members.id]
 	})
 }));
