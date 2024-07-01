@@ -9,7 +9,14 @@ import { BcryptUtils } from '../../common/utils/bcrypt.utils';
 export class ProfileService extends DBService {
 	account(userID: number) {
 		return this.db.query.members.findFirst({
-			where: eq(members.id, userID)
+			where: eq(members.id, userID),
+			with: {
+				organization: {
+					columns: {
+						name: true
+					}
+				}
+			}
 		});
 	}
 

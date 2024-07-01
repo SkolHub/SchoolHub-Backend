@@ -24,7 +24,10 @@ async function bootstrap() {
 			store: redisStore,
 			secret: env.COOKIE_SECRET,
 			resave: false,
-			saveUninitialized: false
+			saveUninitialized: false,
+			cookie: {
+				httpOnly: false
+			}
 		})
 	);
 	app.useGlobalPipes(new ValidationPipe());
