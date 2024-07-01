@@ -4,6 +4,7 @@ import { and, eq } from 'drizzle-orm';
 import { members } from '../../../database/schema/members/members';
 import { BcryptUtils } from '../../../common/utils/bcrypt.utils';
 import { AddAdminDto } from './dto/add-admin.dto';
+import { UpdateAdminDto } from './dto/update-admin.dto';
 
 @Injectable()
 export class AccountsAdminService extends DBService {
@@ -24,6 +25,21 @@ export class AccountsAdminService extends DBService {
 				eq(members.role, 'admin')
 			)
 		});
+	}
+
+	async update(
+		updateAdminDto: UpdateAdminDto,
+		id: number,
+		organizationID: number
+	) {
+		await this.db
+			.update(members)
+			.set({
+				name: updateAdminDto.displayName
+			})
+			.where(
+				and(eq(members.id, id), eq(members.organizationID, organizationID))
+			);
 	}
 
 	async remove(id: number, organizationID: number, ownerID: number) {

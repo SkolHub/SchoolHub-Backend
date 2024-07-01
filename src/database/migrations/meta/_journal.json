@@ -8,6 +8,13 @@
       "when": 1719781991911,
       "tag": "0000_loving_sunfire",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1719860714513,
+      "tag": "0001_blue_power_pack",
+      "breakpoints": true
     }
   ]
 }

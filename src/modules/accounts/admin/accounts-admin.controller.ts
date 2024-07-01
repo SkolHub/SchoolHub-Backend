@@ -5,6 +5,7 @@ import {
 	Get,
 	Param,
 	ParseIntPipe,
+	Patch,
 	Post,
 	Session,
 	UseGuards
@@ -13,6 +14,7 @@ import { AccountsAdminService } from './accounts-admin.service';
 import { OwnerGuard } from '../../../shared/guards/owner.guard';
 import { RawMemberSession } from '../../../types/session';
 import { AddAdminDto } from './dto/add-admin.dto';
+import { UpdateAdminDto } from './dto/update-admin.dto';
 
 @Controller('admin')
 @UseGuards(OwnerGuard)
@@ -33,6 +35,19 @@ export class AccountsAdminController {
 	@Get()
 	findAll(@Session() session: RawMemberSession) {
 		return this.accountsAdminService.findAll(
+			session.passport.user.organizationID
+		);
+	}
+
+	@Patch(':id')
+	update(
+		@Param('id', ParseIntPipe) id: number,
+		@Body() updateAdminDto: UpdateAdminDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.accountsAdminService.update(
+			updateAdminDto,
+			id,
 			session.passport.user.organizationID
 		);
 	}

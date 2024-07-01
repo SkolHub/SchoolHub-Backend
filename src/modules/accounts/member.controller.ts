@@ -4,6 +4,8 @@ import {
 	Delete,
 	Get,
 	Param,
+	ParseIntPipe,
+	Patch,
 	Post,
 	Session,
 	UseGuards
@@ -15,6 +17,8 @@ import { RoleValidationPipe } from '../../common/pipes/role-validation.pipe';
 import { AddTaggedAccountsDto } from './dto/add-tagged-accounts.dto';
 import { AddParentAccountsDto } from './dto/add-parent-accounts.dto';
 import { DeleteAccountsDto } from './dto/delete-accounts.dto';
+import { UpdateTaggedDto } from './dto/update-tagged.dto';
+import { UpdateAccountDto } from './dto/update-account.dto';
 
 @UseGuards(AdminGuard)
 @Controller()
@@ -63,6 +67,32 @@ export class MemberController {
 	) {
 		return this.memberService.findAll(
 			role,
+			session.passport.user.organizationID
+		);
+	}
+
+	@Patch('account/:id')
+	updateAccount(
+		@Param('id', ParseIntPipe) id: number,
+		@Body() updateAccountDto: UpdateAccountDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.memberService.updateAccount(
+			updateAccountDto,
+			id,
+			session.passport.user.organizationID
+		);
+	}
+
+	@Patch('tags/:id')
+	updateTeacher(
+		@Param('id', ParseIntPipe) id: number,
+		@Body() updateTaggedDto: UpdateTaggedDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.memberService.updateTags(
+			updateTaggedDto,
+			id,
 			session.passport.user.organizationID
 		);
 	}

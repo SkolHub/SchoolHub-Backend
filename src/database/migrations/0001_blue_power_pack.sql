@@ -1,0 +1,1 @@
+ALTER TABLE "Tagged" ADD COLUMN "organizationID" integer NOT NULL;
