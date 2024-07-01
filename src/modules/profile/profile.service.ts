@@ -16,6 +16,11 @@ export class ProfileService extends DBService {
 						name: true
 					}
 				}
+			},
+			columns: {
+				name: true,
+				role: true,
+				username: true
 			}
 		});
 	}
