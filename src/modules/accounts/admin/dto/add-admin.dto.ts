@@ -1,13 +1,10 @@
-import { IsEmail, IsString, Length, Validate } from 'class-validator';
+import { IsString, Length, Validate } from 'class-validator';
 import { IsPasswordStrong } from '../../../../common/constraints/password.constraint';
 
-export class CreateOrganizationDto {
+export class AddAdminDto {
 	@IsString()
 	@Length(3, 100)
-	organizationName: string;
-
-	@IsEmail()
-	email: string;
+	username: string;
 
 	@IsString()
 	@Length(3, 100)

@@ -8,10 +8,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { AuthenticatedGuard } from './shared/guards/auth.guard';
 import { DrizzleFilter } from './common/filters/drizzle.filter';
-import { AccountsModule } from './modules/accounts/accounts.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { SubjectModule } from './modules/subject/subject.module';
 import { SchoolClassModule } from './modules/school-class/school-class.module';
+import { AccountsModule } from './modules/accounts/accounts.module';
 
 const routes: Routes = [
 	{
@@ -25,6 +25,18 @@ const routes: Routes = [
 	{
 		path: 'profile',
 		module: ProfileModule
+	},
+	{
+		path: 'accounts',
+		module: AccountsModule
+	},
+	{
+		path: 'school-class',
+		module: SchoolClassModule
+	},
+	{
+		path: 'subject',
+		module: SubjectModule
 	}
 ];
 
