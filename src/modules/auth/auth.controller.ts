@@ -1,68 +1,20 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Redirect,
-	Session,
-	UseGuards
-} from '@nestjs/common';
+import { Controller, HttpCode, Post, Session, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards/local.guard';
-import { FacebookAuthGuard } from './guards/facebook.guard';
-import { GoogleAuthGuard } from './guards/google.guard';
-import { AppleAuthGuard } from './guards/apple.guard';
-import env from '../../config/config';
 import { Public } from '../../common/decorators/public.decorator';
+import { LocalAuthGuard } from './local.guard';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
 	@Post('login')
 	@Public()
 	@UseGuards(LocalAuthGuard)
+	@HttpCode(200)
 	async organizationLogin() {}
 
-	// @Post('register')
-	// @Public()
-	// async register(@Body() authDto: AuthDto) {
-	// 	return this.authService.create(authDto);
-	// }
-
-	@Get('facebook')
-	@Public()
-	@UseGuards(FacebookAuthGuard)
-	async facebookLogin() {}
-
-	@Get('facebook/callback')
-	@Public()
-	@UseGuards(FacebookAuthGuard)
-	@Redirect(env.HOME_URL, 303)
-	async facebookLoginCallback() {}
-
-	@Get('google')
-	@Public()
-	@UseGuards(GoogleAuthGuard)
-	async googleLogin() {}
-
-	@Get('google/callback')
-	@Public()
-	@UseGuards(GoogleAuthGuard)
-	@Redirect(env.HOME_URL, 303)
-	async googleLoginCallback() {}
-
-	@Get('apple')
-	@Public()
-	@UseGuards(AppleAuthGuard)
-	async appleLogin() {}
-
-	@Get('apple/callback')
-	@Public()
-	@UseGuards(AppleAuthGuard)
-	@Redirect(env.HOME_URL, 303)
-	async appleLoginCallback() {}
-
 	@Post('logout')
+	@HttpCode(200)
 	async logout(@Session() session: Record<string, any>) {
 		session.destroy();
 	}

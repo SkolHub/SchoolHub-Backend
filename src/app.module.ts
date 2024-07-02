@@ -12,6 +12,16 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { SubjectModule } from './modules/subject/subject.module';
 import { SchoolClassModule } from './modules/school-class/school-class.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import { ObservationModule } from './modules/observation/observation.module';
+import { AbsenceModule } from './modules/absence/absence.module';
+import { GradeModule } from './modules/grade/grade.module';
+import { PostModule } from './modules/post/post.module';
+import { SchoolClassesModule } from './modules/school-classes/school-classes.module';
+import { SubjectModule } from './modules/subject/subject.module';
+import { AccountsModule } from './accounts/accounts.module';
+import { AccountsModule } from './modules/accounts/accounts.module';
 
 const routes: Routes = [
 	{
@@ -61,7 +71,12 @@ const routes: Routes = [
 		AccountsModule,
 		ProfileModule,
 		SubjectModule,
-		SchoolClassModule
+		SchoolClassModule,
+		SchoolClassesModule,
+		PostModule,
+		GradeModule,
+		AbsenceModule,
+		ObservationModule
 	],
 	providers: [
 		{
