@@ -15,7 +15,7 @@ import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { RawMemberSession } from '../../types/session';
 
-@Controller('organization')
+@Controller()
 export class OrganizationController {
 	constructor(private readonly organizationService: OrganizationService) {}
 

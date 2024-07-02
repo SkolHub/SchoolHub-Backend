@@ -17,7 +17,7 @@ import { UpdateSchoolClassDto } from './dto/update-school-class.dto';
 import { DeleteSchoolClassesDto } from './dto/delete-school-classes.dto';
 import { AdminGuard } from '../../shared/guards/admin.guard';
 
-@Controller('school-classes')
+@Controller()
 @UseGuards(AdminGuard)
 export class SchoolClassesController {
 	constructor(private readonly schoolClassesService: SchoolClassesService) {}

@@ -3,7 +3,7 @@ import { ProfileService } from './profile.service';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { RawMemberSession } from '../../types/session';
 
-@Controller('profile')
+@Controller()
 export class ProfileController {
 	constructor(private readonly profileService: ProfileService) {}
 

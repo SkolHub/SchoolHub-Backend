@@ -17,7 +17,7 @@ import { CreateSubjectsDto } from './dto/create-subjects.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { DeleteSubjectsDto } from './dto/delete-subjects.dto';
 
-@Controller('subject')
+@Controller()
 @UseGuards(AdminGuard)
 export class SubjectController {
 	constructor(private readonly subjectService: SubjectService) {}

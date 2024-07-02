@@ -17,7 +17,7 @@ import { RawMemberSession } from '../../../types/session';
 import { ResetPasswordAdminDto } from './dto/reset-password-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 
-@Controller('accounts/admin')
+@Controller('admin')
 @UseGuards(OwnerGuard)
 export class AccountsAdminController {
 	constructor(private readonly accountsService: AccountsAdminService) {}

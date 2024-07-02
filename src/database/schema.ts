@@ -10,3 +10,4 @@ export * from './schema/students-to-subjects';
 export * from './schema/teachers-to-subjects';
 export * from './schema/subjects-to-school-classes';
 export * from './schema/students-to-school-classes';
+export * from './schema/parents';
