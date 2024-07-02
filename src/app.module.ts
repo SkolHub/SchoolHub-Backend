@@ -12,6 +12,7 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { SubjectModule } from './modules/subject/subject.module';
 import { SchoolClassModule } from './modules/school-class/school-class.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
+import { OrganizationModule } from './modules/organization/organization.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { ObservationModule } from './modules/observation/observation.module';

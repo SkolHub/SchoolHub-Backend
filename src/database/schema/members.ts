@@ -10,9 +10,9 @@ export const members = pgTable('Member', {
 	name: text('name').notNull(),
 	password: text('password').notNull(),
 	role: roleEnum('role').notNull(),
-	organizationID: integer('organizationID')
-		.notNull()
-		.references(() => organizations.id, { onDelete: 'cascade' })
+	organizationID: integer('organizationID').references(() => organizations.id, {
+		onDelete: 'cascade'
+	})
 });
 
 export const membersRelations = relations(members, ({ one }) => ({
