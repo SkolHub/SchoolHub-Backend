@@ -4,6 +4,7 @@ import {
 	Delete,
 	Get,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Session,
@@ -33,7 +34,10 @@ export class SubjectController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: number, @Session() session: RawMemberSession) {
+	findOne(
+		@Param('id', ParseIntPipe) id: number,
+		@Session() session: RawMemberSession
+	) {
 		return this.subjectService.findOne(
 			id,
 			session.passport.user.organizationID
@@ -48,7 +52,7 @@ export class SubjectController {
 	@Patch(':id')
 	update(
 		@Body() updateSubjectDto: UpdateSubjectDto,
-		@Param('id') id: number,
+		@Param('id', ParseIntPipe) id: number,
 		@Session() session: RawMemberSession
 	) {
 		return this.subjectService.update(

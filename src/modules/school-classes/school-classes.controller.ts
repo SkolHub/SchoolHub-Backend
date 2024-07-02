@@ -4,17 +4,21 @@ import {
 	Delete,
 	Get,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
-	Session
+	Session,
+	UseGuards
 } from '@nestjs/common';
 import { SchoolClassesService } from './school-classes.service';
 import { RawMemberSession } from '../../types/session';
 import { CreateSchoolClassesDto } from './dto/create-school-classes.dto';
 import { UpdateSchoolClassDto } from './dto/update-school-class.dto';
 import { DeleteSchoolClassesDto } from './dto/delete-school-classes.dto';
+import { AdminGuard } from '../../shared/guards/admin.guard';
 
 @Controller('school-classes')
+@UseGuards(AdminGuard)
 export class SchoolClassesController {
 	constructor(private readonly schoolClassesService: SchoolClassesService) {}
 
@@ -30,7 +34,10 @@ export class SchoolClassesController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: number, @Session() session: RawMemberSession) {
+	findOne(
+		@Param('id', ParseIntPipe) id: number,
+		@Session() session: RawMemberSession
+	) {
 		return this.schoolClassesService.findOne(
 			id,
 			session.passport.user.organizationID
@@ -47,7 +54,7 @@ export class SchoolClassesController {
 	@Patch(':id')
 	update(
 		@Body() updateSchoolClassDto: UpdateSchoolClassDto,
-		@Param('id') id: number,
+		@Param('id', ParseIntPipe) id: number,
 		@Session() session: RawMemberSession
 	) {
 		return this.schoolClassesService.update(
