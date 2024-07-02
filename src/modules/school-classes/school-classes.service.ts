@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DBService } from '../../common/db.service';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, count, eq, inArray } from 'drizzle-orm';
 import { CreateSchoolClassesDto } from './dto/create-school-classes.dto';
 import { schoolClasses } from '../../database/schema/school-classes';
 import { UpdateSchoolClassDto } from './dto/update-school-class.dto';
 import { DeleteSchoolClassesDto } from './dto/delete-school-classes.dto';
+import { AddMembersToSchoolClassDto } from './dto/add-members-to-school-class.dto';
+import { studentsToSchoolClasses } from '../../database/schema/students-to-school-classes';
 
 @Injectable()
 export class SchoolClassesService extends DBService {
@@ -19,6 +21,39 @@ export class SchoolClassesService extends DBService {
 				organizationID
 			}))
 		);
+	}
+
+	private schoolClassExists(schoolClassID: number, organizationID: number) {
+		return this.db
+			.select({
+				exists: count()
+			})
+			.from(schoolClasses)
+			.where(
+				and(
+					eq(schoolClasses.id, schoolClassID),
+					eq(schoolClasses.organizationID, organizationID)
+				)
+			);
+	}
+
+	async addStudents(
+		addMembersToSchoolClassDto: AddMembersToSchoolClassDto,
+		organizationID: number
+	) {
+		const exists = await this.schoolClassExists(
+			addMembersToSchoolClassDto.schoolClassID,
+			organizationID
+		);
+
+		if (exists[0].exists) {
+			await this.db.insert(studentsToSchoolClasses).values(
+				addMembersToSchoolClassDto.members.map((member) => ({
+					studentID: member,
+					schoolClassID: addMembersToSchoolClassDto.schoolClassID
+				}))
+			);
+		}
 	}
 
 	findOne(organizationID: number, schoolClassID: number) {
@@ -103,5 +138,32 @@ export class SchoolClassesService extends DBService {
 					eq(schoolClasses.organizationID, organizationID)
 				)
 			);
+	}
+
+	async removeStudents(
+		addMembersToSchoolClassDto: AddMembersToSchoolClassDto,
+		organizationID: number
+	) {
+		const exists = await this.schoolClassExists(
+			addMembersToSchoolClassDto.schoolClassID,
+			organizationID
+		);
+
+		if (exists[0].exists) {
+			await this.db
+				.delete(studentsToSchoolClasses)
+				.where(
+					and(
+						inArray(
+							studentsToSchoolClasses.studentID,
+							addMembersToSchoolClassDto.members
+						),
+						eq(
+							studentsToSchoolClasses.schoolClassID,
+							addMembersToSchoolClassDto.schoolClassID
+						)
+					)
+				);
+		}
 	}
 }

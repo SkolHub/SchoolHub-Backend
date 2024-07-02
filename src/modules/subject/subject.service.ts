@@ -2,9 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { DBService } from '../../common/db.service';
 import { CreateSubjectsDto } from './dto/create-subjects.dto';
 import { subjects } from '../../database/schema/subjects';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, count, eq, inArray } from 'drizzle-orm';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { DeleteSubjectsDto } from './dto/delete-subjects.dto';
+import { AddMembersToSubjectDto } from './dto/add-members-to-subject.dto';
+import { studentsToSubjects } from '../../database/schema/students-to-subjects';
+import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 
 @Injectable()
 export class SubjectService extends DBService {
@@ -18,6 +21,58 @@ export class SubjectService extends DBService {
 				organizationID
 			}))
 		);
+	}
+
+	private subjectExists(subjectID: number, organizationID: number) {
+		return this.db
+			.select({
+				exists: count()
+			})
+			.from(subjects)
+			.where(
+				and(
+					eq(subjects.id, subjectID),
+					eq(subjects.organizationID, organizationID)
+				)
+			);
+	}
+
+	async addStudents(
+		addMembersToSubjectDto: AddMembersToSubjectDto,
+		organizationID: number
+	) {
+		const exists = await this.subjectExists(
+			addMembersToSubjectDto.subjectID,
+			organizationID
+		);
+
+		if (exists[0].exists) {
+			await this.db.insert(studentsToSubjects).values(
+				addMembersToSubjectDto.members.map((member) => ({
+					studentID: member,
+					subjectID: addMembersToSubjectDto.subjectID
+				}))
+			);
+		}
+	}
+
+	async addTeachers(
+		addMembersToSubjectDto: AddMembersToSubjectDto,
+		organizationID: number
+	) {
+		const exists = await this.subjectExists(
+			addMembersToSubjectDto.subjectID,
+			organizationID
+		);
+
+		if (exists[0].exists) {
+			await this.db.insert(teachersToSubjects).values(
+				addMembersToSubjectDto.members.map((member) => ({
+					teacherID: member,
+					subjectID: addMembersToSubjectDto.subjectID
+				}))
+			);
+		}
 	}
 
 	findOne(organizationID: number, subjectID: number) {
@@ -105,5 +160,53 @@ export class SubjectService extends DBService {
 					eq(subjects.organizationID, organizationID)
 				)
 			);
+	}
+
+	async removeStudents(
+		addMembersToSubjectDto: AddMembersToSubjectDto,
+		organizationID: number
+	) {
+		const exists = await this.subjectExists(
+			addMembersToSubjectDto.subjectID,
+			organizationID
+		);
+
+		if (exists[0].exists) {
+			await this.db
+				.delete(studentsToSubjects)
+				.where(
+					and(
+						inArray(
+							studentsToSubjects.studentID,
+							addMembersToSubjectDto.members
+						),
+						eq(studentsToSubjects.subjectID, addMembersToSubjectDto.subjectID)
+					)
+				);
+		}
+	}
+
+	async removeTeachers(
+		addMembersToSubjectDto: AddMembersToSubjectDto,
+		organizationID: number
+	) {
+		const exists = await this.subjectExists(
+			addMembersToSubjectDto.subjectID,
+			organizationID
+		);
+
+		if (exists[0].exists) {
+			await this.db
+				.delete(teachersToSubjects)
+				.where(
+					and(
+						inArray(
+							teachersToSubjects.teacherID,
+							addMembersToSubjectDto.members
+						),
+						eq(teachersToSubjects.subjectID, addMembersToSubjectDto.subjectID)
+					)
+				);
+		}
 	}
 }

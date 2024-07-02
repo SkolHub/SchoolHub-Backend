@@ -16,6 +16,7 @@ import { RawMemberSession } from '../../types/session';
 import { CreateSubjectsDto } from './dto/create-subjects.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { DeleteSubjectsDto } from './dto/delete-subjects.dto';
+import { AddMembersToSubjectDto } from './dto/add-members-to-subject.dto';
 
 @Controller()
 @UseGuards(AdminGuard)
@@ -29,6 +30,28 @@ export class SubjectController {
 	) {
 		return this.subjectService.createMany(
 			createSubjectsDto,
+			session.passport.user.organizationID
+		);
+	}
+
+	@Post('student')
+	async addStudents(
+		@Body() addMembersToSubjectDto: AddMembersToSubjectDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.subjectService.addStudents(
+			addMembersToSubjectDto,
+			session.passport.user.organizationID
+		);
+	}
+
+	@Post('teacher')
+	async addTeachers(
+		@Body() addMembersToSubjectDto: AddMembersToSubjectDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.subjectService.addTeachers(
+			addMembersToSubjectDto,
 			session.passport.user.organizationID
 		);
 	}
@@ -69,6 +92,28 @@ export class SubjectController {
 	) {
 		return this.subjectService.removeMany(
 			deleteSubjectsDto,
+			session.passport.user.organizationID
+		);
+	}
+
+	@Delete('student')
+	async removeStudents(
+		@Body() addMembersToSubjectDto: AddMembersToSubjectDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.subjectService.removeStudents(
+			addMembersToSubjectDto,
+			session.passport.user.organizationID
+		);
+	}
+
+	@Delete('teacher')
+	async removeTeachers(
+		@Body() addMembersToSubjectDto: AddMembersToSubjectDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.subjectService.removeTeachers(
+			addMembersToSubjectDto,
 			session.passport.user.organizationID
 		);
 	}

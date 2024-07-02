@@ -16,6 +16,7 @@ import { CreateSchoolClassesDto } from './dto/create-school-classes.dto';
 import { UpdateSchoolClassDto } from './dto/update-school-class.dto';
 import { DeleteSchoolClassesDto } from './dto/delete-school-classes.dto';
 import { AdminGuard } from '../../shared/guards/admin.guard';
+import { AddMembersToSchoolClassDto } from './dto/add-members-to-school-class.dto';
 
 @Controller()
 @UseGuards(AdminGuard)
@@ -29,6 +30,17 @@ export class SchoolClassesController {
 	) {
 		return this.schoolClassesService.createMany(
 			createSchoolClassesDto,
+			session.passport.user.organizationID
+		);
+	}
+
+	@Post('student')
+	async addStudents(
+		@Body() addMembersToSchoolClassDto: AddMembersToSchoolClassDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.schoolClassesService.addStudents(
+			addMembersToSchoolClassDto,
 			session.passport.user.organizationID
 		);
 	}
@@ -71,6 +83,17 @@ export class SchoolClassesController {
 	) {
 		return this.schoolClassesService.removeMany(
 			deleteSchoolClassesDto,
+			session.passport.user.organizationID
+		);
+	}
+
+	@Delete('student')
+	async removeStudents(
+		@Body() addMembersToSchoolClassDto: AddMembersToSchoolClassDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.schoolClassesService.removeStudents(
+			addMembersToSchoolClassDto,
 			session.passport.user.organizationID
 		);
 	}
