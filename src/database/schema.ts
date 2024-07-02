@@ -6,3 +6,7 @@ export * from './schema/school-classes';
 export * from './schema/organizations';
 export * from './schema/grades';
 export * from './schema/observations';
+export * from './schema/students-to-subjects';
+export * from './schema/teachers-to-subjects';
+export * from './schema/subjects-to-school-classes';
+export * from './schema/students-to-school-classes';
