@@ -2,7 +2,12 @@ import { integer, pgEnum, pgTable, serial, text } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
 import { relations } from 'drizzle-orm';
 
-const roleEnum = pgEnum('role', ['admin', 'parent', 'student', 'teacher']);
+export const roleEnum = pgEnum('role', [
+	'admin',
+	'parent',
+	'student',
+	'teacher'
+]);
 
 export const members = pgTable('Member', {
 	id: serial('id').primaryKey(),
