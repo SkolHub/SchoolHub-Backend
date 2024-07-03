@@ -6,6 +6,8 @@ import { organizations } from '../../database/schema/organizations';
 import { subjects } from '../../database/schema/subjects';
 import { schoolClasses } from '../../database/schema/school-classes';
 import { subjectsToSchoolClasses } from '../../database/schema/subjects-to-school-classes';
+import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
+import { studentsToSchoolClasses } from '../../database/schema/students-to-school-classes';
 
 @Injectable()
 export class TestService extends DBService {
@@ -34,11 +36,11 @@ export class TestService extends DBService {
 		.flat();
 
 	private readonly commonSubjects = [
+		'Informatică',
 		'Biologie',
 		'Chimie',
 		'Fizică',
 		'Geografie',
-		'Informatică',
 		'Matematică',
 		'Istorie',
 		'Limba și literatura română',
@@ -93,6 +95,14 @@ export class TestService extends DBService {
 		}
 	];
 
+	private readonly students = this.schoolClasses.map((schoolClass) =>
+		Array.from({ length: 30 }).map((el, index) => ({
+			name: `Student ${index} - ${schoolClass}`,
+			user: `s${index}-${schoolClass.toLowerCase()}`,
+			password: 'Test123!'
+		}))
+	);
+
 	private readonly joined_subjects = this.class_joins
 		.map((subject) =>
 			subject.common_classes.map((schoolClassGroup) => ({
@@ -140,6 +150,16 @@ export class TestService extends DBService {
 			.flat()
 	];
 
+	private splitIntoMatrix<T>(arr: T[], size: number): T[][] {
+		const matrix = [];
+
+		for (let i = 0; i < arr.length; i += size) {
+			matrix.push(arr.slice(i, i + size));
+		}
+
+		return matrix;
+	}
+
 	async generateDummyData() {
 		const [owner] = await this.db
 			.insert(members)
@@ -179,6 +199,23 @@ export class TestService extends DBService {
 			)
 		);
 
+		console.log(this.students);
+
+		const st = await this.db
+			.insert(members)
+			.values(
+				await Promise.all(
+					this.students.flat().map(async (student) => ({
+						organizationID: organization.id,
+						role: 'student' as 'student',
+						name: student.name,
+						user: student.user,
+						password: await BcryptUtils.hashPassword(student.password)
+					}))
+				)
+			)
+			.returning({ id: members.id });
+
 		const sc = await this.db
 			.insert(schoolClasses)
 			.values(
@@ -198,6 +235,19 @@ export class TestService extends DBService {
 				}))
 			)
 			.returning();
+
+		const split_students = this.splitIntoMatrix(st, 30);
+
+		await this.db.insert(studentsToSchoolClasses).values(
+			split_students
+				.map((students, index) =>
+					students.map((student) => ({
+						studentID: student.id,
+						schoolClassID: sc[index].id
+					}))
+				)
+				.flat()
+		);
 
 		await this.db.insert(subjectsToSchoolClasses).values(
 			s.map((subject, index) => ({
@@ -219,8 +269,6 @@ export class TestService extends DBService {
 			)
 			.returning();
 
-		console.log();
-
 		await this.db.insert(subjectsToSchoolClasses).values(
 			this.joined_subjects
 				.map((subject, subjectIndex) =>
@@ -230,6 +278,50 @@ export class TestService extends DBService {
 					}))
 				)
 				.flat()
+		);
+
+		const total_subjects = await this.db.select().from(subjects);
+
+		const teachers = await this.db
+			.insert(members)
+			.values(
+				await Promise.all(
+					total_subjects.map(async (subject, index) => ({
+						name: `${subject.name} teacher`,
+						user: `t${index}`,
+						password: await BcryptUtils.hashPassword('Test123!'),
+						organizationID: organization.id,
+						role: 'teacher' as 'teacher'
+					}))
+				)
+			)
+			.returning({ id: members.id });
+
+		await this.db.insert(teachersToSubjects).values(
+			teachers.map((teacher, index) => ({
+				teacherID: teacher.id,
+				subjectID: total_subjects[index].id
+			}))
+		);
+
+		const extra_teacher = await this.db
+			.insert(members)
+			.values({
+				name: `${this.commonSubjects[0]} teacher`,
+				user: `t${total_subjects.length}`,
+				password: await BcryptUtils.hashPassword('Test123!'),
+				organizationID: organization.id,
+				role: 'teacher' as 'teacher'
+			})
+			.returning({ id: members.id });
+
+		await this.db.insert(teachersToSubjects).values(
+			total_subjects
+				.filter((subject) => subject.name === this.commonSubjects[0])
+				.map((subject) => ({
+					teacherID: extra_teacher[0].id,
+					subjectID: subject.id
+				}))
 		);
 	}
 }
