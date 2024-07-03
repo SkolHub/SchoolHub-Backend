@@ -9,6 +9,7 @@ import { subjectsToSchoolClasses } from '../../database/schema/subjects-to-schoo
 import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 import { studentsToSchoolClasses } from '../../database/schema/students-to-school-classes';
 import { sql } from 'drizzle-orm';
+import { studentsToSubjects } from '../../database/schema/students-to-subjects';
 
 @Injectable()
 export class TestService extends DBService {
@@ -159,6 +160,20 @@ export class TestService extends DBService {
 		}
 
 		return matrix;
+	}
+
+	private splitArrayIntoParts<T>(array: T[], n: number): T[][] {
+		const result = [];
+		const partSize = Math.ceil(array.length / n);
+
+		for (let i = 0; i < n; i++) {
+			const start = i * partSize;
+			const end = start + partSize;
+			const part = array.slice(start, end);
+			result.push(part);
+		}
+
+		return result;
 	}
 
 	async generateDummyData() {
@@ -333,20 +348,89 @@ export class TestService extends DBService {
 				}))
 		);
 
-		const studentSubjectLinks = await this.db.execute(sql`
+		const studentSubjectLinks: {
+			students: {
+				id: number;
+				name: string;
+			}[];
+			subjects: {
+				id: number;
+				name: string;
+			}[];
+		}[] = (
+			await this.db.execute(sql`
+                SELECT ${schoolClasses.name},
+                       ${schoolClasses.id},
+                       (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
+                        FROM ${studentsToSchoolClasses}
+                                 INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
+                        WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
+
+                       (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
+                        FROM ${subjectsToSchoolClasses}
+								 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND NOT ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
+                        WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
+                FROM ${schoolClasses}
+                WHERE ${schoolClasses.organizationID} = ${organization.id};
+            `)
+		).rows;
+
+		console.log(studentSubjectLinks);
+
+		await this.db.insert(studentsToSubjects).values(
+			studentSubjectLinks
+				.map((schoolClass) =>
+					schoolClass.students.map((student) =>
+						schoolClass.subjects.map((subject) => ({
+							studentID: student.id,
+							subjectID: subject.id
+						}))
+					)
+				)
+				.flat(2)
+		);
+
+		const specialStudentSubjectLinks: {
+			students: {
+				id: number;
+				name: string;
+			}[];
+			subjects: {
+				id: number;
+				name: string;
+			}[];
+		}[] = (
+			await this.db.execute(sql`
             SELECT ${schoolClasses.name},
                    ${schoolClasses.id},
                    (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
                     FROM ${studentsToSchoolClasses}
-                             LEFT JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID})   as students,
+							 INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
+                    WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
 
                    (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
                     FROM ${subjectsToSchoolClasses}
-                             LEFT JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID}) as subjects
+							 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
+                    WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
             FROM ${schoolClasses}
             WHERE ${schoolClasses.organizationID} = ${organization.id};
-        `);
+        `)
+		).rows;
 
-		console.log(studentSubjectLinks);
+		await this.db.insert(studentsToSubjects).values(
+			specialStudentSubjectLinks
+				.map((schoolClass) =>
+					this.splitArrayIntoParts(
+						schoolClass.students,
+						schoolClass.subjects.length
+					).map((part, index) =>
+						part.map((student) => ({
+							studentID: student.id,
+							subjectID: schoolClass.subjects[index].id
+						}))
+					)
+				)
+				.flat(2)
+		);
 	}
 }
