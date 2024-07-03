@@ -43,7 +43,7 @@ export class AbsenceController {
 		return this.absenceService.update(
 			updateAbsenceDto,
 			+id,
-			session.passport.user.organizationID
+			session.passport.user.userID
 		);
 	}
 
@@ -54,7 +54,7 @@ export class AbsenceController {
 	) {
 		return this.absenceService.remove(
 			deleteAbsencesDto,
-			session.passport.user.organizationID
+			session.passport.user.userID
 		);
 	}
 }

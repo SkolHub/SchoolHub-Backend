@@ -11,37 +11,38 @@ import { absences } from '../../database/schema/absences';
 @Injectable()
 export class AbsenceService extends DBService {
 	async create(createAbsencesDto: CreateAbsencesDto, teacherID: number) {
-		const teacher = await this.db
-			.select({
-				count: count()
-			})
-			.from(teachersToSubjects)
-			.where(
-				and(
-					eq(teachersToSubjects.teacherID, teacherID),
-					eq(teachersToSubjects.subjectID, createAbsencesDto.subjectID)
+		const [teacher, students] = await Promise.all([
+			this.db
+				.select({
+					count: count()
+				})
+				.from(teachersToSubjects)
+				.where(
+					and(
+						eq(teachersToSubjects.teacherID, teacherID),
+						eq(teachersToSubjects.subjectID, createAbsencesDto.subjectID)
+					)
 				)
-			)
-			.limit(1);
+				.limit(1),
+			this.db
+				.select({
+					count: count()
+				})
+				.from(studentsToSubjects)
+				.where(
+					and(
+						inArray(
+							studentsToSubjects.studentID,
+							createAbsencesDto.absences.map((absence) => absence.studentID)
+						),
+						eq(studentsToSubjects.subjectID, createAbsencesDto.subjectID)
+					)
+				)
+		]);
 
 		if (!teacher[0].count) {
 			throw new ForbiddenException('You are not a teacher in this subject');
 		}
-
-		const students = await this.db
-			.select({
-				count: count()
-			})
-			.from(studentsToSubjects)
-			.where(
-				and(
-					inArray(
-						studentsToSubjects.studentID,
-						createAbsencesDto.absences.map((absence) => absence.studentID)
-					),
-					eq(studentsToSubjects.subjectID, createAbsencesDto.subjectID)
-				)
-			);
 
 		if (students.length !== createAbsencesDto.absences.length) {
 			throw new ForbiddenException("Students don't belong to this class");
@@ -58,17 +59,51 @@ export class AbsenceService extends DBService {
 		);
 	}
 
-	async findOne(absenceID: number, userID: number) {}
-
-	update(
-		updateAbsenceDto: UpdateAbsenceDto,
-		absenceID: number,
-		organizationID: number
-	) {
-		return `This action updates a #${absenceID} absence`;
+	findOne(absenceID: number, teacherID: number) {
+		return this.db
+			.select({
+				date: absences.date,
+				reason: absences.reason,
+				studentID: absences.studentID,
+				teacherID: absences.teacherID,
+				subjectID: absences.subjectID,
+				timestamp: absences.timestamp,
+				id: absences.id
+			})
+			.from(absences)
+			.innerJoin(
+				teachersToSubjects,
+				and(
+					eq(teachersToSubjects.subjectID, absences.subjectID),
+					eq(teachersToSubjects.teacherID, teacherID)
+				)
+			)
+			.where(eq(absences.id, absenceID));
 	}
 
-	remove(deleteAbsencesDto: DeleteAbsencesDto, organizationID: number) {
-		return `This action removes a #${1} absence`;
+	async update(
+		updateAbsenceDto: UpdateAbsenceDto,
+		absenceID: number,
+		teacherID: number
+	) {
+		await this.db
+			.update(absences)
+			.set({
+				reason: updateAbsenceDto.reason
+			})
+			.where(
+				and(eq(absences.id, absenceID), eq(absences.teacherID, teacherID))
+			);
+	}
+
+	async remove(deleteAbsencesDto: DeleteAbsencesDto, teacherID: number) {
+		await this.db
+			.delete(absences)
+			.where(
+				and(
+					inArray(absences.id, deleteAbsencesDto.absences),
+					eq(absences.teacherID, teacherID)
+				)
+			);
 	}
 }
