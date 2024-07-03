@@ -17,7 +17,7 @@ import { AddMembersDto } from './dto/add-members.dto';
 import { AddParentsDto } from './dto/add-parents.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { ResetPasswordMemberDto } from './dto/reset-password-member.dto';
-import { RemoveMembersDto } from './dto/remove-members.dto';
+import {DeleteByIdDto} from "../../common/dto/delete-by-id.dto";
 
 @Controller()
 @UseGuards(AdminGuard)
@@ -117,11 +117,11 @@ export class AccountsController {
 
 	@Delete()
 	remove(
-		@Body() removeMembersDto: RemoveMembersDto,
+		@Body() deleteByIdDto: DeleteByIdDto,
 		@Session() session: RawMemberSession
 	) {
 		return this.accountsService.remove(
-			removeMembersDto,
+			deleteByIdDto,
 			session.passport.user.organizationID
 		);
 	}

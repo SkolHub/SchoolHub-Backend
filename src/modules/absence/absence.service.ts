@@ -1,52 +1,25 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateAbsencesDto } from './dto/create-absences.dto';
 import { UpdateAbsenceDto } from './dto/update-absence.dto';
-import { DeleteAbsencesDto } from './dto/delete-absences.dto';
 import { DBService } from '../../common/db.service';
-import { and, count, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
-import { studentsToSubjects } from '../../database/schema/students-to-subjects';
 import { absences } from '../../database/schema/absences';
+import { PermissionService } from '../../common/permission.service';
+import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
 
 @Injectable()
 export class AbsenceService extends DBService {
+	constructor(private readonly permissionService: PermissionService) {
+		super();
+	}
+
 	async create(createAbsencesDto: CreateAbsencesDto, teacherID: number) {
-		const [teacher, students] = await Promise.all([
-			this.db
-				.select({
-					count: count()
-				})
-				.from(teachersToSubjects)
-				.where(
-					and(
-						eq(teachersToSubjects.teacherID, teacherID),
-						eq(teachersToSubjects.subjectID, createAbsencesDto.subjectID)
-					)
-				)
-				.limit(1),
-			this.db
-				.select({
-					count: count()
-				})
-				.from(studentsToSubjects)
-				.where(
-					and(
-						inArray(
-							studentsToSubjects.studentID,
-							createAbsencesDto.absences.map((absence) => absence.studentID)
-						),
-						eq(studentsToSubjects.subjectID, createAbsencesDto.subjectID)
-					)
-				)
-		]);
-
-		if (!teacher[0].count) {
-			throw new ForbiddenException('You are not a teacher in this subject');
-		}
-
-		if (students.length !== createAbsencesDto.absences.length) {
-			throw new ForbiddenException("Students don't belong to this class");
-		}
+		await this.permissionService.canAssignObject(
+			teacherID,
+			createAbsencesDto.absences.map((absence) => absence.studentID),
+			createAbsencesDto.subjectID
+		);
 
 		await this.db.insert(absences).values(
 			createAbsencesDto.absences.map((absence) => ({
@@ -61,16 +34,7 @@ export class AbsenceService extends DBService {
 
 	findOne(absenceID: number, teacherID: number) {
 		return this.db
-			.select({
-				date: absences.date,
-				reason: absences.reason,
-				studentID: absences.studentID,
-				teacherID: absences.teacherID,
-				subjectID: absences.subjectID,
-				timestamp: absences.timestamp,
-				excused: absences.excused,
-				id: absences.id
-			})
+			.select()
 			.from(absences)
 			.innerJoin(
 				teachersToSubjects,
@@ -97,12 +61,12 @@ export class AbsenceService extends DBService {
 			);
 	}
 
-	async remove(deleteAbsencesDto: DeleteAbsencesDto, teacherID: number) {
+	async remove(deleteByIdDto: DeleteByIdDto, teacherID: number) {
 		await this.db
 			.delete(absences)
 			.where(
 				and(
-					inArray(absences.id, deleteAbsencesDto.absences),
+					inArray(absences.id, deleteByIdDto.objects),
 					eq(absences.teacherID, teacherID)
 				)
 			);

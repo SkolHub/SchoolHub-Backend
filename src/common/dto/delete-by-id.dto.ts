@@ -1,7 +1,7 @@
 import { IsArray, IsInt } from 'class-validator';
 
-export class DeleteAbsencesDto {
+export class DeleteByIdDto {
 	@IsArray()
 	@IsInt({ each: true })
-	absences: number[];
+	objects: number[];
 }

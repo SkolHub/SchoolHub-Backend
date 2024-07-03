@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateObservationDto } from './create-observation.dto';
+import { IsString, Length } from 'class-validator';
 
-export class UpdateObservationDto extends PartialType(CreateObservationDto) {}
+export class UpdateObservationDto {
+	@IsString()
+	@Length(1, 1000)
+	reason: string;
+}

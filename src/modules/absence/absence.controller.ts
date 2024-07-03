@@ -13,8 +13,8 @@ import { AbsenceService } from './absence.service';
 import { UpdateAbsenceDto } from './dto/update-absence.dto';
 import { CreateAbsencesDto } from './dto/create-absences.dto';
 import { RawMemberSession } from '../../types/session';
-import { DeleteAbsencesDto } from './dto/delete-absences.dto';
 import { TeacherGuard } from '../../shared/guards/teacher.guard';
+import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
 
 @Controller()
 @UseGuards(TeacherGuard)
@@ -52,11 +52,11 @@ export class AbsenceController {
 
 	@Delete()
 	remove(
-		@Body() deleteAbsencesDto: DeleteAbsencesDto,
+		@Body() deleteByIdDto: DeleteByIdDto,
 		@Session() session: RawMemberSession
 	) {
 		return this.absenceService.remove(
-			deleteAbsencesDto,
+			deleteByIdDto,
 			session.passport.user.userID
 		);
 	}

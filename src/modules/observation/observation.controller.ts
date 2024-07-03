@@ -2,32 +2,29 @@ import {
 	Body,
 	Controller,
 	Delete,
-	Get,
 	Param,
 	Patch,
-	Post
+	Post,
+	Session
 } from '@nestjs/common';
 import { ObservationService } from './observation.service';
-import { CreateObservationDto } from './dto/create-observation.dto';
+import { CreateObservationsDto } from './dto/create-observations.dto';
 import { UpdateObservationDto } from './dto/update-observation.dto';
+import { RawMemberSession } from '../../types/session';
 
 @Controller()
 export class ObservationController {
 	constructor(private readonly observationService: ObservationService) {}
 
 	@Post()
-	create(@Body() createObservationDto: CreateObservationDto) {
-		return this.observationService.create(createObservationDto);
-	}
-
-	@Get()
-	findAll() {
-		return this.observationService.findAll();
-	}
-
-	@Get(':id')
-	findOne(@Param('id') id: string) {
-		return this.observationService.findOne(+id);
+	create(
+		@Body() createObservationDto: CreateObservationsDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.observationService.create(
+			createObservationDto,
+			session.passport.user.userID
+		);
 	}
 
 	@Patch(':id')

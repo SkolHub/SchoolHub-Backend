@@ -4,10 +4,10 @@ import { CreateSubjectsDto } from './dto/create-subjects.dto';
 import { subjects } from '../../../database/schema/subjects';
 import { and, count, eq, inArray } from 'drizzle-orm';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
-import { DeleteSubjectsDto } from './dto/delete-subjects.dto';
 import { AddMembersToSubjectDto } from './dto/add-members-to-subject.dto';
 import { studentsToSubjects } from '../../../database/schema/students-to-subjects';
 import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
+import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 
 @Injectable()
 export class SubjectAdminService extends DBService {
@@ -148,15 +148,12 @@ export class SubjectAdminService extends DBService {
 			);
 	}
 
-	async removeMany(
-		deleteSubjectsDto: DeleteSubjectsDto,
-		organizationID: number
-	) {
+	async remove(deleteByIdDto: DeleteByIdDto, organizationID: number) {
 		await this.db
 			.delete(subjects)
 			.where(
 				and(
-					inArray(subjects.id, deleteSubjectsDto.subjects),
+					inArray(subjects.id, deleteByIdDto.objects),
 					eq(subjects.organizationID, organizationID)
 				)
 			);

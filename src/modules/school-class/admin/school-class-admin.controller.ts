@@ -14,9 +14,9 @@ import { SchoolClassAdminService } from './school-class-admin.service';
 import { RawMemberSession } from '../../../types/session';
 import { CreateSchoolClassesDto } from './dto/create-school-classes.dto';
 import { UpdateSchoolClassDto } from './dto/update-school-class.dto';
-import { DeleteSchoolClassesDto } from './dto/delete-school-classes.dto';
 import { AdminGuard } from '../../../shared/guards/admin.guard';
 import { AddMembersToSchoolClassDto } from './dto/add-members-to-school-class.dto';
+import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 
 @Controller()
 @UseGuards(AdminGuard)
@@ -77,12 +77,12 @@ export class SchoolClassAdminController {
 	}
 
 	@Delete()
-	removeMany(
-		@Body() deleteSchoolClassesDto: DeleteSchoolClassesDto,
+	remove(
+		@Body() deleteByIdDto: DeleteByIdDto,
 		@Session() session: RawMemberSession
 	) {
-		return this.schoolClassesService.removeMany(
-			deleteSchoolClassesDto,
+		return this.schoolClassesService.remove(
+			deleteByIdDto,
 			session.passport.user.organizationID
 		);
 	}

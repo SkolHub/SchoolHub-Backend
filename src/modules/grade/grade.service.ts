@@ -1,52 +1,25 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { and, count, eq, inArray } from 'drizzle-orm';
+import { Injectable } from '@nestjs/common';
+import { and, eq, inArray } from 'drizzle-orm';
 import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
-import { studentsToSubjects } from '../../database/schema/students-to-subjects';
 import { DBService } from '../../common/db.service';
 import { CreateGradesDto } from './dto/create-grades.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
-import { DeleteGradesDto } from './dto/delete-grades.dto';
 import { grades } from '../../database/schema/grades';
+import { PermissionService } from '../../common/permission.service';
+import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
 
 @Injectable()
 export class GradeService extends DBService {
+	constructor(private readonly permissionService: PermissionService) {
+		super();
+	}
+
 	async create(createGradesDto: CreateGradesDto, teacherID: number) {
-		const [teacher, students] = await Promise.all([
-			this.db
-				.select({
-					count: count()
-				})
-				.from(teachersToSubjects)
-				.where(
-					and(
-						eq(teachersToSubjects.teacherID, teacherID),
-						eq(teachersToSubjects.subjectID, createGradesDto.subjectID)
-					)
-				)
-				.limit(1),
-			this.db
-				.select({
-					count: count()
-				})
-				.from(studentsToSubjects)
-				.where(
-					and(
-						inArray(
-							studentsToSubjects.studentID,
-							createGradesDto.grades.map((grade) => grade.studentID)
-						),
-						eq(studentsToSubjects.subjectID, createGradesDto.subjectID)
-					)
-				)
-		]);
-
-		if (!teacher[0].count) {
-			throw new ForbiddenException('You are not a teacher in this subject');
-		}
-
-		if (students.length !== createGradesDto.grades.length) {
-			throw new ForbiddenException("Students don't belong to this class");
-		}
+		await this.permissionService.canAssignObject(
+			teacherID,
+			createGradesDto.grades.map((grade) => grade.studentID),
+			createGradesDto.subjectID
+		);
 
 		await this.db.insert(grades).values(
 			createGradesDto.grades.map((grade) => ({
@@ -96,12 +69,12 @@ export class GradeService extends DBService {
 			.where(and(eq(grades.id, gradeID), eq(grades.teacherID, teacherID)));
 	}
 
-	async remove(deleteGradesDto: DeleteGradesDto, teacherID: number) {
+	async remove(deleteByIdDto: DeleteByIdDto, teacherID: number) {
 		await this.db
 			.delete(grades)
 			.where(
 				and(
-					inArray(grades.id, deleteGradesDto.grades),
+					inArray(grades.id, deleteByIdDto.objects),
 					eq(grades.teacherID, teacherID)
 				)
 			);

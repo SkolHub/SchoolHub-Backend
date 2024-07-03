@@ -1,26 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { CreateObservationDto } from './dto/create-observation.dto';
+import { CreateObservationsDto } from './dto/create-observations.dto';
 import { UpdateObservationDto } from './dto/update-observation.dto';
+import { DBService } from '../../common/db.service';
+import { observations } from '../../database/schema/observations';
 
 @Injectable()
-export class ObservationService {
-  create(createObservationDto: CreateObservationDto) {
-    return 'This action adds a new observation';
-  }
+export class ObservationService extends DBService {
+	async create(createObservationDto: CreateObservationsDto, teacherID: number) {
 
-  findAll() {
-    return `This action returns all observation`;
-  }
 
-  findOne(id: number) {
-    return `This action returns a #${id} observation`;
-  }
+		await this.db.insert(observations).values({
+			reason: createObservationDto.reason,
+			studentID: createObservationDto.studentID,
+			subjectID: createObservationDto.subjectID,
+			teacherID
+		});
+	}
 
-  update(id: number, updateObservationDto: UpdateObservationDto) {
-    return `This action updates a #${id} observation`;
-  }
+	findAll() {
+		return `This action returns all observation`;
+	}
 
-  remove(id: number) {
-    return `This action removes a #${id} observation`;
-  }
+	findOne(id: number) {
+		return `This action returns a #${id} observation`;
+	}
+
+	update(id: number, updateObservationDto: UpdateObservationDto) {
+		return `This action updates a #${id} observation`;
+	}
+
+	remove(id: number) {
+		return `This action removes a #${id} observation`;
+	}
 }

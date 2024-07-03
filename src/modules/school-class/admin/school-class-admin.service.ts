@@ -4,9 +4,9 @@ import { and, count, eq, inArray } from 'drizzle-orm';
 import { CreateSchoolClassesDto } from './dto/create-school-classes.dto';
 import { schoolClasses } from '../../../database/schema/school-classes';
 import { UpdateSchoolClassDto } from './dto/update-school-class.dto';
-import { DeleteSchoolClassesDto } from './dto/delete-school-classes.dto';
 import { AddMembersToSchoolClassDto } from './dto/add-members-to-school-class.dto';
 import { studentsToSchoolClasses } from '../../../database/schema/students-to-school-classes';
+import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 
 @Injectable()
 export class SchoolClassAdminService extends DBService {
@@ -126,15 +126,12 @@ export class SchoolClassAdminService extends DBService {
 			);
 	}
 
-	async removeMany(
-		deleteSchoolClassesDto: DeleteSchoolClassesDto,
-		organizationID: number
-	) {
+	async remove(deleteByIdDto: DeleteByIdDto, organizationID: number) {
 		await this.db
 			.delete(schoolClasses)
 			.where(
 				and(
-					inArray(schoolClasses.id, deleteSchoolClassesDto.schoolClasses),
+					inArray(schoolClasses.id, deleteByIdDto.objects),
 					eq(schoolClasses.organizationID, organizationID)
 				)
 			);

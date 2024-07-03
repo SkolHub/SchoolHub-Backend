@@ -13,8 +13,8 @@ import { GradeService } from './grade.service';
 import { RawMemberSession } from '../../types/session';
 import { CreateGradesDto } from './dto/create-grades.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
-import { DeleteGradesDto } from './dto/delete-grades.dto';
 import { TeacherGuard } from '../../shared/guards/teacher.guard';
+import {DeleteByIdDto} from "../../common/dto/delete-by-id.dto";
 
 @Controller()
 @UseGuards(TeacherGuard)
@@ -52,11 +52,11 @@ export class GradeController {
 
 	@Delete()
 	remove(
-		@Body() deleteGradesDto: DeleteGradesDto,
+		@Body() deleteByIdDto: DeleteByIdDto,
 		@Session() session: RawMemberSession
 	) {
 		return this.gradeService.remove(
-			deleteGradesDto,
+			deleteByIdDto,
 			session.passport.user.userID
 		);
 	}

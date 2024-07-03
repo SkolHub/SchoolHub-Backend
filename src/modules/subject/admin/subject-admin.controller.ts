@@ -15,8 +15,8 @@ import { AdminGuard } from '../../../shared/guards/admin.guard';
 import { RawMemberSession } from '../../../types/session';
 import { CreateSubjectsDto } from './dto/create-subjects.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
-import { DeleteSubjectsDto } from './dto/delete-subjects.dto';
 import { AddMembersToSubjectDto } from './dto/add-members-to-subject.dto';
+import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 
 @Controller()
 @UseGuards(AdminGuard)
@@ -86,12 +86,12 @@ export class SubjectAdminController {
 	}
 
 	@Delete()
-	removeMany(
-		@Body() deleteSubjectsDto: DeleteSubjectsDto,
+	remove(
+		@Body() deleteByIdDto: DeleteByIdDto,
 		@Session() session: RawMemberSession
 	) {
-		return this.subjectService.removeMany(
-			deleteSubjectsDto,
+		return this.subjectService.remove(
+			deleteByIdDto,
 			session.passport.user.organizationID
 		);
 	}

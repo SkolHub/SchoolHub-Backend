@@ -4,11 +4,11 @@ import { AddMembersDto } from './dto/add-members.dto';
 import { AddParentsDto } from './dto/add-parents.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { ResetPasswordMemberDto } from './dto/reset-password-member.dto';
-import { RemoveMembersDto } from './dto/remove-members.dto';
 import { BcryptUtils } from '../../common/utils/bcrypt.utils';
 import { members } from '../../database/schema/members';
 import { parents } from '../../database/schema/parents';
 import { and, eq, inArray } from 'drizzle-orm';
+import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
 
 @Injectable()
 export class AccountsService extends DBService {
@@ -137,12 +137,12 @@ export class AccountsService extends DBService {
 			);
 	}
 
-	async remove(removeMembersDto: RemoveMembersDto, organizationID: number) {
+	async remove(deleteByIdDto: DeleteByIdDto, organizationID: number) {
 		await this.db
 			.delete(members)
 			.where(
 				and(
-					inArray(members.id, removeMembersDto.members),
+					inArray(members.id, deleteByIdDto.objects),
 					eq(members.organizationID, organizationID)
 				)
 			);
