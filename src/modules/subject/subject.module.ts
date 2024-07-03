@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { SubjectService } from './subject.service';
-import { SubjectController } from './subject.controller';
+import { SubjectAdminService } from './admin/subject-admin.service';
+import { SubjectAdminController } from './admin/subject-admin.controller';
 
 @Module({
-  controllers: [SubjectController],
-  providers: [SubjectService],
+  controllers: [SubjectAdminController],
+  providers: [SubjectAdminService],
 })
 export class SubjectModule {}

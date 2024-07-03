@@ -10,9 +10,9 @@ import {
 	Session,
 	UseGuards
 } from '@nestjs/common';
-import { SubjectService } from './subject.service';
-import { AdminGuard } from '../../shared/guards/admin.guard';
-import { RawMemberSession } from '../../types/session';
+import { SubjectAdminService } from './subject-admin.service';
+import { AdminGuard } from '../../../shared/guards/admin.guard';
+import { RawMemberSession } from '../../../types/session';
 import { CreateSubjectsDto } from './dto/create-subjects.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { DeleteSubjectsDto } from './dto/delete-subjects.dto';
@@ -20,8 +20,8 @@ import { AddMembersToSubjectDto } from './dto/add-members-to-subject.dto';
 
 @Controller()
 @UseGuards(AdminGuard)
-export class SubjectController {
-	constructor(private readonly subjectService: SubjectService) {}
+export class SubjectAdminController {
+	constructor(private readonly subjectService: SubjectAdminService) {}
 
 	@Post()
 	createMany(

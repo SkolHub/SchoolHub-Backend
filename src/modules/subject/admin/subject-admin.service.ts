@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { DBService } from '../../common/db.service';
+import { DBService } from '../../../common/db.service';
 import { CreateSubjectsDto } from './dto/create-subjects.dto';
-import { subjects } from '../../database/schema/subjects';
+import { subjects } from '../../../database/schema/subjects';
 import { and, count, eq, inArray } from 'drizzle-orm';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { DeleteSubjectsDto } from './dto/delete-subjects.dto';
 import { AddMembersToSubjectDto } from './dto/add-members-to-subject.dto';
-import { studentsToSubjects } from '../../database/schema/students-to-subjects';
-import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
+import { studentsToSubjects } from '../../../database/schema/students-to-subjects';
+import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
 
 @Injectable()
-export class SubjectService extends DBService {
+export class SubjectAdminService extends DBService {
 	async createMany(
 		createSubjectsDto: CreateSubjectsDto,
 		organizationID: number

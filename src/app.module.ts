@@ -16,6 +16,7 @@ import { SchoolClassModule } from './modules/school-class/school-class.module';
 import { GradeModule } from './modules/grade/grade.module';
 import { AbsenceModule } from './modules/absence/absence.module';
 import { PostModule } from './modules/post/post.module';
+import { TestModule } from './modules/test/test.module';
 
 const routes: Routes = [
 	{
@@ -57,6 +58,10 @@ const routes: Routes = [
 	{
 		path: 'post',
 		module: PostModule
+	},
+	{
+		path: 'test',
+		module: TestModule
 	}
 ];
 
@@ -84,7 +89,8 @@ const routes: Routes = [
 		ObservationModule,
 		GradeModule,
 		AbsenceModule,
-		PostModule
+		PostModule,
+		TestModule
 	],
 	providers: [
 		{
