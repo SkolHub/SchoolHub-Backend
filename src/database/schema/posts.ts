@@ -10,7 +10,8 @@ import {
 export const postTypeEnum = pgEnum('post_type', [
 	'announcement',
 	'assignment',
-	'test'
+	'test',
+	'material'
 ]);
 
 export const posts = pgTable('Post', {

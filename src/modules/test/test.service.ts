@@ -8,6 +8,7 @@ import { schoolClasses } from '../../database/schema/school-classes';
 import { subjectsToSchoolClasses } from '../../database/schema/subjects-to-school-classes';
 import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 import { studentsToSchoolClasses } from '../../database/schema/students-to-school-classes';
+import { sql } from 'drizzle-orm';
 
 @Injectable()
 export class TestService extends DBService {
@@ -199,8 +200,6 @@ export class TestService extends DBService {
 			)
 		);
 
-		console.log(this.students);
-
 		const st = await this.db
 			.insert(members)
 			.values(
@@ -280,13 +279,18 @@ export class TestService extends DBService {
 				.flat()
 		);
 
-		const total_subjects = await this.db.select().from(subjects);
+		const unique_subjects = await this.db
+			.select({
+				name: subjects.name
+			})
+			.from(subjects)
+			.groupBy(subjects.name);
 
 		const teachers = await this.db
 			.insert(members)
 			.values(
 				await Promise.all(
-					total_subjects.map(async (subject, index) => ({
+					unique_subjects.map(async (subject, index) => ({
 						name: `${subject.name} teacher`,
 						user: `t${index}`,
 						password: await BcryptUtils.hashPassword('Test123!'),
@@ -297,18 +301,23 @@ export class TestService extends DBService {
 			)
 			.returning({ id: members.id });
 
+		const total_subjects = await this.db.select().from(subjects);
+
 		await this.db.insert(teachersToSubjects).values(
-			teachers.map((teacher, index) => ({
-				teacherID: teacher.id,
-				subjectID: total_subjects[index].id
+			total_subjects.map((subject, index) => ({
+				teacherID:
+					teachers[
+						unique_subjects.findIndex((sub) => sub.name === subject.name)
+					].id,
+				subjectID: subject.id
 			}))
 		);
 
 		const extra_teacher = await this.db
 			.insert(members)
 			.values({
-				name: `${this.commonSubjects[0]} teacher`,
-				user: `t${total_subjects.length}`,
+				name: `${this.commonSubjects[0]} teacher 2`,
+				user: `t${unique_subjects.length}`,
 				password: await BcryptUtils.hashPassword('Test123!'),
 				organizationID: organization.id,
 				role: 'teacher' as 'teacher'
@@ -323,5 +332,21 @@ export class TestService extends DBService {
 					subjectID: subject.id
 				}))
 		);
+
+		const studentSubjectLinks = await this.db.execute(sql`
+            SELECT ${schoolClasses.name},
+                   ${schoolClasses.id},
+                   (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
+                    FROM ${studentsToSchoolClasses}
+                             LEFT JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID})   as students,
+
+                   (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
+                    FROM ${subjectsToSchoolClasses}
+                             LEFT JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID}) as subjects
+            FROM ${schoolClasses}
+            WHERE ${schoolClasses.organizationID} = ${organization.id};
+        `);
+
+		console.log(studentSubjectLinks);
 	}
 }
