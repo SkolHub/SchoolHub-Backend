@@ -10,19 +10,12 @@ import { AuthenticatedGuard } from './shared/guards/auth.guard';
 import { DrizzleFilter } from './common/filters/drizzle.filter';
 import { ProfileModule } from './modules/profile/profile.module';
 import { SubjectModule } from './modules/subject/subject.module';
-import { SchoolClassModule } from './modules/school-class/school-class.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
-import { OrganizationModule } from './modules/organization/organization.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { ProfileModule } from './modules/profile/profile.module';
 import { ObservationModule } from './modules/observation/observation.module';
-import { AbsenceModule } from './modules/absence/absence.module';
+import { SchoolClassModule } from './modules/school-class/school-class.module';
 import { GradeModule } from './modules/grade/grade.module';
+import { AbsenceModule } from './modules/absence/absence.module';
 import { PostModule } from './modules/post/post.module';
-import { SchoolClassesModule } from './modules/school-classes/school-classes.module';
-import { SubjectModule } from './modules/subject/subject.module';
-import { AccountsModule } from './accounts/accounts.module';
-import { AccountsModule } from './modules/accounts/accounts.module';
 
 const routes: Routes = [
 	{
@@ -48,6 +41,22 @@ const routes: Routes = [
 	{
 		path: 'subject',
 		module: SubjectModule
+	},
+	{
+		path: 'absence',
+		module: AbsenceModule
+	},
+	{
+		path: 'grade',
+		module: GradeModule
+	},
+	{
+		path: 'observation',
+		module: ObservationModule
+	},
+	{
+		path: 'post',
+		module: PostModule
 	}
 ];
 
@@ -72,12 +81,10 @@ const routes: Routes = [
 		AccountsModule,
 		ProfileModule,
 		SubjectModule,
-		SchoolClassModule,
-		SchoolClassesModule,
-		PostModule,
+		ObservationModule,
 		GradeModule,
 		AbsenceModule,
-		ObservationModule
+		PostModule
 	],
 	providers: [
 		{
