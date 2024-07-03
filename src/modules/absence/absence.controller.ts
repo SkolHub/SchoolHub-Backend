@@ -6,15 +6,18 @@ import {
 	Param,
 	Patch,
 	Post,
-	Session
+	Session,
+	UseGuards
 } from '@nestjs/common';
 import { AbsenceService } from './absence.service';
 import { UpdateAbsenceDto } from './dto/update-absence.dto';
 import { CreateAbsencesDto } from './dto/create-absences.dto';
 import { RawMemberSession } from '../../types/session';
 import { DeleteAbsencesDto } from './dto/delete-absences.dto';
+import { TeacherGuard } from '../../shared/guards/teacher.guard';
 
 @Controller()
+@UseGuards(TeacherGuard)
 export class AbsenceController {
 	constructor(private readonly absenceService: AbsenceService) {}
 

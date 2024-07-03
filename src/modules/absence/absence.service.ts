@@ -68,6 +68,7 @@ export class AbsenceService extends DBService {
 				teacherID: absences.teacherID,
 				subjectID: absences.subjectID,
 				timestamp: absences.timestamp,
+				excused: absences.excused,
 				id: absences.id
 			})
 			.from(absences)
