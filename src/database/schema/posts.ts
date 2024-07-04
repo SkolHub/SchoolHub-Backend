@@ -6,6 +6,7 @@ import {
 	text,
 	timestamp
 } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 export const postTypeEnum = pgEnum('post_type', [
 	'announcement',
@@ -23,3 +24,5 @@ export const posts = pgTable('Post', {
 	memberID: integer('memberID').notNull(),
 	subjectID: integer('subjectID').notNull()
 });
+
+export const postsRelations = relations(posts, () => ({}));

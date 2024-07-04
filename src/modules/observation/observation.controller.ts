@@ -3,6 +3,7 @@ import {
 	Controller,
 	Delete,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Session
@@ -11,6 +12,7 @@ import { ObservationService } from './observation.service';
 import { CreateObservationsDto } from './dto/create-observations.dto';
 import { UpdateObservationDto } from './dto/update-observation.dto';
 import { RawMemberSession } from '../../types/session';
+import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
 
 @Controller()
 export class ObservationController {
@@ -18,25 +20,36 @@ export class ObservationController {
 
 	@Post()
 	create(
-		@Body() createObservationDto: CreateObservationsDto,
+		@Body() createObservationsDto: CreateObservationsDto,
 		@Session() session: RawMemberSession
 	) {
 		return this.observationService.create(
-			createObservationDto,
+			createObservationsDto,
 			session.passport.user.userID
 		);
 	}
 
 	@Patch(':id')
 	update(
-		@Param('id') id: string,
-		@Body() updateObservationDto: UpdateObservationDto
+		@Param('id', ParseIntPipe) id: number,
+		@Body() updateObservationDto: UpdateObservationDto,
+		@Session() session: RawMemberSession
 	) {
-		return this.observationService.update(+id, updateObservationDto);
+		return this.observationService.update(
+			updateObservationDto,
+			id,
+			session.passport.user.userID
+		);
 	}
 
-	@Delete(':id')
-	remove(@Param('id') id: string) {
-		return this.observationService.remove(+id);
+	@Delete()
+	remove(
+		@Body() deleteByIdDto: DeleteByIdDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.observationService.remove(
+			deleteByIdDto,
+			session.passport.user.userID
+		);
 	}
 }

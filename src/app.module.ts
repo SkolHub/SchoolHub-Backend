@@ -17,6 +17,7 @@ import { GradeModule } from './modules/grade/grade.module';
 import { AbsenceModule } from './modules/absence/absence.module';
 import { PostModule } from './modules/post/post.module';
 import { TestModule } from './modules/test/test.module';
+import { PermissionService } from './common/permission.service';
 
 const routes: Routes = [
 	{
@@ -100,7 +101,8 @@ const routes: Routes = [
 		{
 			provide: APP_FILTER,
 			useClass: DrizzleFilter
-		}
+		},
+		PermissionService
 	]
 })
 export class AppModule {}

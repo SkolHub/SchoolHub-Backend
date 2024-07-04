@@ -11,3 +11,6 @@ export * from './schema/teachers-to-subjects';
 export * from './schema/subjects-to-school-classes';
 export * from './schema/students-to-school-classes';
 export * from './schema/parents';
+export * from './schema/post-attachments';
+export * from './schema/post-comments';
+export * from './schema/post-submissions';

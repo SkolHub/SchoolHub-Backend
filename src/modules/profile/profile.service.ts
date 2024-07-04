@@ -8,7 +8,7 @@ import { BcryptUtils } from '../../common/utils/bcrypt.utils';
 @Injectable()
 export class ProfileService extends DBService {
 	async getAccount(memberID: number) {
-		await this.db.query.members.findFirst({
+		return this.db.query.members.findFirst({
 			where: eq(members.id, memberID),
 			columns: {
 				name: true,
