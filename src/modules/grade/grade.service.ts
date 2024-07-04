@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { and, eq, inArray } from 'drizzle-orm';
-import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 import { DBService } from '../../common/db.service';
 import { CreateGradesDto } from './dto/create-grades.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
@@ -33,26 +32,14 @@ export class GradeService extends DBService {
 		);
 	}
 
-	findOne(gradeID: number, teacherID: number) {
-		return this.db
-			.select({
-				date: grades.date,
-				reason: grades.reason,
-				studentID: grades.studentID,
-				teacherID: grades.teacherID,
-				subjectID: grades.subjectID,
-				timestamp: grades.timestamp,
-				id: grades.id
-			})
-			.from(grades)
-			.innerJoin(
-				teachersToSubjects,
-				and(
-					eq(teachersToSubjects.subjectID, grades.subjectID),
-					eq(teachersToSubjects.teacherID, teacherID)
-				)
-			)
-			.where(eq(grades.id, gradeID));
+	async getOrganizationObjectsStudent(userID: number) {
+		const [gr, ab] = await Promise.all([
+			this.db
+				.select({})
+				.from(grades)
+				.where(eq(grades.studentID, userID))
+				.groupBy(grades.subjectID)
+		]);
 	}
 
 	async update(

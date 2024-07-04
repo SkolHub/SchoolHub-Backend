@@ -2,7 +2,6 @@ import {
 	Body,
 	Controller,
 	Delete,
-	Get,
 	Param,
 	Patch,
 	Post,
@@ -30,11 +29,6 @@ export class AbsenceController {
 			createAbsenceDto,
 			session.passport.user.userID
 		);
-	}
-
-	@Get(':id')
-	findOne(@Param('id') id: string, @Session() session: RawMemberSession) {
-		return this.absenceService.findOne(+id, session.passport.user.userID);
 	}
 
 	@Patch(':id')

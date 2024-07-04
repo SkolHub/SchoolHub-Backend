@@ -5,6 +5,9 @@ import { DBService } from '../../common/db.service';
 import { PermissionService } from '../../common/permission.service';
 import { posts } from '../../database/schema/posts';
 import { and, eq } from 'drizzle-orm';
+import { Role } from '../../types/session';
+import { studentsToSubjects } from '../../database/schema/students-to-subjects';
+import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 
 @Injectable()
 export class PostService extends DBService {
@@ -12,7 +15,11 @@ export class PostService extends DBService {
 		super();
 	}
 
-	async create(createPostDto: CreatePostDto, teacherID: number) {
+	async create(createPostDto: CreatePostDto, teacherID: number, role: Role) {
+		if (role === 'student' && createPostDto.type !== 'announcement') {
+			throw new ForbiddenException('Students can only create announcements');
+		}
+
 		const isTeacher = this.permissionService.isTeacherInSubject(
 			teacherID,
 			createPostDto.subjectID
@@ -29,6 +36,82 @@ export class PostService extends DBService {
 			title: createPostDto.title,
 			type: createPostDto.type
 		});
+
+		// TODO: Fix post creation
+	}
+
+	getOrganizationPostsStudent(userID: number) {
+		return this.db
+			.select({
+				id: posts.id,
+				type: posts.type,
+				subjectID: posts.subjectID,
+				title: posts.title
+			})
+			.from(studentsToSubjects)
+			.where(eq(studentsToSubjects.studentID, userID))
+			.innerJoin(
+				posts,
+				and(
+					eq(posts.subjectID, studentsToSubjects.subjectID),
+					eq(posts.type, 'assignment')
+				)
+			);
+	}
+
+	getOrganizationPostsTeacher(userID: number) {
+		return this.db
+			.select({
+				id: posts.id,
+				type: posts.type,
+				subjectID: posts.subjectID,
+				title: posts.title
+			})
+			.from(teachersToSubjects)
+			.where(eq(teachersToSubjects.teacherID, userID))
+			.innerJoin(
+				posts,
+				and(
+					eq(posts.subjectID, teachersToSubjects.subjectID),
+					eq(posts.type, 'assignment')
+				)
+			);
+	}
+
+	getSubjectPostsStudent(subjectID: number, userID: number) {
+		return this.db
+			.select({
+				id: posts.id,
+				type: posts.type,
+				subjectID: posts.subjectID,
+				title: posts.title
+			})
+			.from(studentsToSubjects)
+			.where(
+				and(
+					eq(studentsToSubjects.studentID, userID),
+					eq(studentsToSubjects.subjectID, subjectID)
+				)
+			)
+			.innerJoin(posts, and(eq(posts.subjectID, studentsToSubjects.subjectID)));
+	}
+
+	getSubjectPostsTeacher(subjectID: number, userID: number) {
+		return this.db
+			.select({
+				id: posts.id,
+				type: posts.type,
+				subjectID: posts.subjectID,
+				title: posts.title
+			})
+			.from(teachersToSubjects)
+			.where(
+				and(
+					eq(teachersToSubjects.teacherID, userID),
+					eq(teachersToSubjects.subjectID, subjectID)
+				)
+			)
+			.innerJoin(posts, and(eq(posts.subjectID, teachersToSubjects.subjectID)));
 	}
 
 	async update(

@@ -3,7 +3,6 @@ import { CreateAbsencesDto } from './dto/create-absences.dto';
 import { UpdateAbsenceDto } from './dto/update-absence.dto';
 import { DBService } from '../../common/db.service';
 import { and, eq, inArray } from 'drizzle-orm';
-import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 import { absences } from '../../database/schema/absences';
 import { PermissionService } from '../../common/permission.service';
 import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
@@ -30,20 +29,6 @@ export class AbsenceService extends DBService {
 				teacherID
 			}))
 		);
-	}
-
-	findOne(absenceID: number, teacherID: number) {
-		return this.db
-			.select()
-			.from(absences)
-			.innerJoin(
-				teachersToSubjects,
-				and(
-					eq(teachersToSubjects.subjectID, absences.subjectID),
-					eq(teachersToSubjects.teacherID, teacherID)
-				)
-			)
-			.where(eq(absences.id, absenceID));
 	}
 
 	async update(
