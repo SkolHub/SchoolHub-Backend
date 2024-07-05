@@ -10,15 +10,12 @@ import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 
 @Injectable()
 export class SchoolClassAdminService extends DBService {
-	async createMany(
-		createSchoolClassesDto: CreateSchoolClassesDto,
-		organizationID: number
-	) {
+	async createMany(createSchoolClassesDto: CreateSchoolClassesDto) {
 		await this.db.insert(schoolClasses).values(
 			createSchoolClassesDto.schoolClasses.map((schoolClass) => ({
 				name: schoolClass.name,
 				classMasterID: schoolClass.classMasterID,
-				organizationID
+				organizationID: this.organizationID
 			}))
 		);
 	}
@@ -37,13 +34,10 @@ export class SchoolClassAdminService extends DBService {
 			);
 	}
 
-	async addStudents(
-		addMembersToSchoolClassDto: AddMembersToSchoolClassDto,
-		organizationID: number
-	) {
+	async addStudents(addMembersToSchoolClassDto: AddMembersToSchoolClassDto) {
 		const exists = await this.schoolClassExists(
 			addMembersToSchoolClassDto.schoolClassID,
-			organizationID
+			this.organizationID
 		);
 
 		if (exists[0].exists) {
@@ -56,11 +50,11 @@ export class SchoolClassAdminService extends DBService {
 		}
 	}
 
-	findOne(organizationID: number, schoolClassID: number) {
+	findOne(schoolClassID: number) {
 		return this.db.query.schoolClasses.findFirst({
 			where: and(
 				eq(schoolClasses.id, schoolClassID),
-				eq(schoolClasses.organizationID, organizationID)
+				eq(schoolClasses.organizationID, this.organizationID)
 			),
 			columns: {
 				id: true,
@@ -97,9 +91,9 @@ export class SchoolClassAdminService extends DBService {
 		});
 	}
 
-	findMany(organizationID: number) {
+	findMany() {
 		return this.db.query.schoolClasses.findMany({
-			where: eq(schoolClasses.organizationID, organizationID),
+			where: eq(schoolClasses.organizationID, this.organizationID),
 			columns: {
 				id: true,
 				name: true
@@ -109,8 +103,7 @@ export class SchoolClassAdminService extends DBService {
 
 	async update(
 		updateSchoolClassDto: UpdateSchoolClassDto,
-		schoolClassID: number,
-		organizationID: number
+		schoolClassID: number
 	) {
 		await this.db
 			.update(schoolClasses)
@@ -121,29 +114,26 @@ export class SchoolClassAdminService extends DBService {
 			.where(
 				and(
 					eq(schoolClasses.id, schoolClassID),
-					eq(schoolClasses.organizationID, organizationID)
+					eq(schoolClasses.organizationID, this.organizationID)
 				)
 			);
 	}
 
-	async remove(deleteByIdDto: DeleteByIdDto, organizationID: number) {
+	async remove(deleteByIdDto: DeleteByIdDto) {
 		await this.db
 			.delete(schoolClasses)
 			.where(
 				and(
 					inArray(schoolClasses.id, deleteByIdDto.objects),
-					eq(schoolClasses.organizationID, organizationID)
+					eq(schoolClasses.organizationID, this.organizationID)
 				)
 			);
 	}
 
-	async removeStudents(
-		addMembersToSchoolClassDto: AddMembersToSchoolClassDto,
-		organizationID: number
-	) {
+	async removeStudents(addMembersToSchoolClassDto: AddMembersToSchoolClassDto) {
 		const exists = await this.schoolClassExists(
 			addMembersToSchoolClassDto.schoolClassID,
-			organizationID
+			this.organizationID
 		);
 
 		if (exists[0].exists) {

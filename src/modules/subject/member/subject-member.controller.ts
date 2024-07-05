@@ -1,8 +1,7 @@
-import { Controller, Get, Session, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { SubjectMemberService } from './subject-member.service';
 import { StudentGuard } from '../../../shared/guards/student.guard';
 import { TeacherGuard } from '../../../shared/guards/teacher.guard';
-import { RawMemberSession } from '../../../types/session';
 
 @Controller()
 export class SubjectMemberController {
@@ -10,13 +9,13 @@ export class SubjectMemberController {
 
 	@Get('student')
 	@UseGuards(StudentGuard)
-	getStudentSubjects(@Session() session: RawMemberSession) {
-		return this.subjectService.getStudentSubjects(session.passport.user.userID);
+	getStudentSubjects() {
+		return this.subjectService.getStudentSubjects();
 	}
 
 	@Get('teacher')
 	@UseGuards(TeacherGuard)
-	getTeacherSubjects(@Session() session: RawMemberSession) {
-		return this.subjectService.getTeacherSubjects(session.passport.user.userID);
+	getTeacherSubjects() {
+		return this.subjectService.getTeacherSubjects();
 	}
 }

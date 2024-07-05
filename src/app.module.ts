@@ -18,6 +18,7 @@ import { AbsenceModule } from './modules/absence/absence.module';
 import { PostModule } from './modules/post/post.module';
 import { TestModule } from './modules/test/test.module';
 import { PermissionService } from './common/permission.service';
+import { ClsModule } from 'nestjs-cls';
 
 const routes: Routes = [
 	{
@@ -80,6 +81,12 @@ const routes: Routes = [
 		}),
 		PassportModule.register({
 			session: true
+		}),
+		ClsModule.forRoot({
+			global: true,
+			middleware: {
+				mount: true
+			}
 		}),
 		RouterModule.register(routes),
 		AuthModule,

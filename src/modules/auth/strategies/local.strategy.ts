@@ -1,8 +1,7 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { MemberSession } from '../../types/session';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
@@ -13,7 +12,12 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
 		});
 	}
 
-	async validate(user: string, password: string): Promise<MemberSession> {
+	async validate(
+		user: string,
+		password: string
+	): Promise<{
+		token: string;
+	}> {
 		return this.authService.validateUser(user, password);
 	}
 }

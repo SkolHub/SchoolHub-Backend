@@ -7,13 +7,11 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
-	Session,
 	UseGuards
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreateStudentPostDto } from './dto/create-student-post.dto';
 import { UpdateStudentPostDto } from './dto/update-student-post.dto';
-import { RawMemberSession } from '../../types/session';
 import { StudentGuard } from '../../shared/guards/student.guard';
 import { TeacherGuard } from '../../shared/guards/teacher.guard';
 import { CreateTeacherPostDto } from './dto/create-teacher-post.dto';
@@ -25,99 +23,60 @@ export class PostController {
 
 	@Post('student')
 	@UseGuards(StudentGuard)
-	createStudentPost(
-		@Body() createStudentPostDto: CreateStudentPostDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.postService.createStudentPost(
-			createStudentPostDto,
-			session.passport.user.userID
-		);
+	createStudentPost(@Body() createStudentPostDto: CreateStudentPostDto) {
+		return this.postService.createStudentPost(createStudentPostDto);
 	}
 
 	@Post('teacher')
 	@UseGuards(TeacherGuard)
-	createTeacherPost(
-		@Body() createTeacherPostDto: CreateTeacherPostDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.postService.createTeacherPost(
-			createTeacherPostDto,
-			session.passport.user.userID
-		);
+	createTeacherPost(@Body() createTeacherPostDto: CreateTeacherPostDto) {
+		return this.postService.createTeacherPost(createTeacherPostDto);
 	}
 
 	@Get('student/organization')
 	@UseGuards(StudentGuard)
-	getOrganizationPostsStudent(@Session() session: RawMemberSession) {
-		return this.postService.getOrganizationPostsStudent(
-			session.passport.user.userID
-		);
+	getOrganizationPostsStudent() {
+		return this.postService.getOrganizationPostsStudent();
 	}
 
 	@Get('teacher/organization')
 	@UseGuards(TeacherGuard)
-	getOrganizationPostsTeacher(@Session() session: RawMemberSession) {
-		return this.postService.getOrganizationPostsTeacher(
-			session.passport.user.userID
-		);
+	getOrganizationPostsTeacher() {
+		return this.postService.getOrganizationPostsTeacher();
 	}
 
 	@Get('student/subject/:id')
 	@UseGuards(StudentGuard)
-	getSubjectPostsStudent(
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
-	) {
-		return this.postService.getSubjectPostsStudent(
-			id,
-			session.passport.user.userID
-		);
+	getSubjectPostsStudent(@Param('id', ParseIntPipe) id: number) {
+		return this.postService.getSubjectPostsStudent(id);
 	}
 
 	@Get('teacher/subject/:id')
 	@UseGuards(TeacherGuard)
-	getSubjectPostsTeacher(
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
-	) {
-		return this.postService.getSubjectPostsTeacher(
-			id,
-			session.passport.user.userID
-		);
+	getSubjectPostsTeacher(@Param('id', ParseIntPipe) id: number) {
+		return this.postService.getSubjectPostsTeacher(id);
 	}
 
 	@Patch(':id')
+	@UseGuards(StudentGuard)
 	updateStudentPost(
 		@Body() updateStudentPostDto: UpdateStudentPostDto,
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
+		@Param('id', ParseIntPipe) id: number
 	) {
-		return this.postService.updateStudentPost(
-			id,
-			updateStudentPostDto,
-			session.passport.user.userID
-		);
+		return this.postService.updateStudentPost(id, updateStudentPostDto);
 	}
 
 	@Patch(':id')
+	@UseGuards(TeacherGuard)
 	updateTeacherPost(
 		@Body() updateTeacherPostDto: UpdateTeacherPostDto,
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
+		@Param('id', ParseIntPipe) id: number
 	) {
-		return this.postService.updateTeacherPost(
-			id,
-			updateTeacherPostDto,
-			session.passport.user.userID
-		);
+		return this.postService.updateTeacherPost(id, updateTeacherPostDto);
 	}
 
 	@Delete(':id')
-	remove(
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
-	) {
-		return this.postService.remove(id, session.passport.user.userID);
+	remove(@Param('id', ParseIntPipe) id: number) {
+		return this.postService.remove(id);
 	}
 }

@@ -7,9 +7,9 @@ import { BcryptUtils } from '../../common/utils/bcrypt.utils';
 
 @Injectable()
 export class ProfileService extends DBService {
-	async getAccount(memberID: number) {
+	async getAccount() {
 		return this.db.query.members.findFirst({
-			where: eq(members.id, memberID),
+			where: eq(members.id, this.userID),
 			columns: {
 				name: true,
 				role: true
@@ -24,12 +24,12 @@ export class ProfileService extends DBService {
 		});
 	}
 
-	async update(updatePasswordDto: UpdatePasswordDto, memberID: number) {
+	async update(updatePasswordDto: UpdatePasswordDto) {
 		await this.db
 			.update(members)
 			.set({
 				password: await BcryptUtils.hashPassword(updatePasswordDto.password)
 			})
-			.where(eq(members.id, memberID));
+			.where(eq(members.id, this.userID));
 	}
 }

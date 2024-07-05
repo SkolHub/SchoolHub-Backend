@@ -9,20 +9,20 @@ import { and, eq } from 'drizzle-orm';
 
 @Injectable()
 export class AccountsAdminService extends DBService {
-	async create(addAdminDto: AddAdminDto, organizationID: number) {
+	async create(addAdminDto: AddAdminDto) {
 		await this.db.insert(members).values({
 			user: addAdminDto.user,
 			name: addAdminDto.name,
 			password: await BcryptUtils.hashPassword(addAdminDto.password),
 			role: 'admin',
-			organizationID
+			organizationID: this.organizationID
 		});
 	}
 
-	findAll(organizationID: number) {
+	findAll() {
 		return this.db.query.members.findMany({
 			where: and(
-				eq(members.organizationID, organizationID),
+				eq(members.organizationID, this.organizationID),
 				eq(members.role, 'admin')
 			),
 			columns: {
@@ -33,11 +33,7 @@ export class AccountsAdminService extends DBService {
 		});
 	}
 
-	async update(
-		updateAdminDto: UpdateAdminDto,
-		adminID: number,
-		organizationID: number
-	) {
+	async update(updateAdminDto: UpdateAdminDto, adminID: number) {
 		await this.db
 			.update(members)
 			.set({
@@ -45,14 +41,16 @@ export class AccountsAdminService extends DBService {
 				name: updateAdminDto.name
 			})
 			.where(
-				and(eq(members.id, adminID), eq(members.organizationID, organizationID))
+				and(
+					eq(members.id, adminID),
+					eq(members.organizationID, this.organizationID)
+				)
 			);
 	}
 
 	async resetPassword(
 		resetPasswordAdminDto: ResetPasswordAdminDto,
-		adminID: number,
-		organizationID: number
+		adminID: number
 	) {
 		await this.db
 			.update(members)
@@ -60,15 +58,21 @@ export class AccountsAdminService extends DBService {
 				password: await BcryptUtils.hashPassword(resetPasswordAdminDto.password)
 			})
 			.where(
-				and(eq(members.id, adminID), eq(members.organizationID, organizationID))
+				and(
+					eq(members.id, adminID),
+					eq(members.organizationID, this.organizationID)
+				)
 			);
 	}
 
-	async remove(adminID: number, organizationID: number) {
+	async remove(adminID: number) {
 		await this.db
 			.delete(members)
 			.where(
-				and(eq(members.id, adminID), eq(members.organizationID, organizationID))
+				and(
+					eq(members.id, adminID),
+					eq(members.organizationID, this.organizationID)
+				)
 			);
 	}
 }

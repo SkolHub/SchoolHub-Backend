@@ -7,11 +7,9 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
-	Session,
 	UseGuards
 } from '@nestjs/common';
 import { GradeService } from './grade.service';
-import { RawMemberSession } from '../../types/session';
 import { CreateGradesDto } from './dto/create-grades.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
 import { TeacherGuard } from '../../shared/guards/teacher.guard';
@@ -19,62 +17,36 @@ import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
 import { StudentGuard } from '../../shared/guards/student.guard';
 
 @Controller()
-@UseGuards(TeacherGuard)
 export class GradeController {
 	constructor(private readonly gradeService: GradeService) {}
 
 	@Post()
-	createMany(
-		@Body() createGradesDto: CreateGradesDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.gradeService.create(
-			createGradesDto,
-			session.passport.user.userID
-		);
+	@UseGuards(TeacherGuard)
+	createMany(@Body() createGradesDto: CreateGradesDto) {
+		return this.gradeService.create(createGradesDto);
 	}
 
 	@Get('student/organization')
 	@UseGuards(StudentGuard)
-	getOrganizationObjectsStudent(@Session() session: RawMemberSession) {
-		return this.gradeService.getOrganizationObjectsStudent(
-			session.passport.user.userID
-		);
+	getOrganizationObjectsStudent() {
+		return this.gradeService.getOrganizationObjectsStudent();
 	}
 
 	@Get('student/subject/:id')
 	@UseGuards(StudentGuard)
-	getSubjectObjectsStudent(
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
-	) {
-		return this.gradeService.getSubjectObjectsStudent(
-			id,
-			session.passport.user.userID
-		);
+	getSubjectObjectsStudent(@Param('id', ParseIntPipe) id: number) {
+		return this.gradeService.getSubjectObjectsStudent(id);
 	}
 
 	@Patch(':id')
-	update(
-		@Body() updateGradeDto: UpdateGradeDto,
-		@Param('id') id: string,
-		@Session() session: RawMemberSession
-	) {
-		return this.gradeService.update(
-			updateGradeDto,
-			+id,
-			session.passport.user.userID
-		);
+	@UseGuards(TeacherGuard)
+	update(@Body() updateGradeDto: UpdateGradeDto, @Param('id') id: string) {
+		return this.gradeService.update(updateGradeDto, +id);
 	}
 
 	@Delete()
-	remove(
-		@Body() deleteByIdDto: DeleteByIdDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.gradeService.remove(
-			deleteByIdDto,
-			session.passport.user.userID
-		);
+	@UseGuards(TeacherGuard)
+	remove(@Body() deleteByIdDto: DeleteByIdDto) {
+		return this.gradeService.remove(deleteByIdDto);
 	}
 }

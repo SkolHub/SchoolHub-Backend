@@ -11,14 +11,11 @@ import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 
 @Injectable()
 export class SubjectAdminService extends DBService {
-	async createMany(
-		createSubjectsDto: CreateSubjectsDto,
-		organizationID: number
-	) {
+	async createMany(createSubjectsDto: CreateSubjectsDto) {
 		await this.db.insert(subjects).values(
 			createSubjectsDto.subjects.map((subject) => ({
 				name: subject.name,
-				organizationID,
+				organizationID: this.organizationID,
 				icon: subject.icon,
 				metadata: {
 					minGrades: subject.minGrades
@@ -41,13 +38,10 @@ export class SubjectAdminService extends DBService {
 			);
 	}
 
-	async addStudents(
-		addMembersToSubjectDto: AddMembersToSubjectDto,
-		organizationID: number
-	) {
+	async addStudents(addMembersToSubjectDto: AddMembersToSubjectDto) {
 		const exists = await this.subjectExists(
 			addMembersToSubjectDto.subjectID,
-			organizationID
+			this.organizationID
 		);
 
 		if (exists[0].exists) {
@@ -60,13 +54,10 @@ export class SubjectAdminService extends DBService {
 		}
 	}
 
-	async addTeachers(
-		addMembersToSubjectDto: AddMembersToSubjectDto,
-		organizationID: number
-	) {
+	async addTeachers(addMembersToSubjectDto: AddMembersToSubjectDto) {
 		const exists = await this.subjectExists(
 			addMembersToSubjectDto.subjectID,
-			organizationID
+			this.organizationID
 		);
 
 		if (exists[0].exists) {
@@ -79,11 +70,11 @@ export class SubjectAdminService extends DBService {
 		}
 	}
 
-	findOne(organizationID: number, subjectID: number) {
+	findOne(subjectID: number) {
 		return this.db.query.subjects.findFirst({
 			where: and(
 				eq(subjects.id, subjectID),
-				eq(subjects.organizationID, organizationID)
+				eq(subjects.organizationID, this.organizationID)
 			),
 			columns: {
 				id: true,
@@ -126,9 +117,9 @@ export class SubjectAdminService extends DBService {
 		});
 	}
 
-	findMany(organizationID: number) {
+	findMany() {
 		return this.db.query.subjects.findMany({
-			where: eq(subjects.organizationID, organizationID),
+			where: eq(subjects.organizationID, this.organizationID),
 			columns: {
 				id: true,
 				name: true,
@@ -138,11 +129,7 @@ export class SubjectAdminService extends DBService {
 		});
 	}
 
-	async update(
-		updateSubjectDto: UpdateSubjectDto,
-		subjectID: number,
-		organizationID: number
-	) {
+	async update(updateSubjectDto: UpdateSubjectDto, subjectID: number) {
 		await this.db
 			.update(subjects)
 			.set({
@@ -150,35 +137,32 @@ export class SubjectAdminService extends DBService {
 				icon: updateSubjectDto.icon,
 				metadata: updateSubjectDto.minGrades
 					? sql`jsonb_set
-                    (${subjects.metadata}, array ['minGrades'], to_jsonb(${updateSubjectDto.minGrades}))`
+                            (${subjects.metadata}, array ['minGrades'], to_jsonb(${updateSubjectDto.minGrades}))`
 					: undefined
 			})
 			.where(
 				and(
 					eq(subjects.id, subjectID),
-					eq(subjects.organizationID, organizationID)
+					eq(subjects.organizationID, this.organizationID)
 				)
 			);
 	}
 
-	async remove(deleteByIdDto: DeleteByIdDto, organizationID: number) {
+	async remove(deleteByIdDto: DeleteByIdDto) {
 		await this.db
 			.delete(subjects)
 			.where(
 				and(
 					inArray(subjects.id, deleteByIdDto.objects),
-					eq(subjects.organizationID, organizationID)
+					eq(subjects.organizationID, this.organizationID)
 				)
 			);
 	}
 
-	async removeStudents(
-		addMembersToSubjectDto: AddMembersToSubjectDto,
-		organizationID: number
-	) {
+	async removeStudents(addMembersToSubjectDto: AddMembersToSubjectDto) {
 		const exists = await this.subjectExists(
 			addMembersToSubjectDto.subjectID,
-			organizationID
+			this.organizationID
 		);
 
 		if (exists[0].exists) {
@@ -196,13 +180,10 @@ export class SubjectAdminService extends DBService {
 		}
 	}
 
-	async removeTeachers(
-		addMembersToSubjectDto: AddMembersToSubjectDto,
-		organizationID: number
-	) {
+	async removeTeachers(addMembersToSubjectDto: AddMembersToSubjectDto) {
 		const exists = await this.subjectExists(
 			addMembersToSubjectDto.subjectID,
-			organizationID
+			this.organizationID
 		);
 
 		if (exists[0].exists) {

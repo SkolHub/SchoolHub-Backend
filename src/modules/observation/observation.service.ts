@@ -14,12 +14,9 @@ export class ObservationService extends DBService {
 		super();
 	}
 
-	async create(
-		createObservationsDto: CreateObservationsDto,
-		teacherID: number
-	) {
+	async create(createObservationsDto: CreateObservationsDto) {
 		await this.permissionService.canAssignObject(
-			teacherID,
+			this.userID,
 			createObservationsDto.observations.map(
 				(observation) => observation.studentID
 			),
@@ -31,15 +28,14 @@ export class ObservationService extends DBService {
 				reason: observation.reason,
 				studentID: observation.studentID,
 				subjectID: createObservationsDto.subjectID,
-				teacherID
+				teacherID: this.userID
 			}))
 		);
 	}
 
 	async update(
 		updateObservationDto: UpdateObservationDto,
-		observationID: number,
-		teacherID: number
+		observationID: number
 	) {
 		await this.db
 			.update(observations)
@@ -49,18 +45,18 @@ export class ObservationService extends DBService {
 			.where(
 				and(
 					eq(observations.id, observationID),
-					eq(observations.teacherID, teacherID)
+					eq(observations.teacherID, this.userID)
 				)
 			);
 	}
 
-	async remove(deleteByIdDto: DeleteByIdDto, teacherID: number) {
+	async remove(deleteByIdDto: DeleteByIdDto) {
 		await this.db
 			.delete(grades)
 			.where(
 				and(
 					inArray(grades.id, deleteByIdDto.objects),
-					eq(grades.teacherID, teacherID)
+					eq(grades.teacherID, this.userID)
 				)
 			);
 	}

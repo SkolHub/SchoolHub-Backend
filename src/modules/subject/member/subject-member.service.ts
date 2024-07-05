@@ -10,7 +10,7 @@ import { studentsToSubjects } from '../../../database/schema/students-to-subject
 
 @Injectable()
 export class SubjectMemberService extends DBService {
-	getStudentSubjects(studentID: number) {
+	getStudentSubjects() {
 		return this.db
 			.select({
 				id: schoolClasses.id,
@@ -30,7 +30,7 @@ export class SubjectMemberService extends DBService {
 				studentsToSubjects,
 				and(
 					eq(studentsToSubjects.subjectID, subjectsToSchoolClasses.subjectID),
-					eq(studentsToSubjects.studentID, studentID)
+					eq(studentsToSubjects.studentID, this.organizationID)
 				)
 			)
 			.innerJoin(subjects, eq(subjects.id, subjectsToSchoolClasses.subjectID))
@@ -38,11 +38,11 @@ export class SubjectMemberService extends DBService {
 				schoolClasses,
 				eq(schoolClasses.id, subjectsToSchoolClasses.schoolClassID)
 			)
-			.where(eq(studentsToSchoolClasses.studentID, studentID))
+			.where(eq(studentsToSchoolClasses.studentID, this.organizationID))
 			.groupBy(schoolClasses.id);
 	}
 
-	getTeacherSubjects(teacherID: number) {
+	getTeacherSubjects() {
 		const sq = this.db
 			.select({
 				schoolClasses: sql`JSONB_AGG
@@ -64,7 +64,7 @@ export class SubjectMemberService extends DBService {
 				schoolClasses,
 				eq(schoolClasses.id, subjectsToSchoolClasses.schoolClassID)
 			)
-			.where(eq(teachersToSubjects.teacherID, teacherID))
+			.where(eq(teachersToSubjects.teacherID, this.organizationID))
 			.groupBy(subjects.id)
 			.as('sq');
 

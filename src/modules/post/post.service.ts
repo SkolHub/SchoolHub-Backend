@@ -16,12 +16,9 @@ export class PostService extends DBService {
 		super();
 	}
 
-	async createStudentPost(
-		createPostDto: CreateStudentPostDto,
-		studentID: number
-	) {
+	async createStudentPost(createPostDto: CreateStudentPostDto) {
 		const isStudent = this.permissionService.isStudentInSubject(
-			studentID,
+			this.userID,
 			createPostDto.subjectID
 		);
 
@@ -32,18 +29,15 @@ export class PostService extends DBService {
 		await this.db.insert(posts).values({
 			subjectID: createPostDto.subjectID,
 			body: createPostDto.body,
-			memberID: studentID,
+			memberID: this.userID,
 			title: createPostDto.title,
 			type: 'announcement'
 		});
 	}
 
-	async createTeacherPost(
-		createPostDto: CreateTeacherPostDto,
-		teacherID: number
-	) {
+	async createTeacherPost(createPostDto: CreateTeacherPostDto) {
 		const isTeacher = this.permissionService.isTeacherInSubject(
-			teacherID,
+			this.userID,
 			createPostDto.subjectID
 		);
 
@@ -54,14 +48,14 @@ export class PostService extends DBService {
 		await this.db.insert(posts).values({
 			subjectID: createPostDto.subjectID,
 			body: createPostDto.body,
-			memberID: teacherID,
+			memberID: this.userID,
 			title: createPostDto.title,
 			type: createPostDto.type,
 			dueDate: createPostDto.dueDate
 		});
 	}
 
-	getOrganizationPostsStudent(userID: number) {
+	getOrganizationPostsStudent() {
 		return this.db
 			.select({
 				id: posts.id,
@@ -72,7 +66,7 @@ export class PostService extends DBService {
 				timestamp: posts.timestamp
 			})
 			.from(studentsToSubjects)
-			.where(eq(studentsToSubjects.studentID, userID))
+			.where(eq(studentsToSubjects.studentID, this.userID))
 			.innerJoin(
 				posts,
 				and(
@@ -82,7 +76,7 @@ export class PostService extends DBService {
 			);
 	}
 
-	getOrganizationPostsTeacher(userID: number) {
+	getOrganizationPostsTeacher() {
 		return this.db
 			.select({
 				id: posts.id,
@@ -93,7 +87,7 @@ export class PostService extends DBService {
 				timestamp: posts.timestamp
 			})
 			.from(teachersToSubjects)
-			.where(eq(teachersToSubjects.teacherID, userID))
+			.where(eq(teachersToSubjects.teacherID, this.userID))
 			.innerJoin(
 				posts,
 				and(
@@ -103,7 +97,7 @@ export class PostService extends DBService {
 			);
 	}
 
-	getSubjectPostsStudent(subjectID: number, userID: number) {
+	getSubjectPostsStudent(subjectID: number) {
 		return this.db
 			.select({
 				id: posts.id,
@@ -117,14 +111,14 @@ export class PostService extends DBService {
 			.from(studentsToSubjects)
 			.where(
 				and(
-					eq(studentsToSubjects.studentID, userID),
+					eq(studentsToSubjects.studentID, this.userID),
 					eq(studentsToSubjects.subjectID, subjectID)
 				)
 			)
 			.innerJoin(posts, and(eq(posts.subjectID, studentsToSubjects.subjectID)));
 	}
 
-	getSubjectPostsTeacher(subjectID: number, userID: number) {
+	getSubjectPostsTeacher(subjectID: number) {
 		return this.db
 			.select({
 				id: posts.id,
@@ -138,7 +132,7 @@ export class PostService extends DBService {
 			.from(teachersToSubjects)
 			.where(
 				and(
-					eq(teachersToSubjects.teacherID, userID),
+					eq(teachersToSubjects.teacherID, this.userID),
 					eq(teachersToSubjects.subjectID, subjectID)
 				)
 			)
@@ -146,25 +140,20 @@ export class PostService extends DBService {
 	}
 
 	@Patch(':id')
-	async updateStudentPost(
-		postID: number,
-		updatePostDto: UpdateStudentPostDto,
-		studentID: number
-	) {
+	async updateStudentPost(postID: number, updatePostDto: UpdateStudentPostDto) {
 		await this.db
 			.update(posts)
 			.set({
 				title: updatePostDto.title,
 				body: updatePostDto.body
 			})
-			.where(and(eq(posts.id, postID), eq(posts.memberID, studentID)));
+			.where(and(eq(posts.id, postID), eq(posts.memberID, this.userID)));
 	}
 
 	@Patch(':id')
 	async updateTeacherPost(
 		postID: number,
-		updateTeacherPostDto: UpdateTeacherPostDto,
-		teacherID: number
+		updateTeacherPostDto: UpdateTeacherPostDto
 	) {
 		await this.db
 			.update(posts)
@@ -173,12 +162,12 @@ export class PostService extends DBService {
 				body: updateTeacherPostDto.body,
 				dueDate: updateTeacherPostDto.dueDate
 			})
-			.where(and(eq(posts.id, postID), eq(posts.memberID, teacherID)));
+			.where(and(eq(posts.id, postID), eq(posts.memberID, this.userID)));
 	}
 
-	async remove(postID: number, teacherID: number) {
+	async remove(postID: number) {
 		await this.db
 			.delete(posts)
-			.where(and(eq(posts.id, postID), eq(posts.memberID, teacherID)));
+			.where(and(eq(posts.id, postID), eq(posts.memberID, this.userID)));
 	}
 }

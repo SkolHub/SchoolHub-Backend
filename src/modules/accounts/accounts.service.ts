@@ -28,26 +28,28 @@ export class AccountsService extends DBService {
 		);
 	}
 
-	async addStudents(addMembersDto: AddMembersDto, organizationID: number) {
+	async addStudents(addMembersDto: AddMembersDto) {
 		await this.db
 			.insert(members)
 			.values(
-				await this.hashAccounts(addMembersDto, organizationID, 'student')
+				await this.hashAccounts(addMembersDto, this.organizationID, 'student')
 			);
 	}
 
-	async addTeachers(addMembersDto: AddMembersDto, organizationID: number) {
+	async addTeachers(addMembersDto: AddMembersDto) {
 		await this.db
 			.insert(members)
 			.values(
-				await this.hashAccounts(addMembersDto, organizationID, 'teacher')
+				await this.hashAccounts(addMembersDto, this.organizationID, 'teacher')
 			);
 	}
 
-	async addParents(addParentsDto: AddParentsDto, organizationID: number) {
+	async addParents(addParentsDto: AddParentsDto) {
 		const accounts = await this.db
 			.insert(members)
-			.values(await this.hashAccounts(addParentsDto, organizationID, 'student'))
+			.values(
+				await this.hashAccounts(addParentsDto, this.organizationID, 'student')
+			)
 			.returning({
 				id: members.id
 			});
@@ -60,11 +62,11 @@ export class AccountsService extends DBService {
 		);
 	}
 
-	findOne(memberID: number, organizationID: number) {
+	findOne(memberID: number) {
 		return this.db.query.members.findFirst({
 			where: and(
 				eq(members.id, memberID),
-				eq(members.organizationID, organizationID)
+				eq(members.organizationID, this.organizationID)
 			),
 			columns: {
 				name: true,
@@ -86,23 +88,19 @@ export class AccountsService extends DBService {
 		});
 	}
 
-	getStudents(organizationID: number) {
-		return this.getMany('student', organizationID);
+	getStudents() {
+		return this.getMany('student', this.organizationID);
 	}
 
-	getTeachers(organizationID: number) {
-		return this.getMany('teacher', organizationID);
+	getTeachers() {
+		return this.getMany('teacher', this.organizationID);
 	}
 
-	getParents(organizationID: number) {
-		return this.getMany('parent', organizationID);
+	getParents() {
+		return this.getMany('parent', this.organizationID);
 	}
 
-	async update(
-		updateMemberDto: UpdateMemberDto,
-		memberID: number,
-		organizationID: number
-	) {
+	async update(updateMemberDto: UpdateMemberDto, memberID: number) {
 		await this.db
 			.update(members)
 			.set({
@@ -112,15 +110,14 @@ export class AccountsService extends DBService {
 			.where(
 				and(
 					eq(members.id, memberID),
-					eq(members.organizationID, organizationID)
+					eq(members.organizationID, this.organizationID)
 				)
 			);
 	}
 
 	async resetPassword(
 		resetPasswordMemberDto: ResetPasswordMemberDto,
-		memberID: number,
-		organizationID: number
+		memberID: number
 	) {
 		await this.db
 			.update(members)
@@ -132,18 +129,18 @@ export class AccountsService extends DBService {
 			.where(
 				and(
 					eq(members.id, memberID),
-					eq(members.organizationID, organizationID)
+					eq(members.organizationID, this.organizationID)
 				)
 			);
 	}
 
-	async remove(deleteByIdDto: DeleteByIdDto, organizationID: number) {
+	async remove(deleteByIdDto: DeleteByIdDto) {
 		await this.db
 			.delete(members)
 			.where(
 				and(
 					inArray(members.id, deleteByIdDto.objects),
-					eq(members.organizationID, organizationID)
+					eq(members.organizationID, this.organizationID)
 				)
 			);
 	}

@@ -7,12 +7,10 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
-	Session,
 	UseGuards
 } from '@nestjs/common';
 import { SubjectAdminService } from './subject-admin.service';
 import { AdminGuard } from '../../../shared/guards/admin.guard';
-import { RawMemberSession } from '../../../types/session';
 import { CreateSubjectsDto } from './dto/create-subjects.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { AddMembersToSubjectDto } from './dto/add-members-to-subject.dto';
@@ -24,97 +22,50 @@ export class SubjectAdminController {
 	constructor(private readonly subjectService: SubjectAdminService) {}
 
 	@Post()
-	createMany(
-		@Body() createSubjectsDto: CreateSubjectsDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.subjectService.createMany(
-			createSubjectsDto,
-			session.passport.user.organizationID
-		);
+	createMany(@Body() createSubjectsDto: CreateSubjectsDto) {
+		return this.subjectService.createMany(createSubjectsDto);
 	}
 
 	@Post('student')
-	async addStudents(
-		@Body() addMembersToSubjectDto: AddMembersToSubjectDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.subjectService.addStudents(
-			addMembersToSubjectDto,
-			session.passport.user.organizationID
-		);
+	async addStudents(@Body() addMembersToSubjectDto: AddMembersToSubjectDto) {
+		return this.subjectService.addStudents(addMembersToSubjectDto);
 	}
 
 	@Post('teacher')
-	async addTeachers(
-		@Body() addMembersToSubjectDto: AddMembersToSubjectDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.subjectService.addTeachers(
-			addMembersToSubjectDto,
-			session.passport.user.organizationID
-		);
+	async addTeachers(@Body() addMembersToSubjectDto: AddMembersToSubjectDto) {
+		return this.subjectService.addTeachers(addMembersToSubjectDto);
 	}
 
 	@Get(':id')
-	findOne(
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
-	) {
-		return this.subjectService.findOne(
-			id,
-			session.passport.user.organizationID
-		);
+	findOne(@Param('id', ParseIntPipe) id: number) {
+		return this.subjectService.findOne(id);
 	}
 
 	@Get()
-	findMany(@Session() session: RawMemberSession) {
-		return this.subjectService.findMany(session.passport.user.organizationID);
+	findMany() {
+		return this.subjectService.findMany();
 	}
 
 	@Patch(':id')
 	update(
 		@Body() updateSubjectDto: UpdateSubjectDto,
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
+		@Param('id', ParseIntPipe) id: number
 	) {
-		return this.subjectService.update(
-			updateSubjectDto,
-			id,
-			session.passport.user.organizationID
-		);
+		return this.subjectService.update(updateSubjectDto, id);
 	}
 
 	@Delete()
-	remove(
-		@Body() deleteByIdDto: DeleteByIdDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.subjectService.remove(
-			deleteByIdDto,
-			session.passport.user.organizationID
-		);
+	remove(@Body() deleteByIdDto: DeleteByIdDto) {
+		return this.subjectService.remove(deleteByIdDto);
 	}
 
 	@Delete('student')
-	async removeStudents(
-		@Body() addMembersToSubjectDto: AddMembersToSubjectDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.subjectService.removeStudents(
-			addMembersToSubjectDto,
-			session.passport.user.organizationID
-		);
+	async removeStudents(@Body() addMembersToSubjectDto: AddMembersToSubjectDto) {
+		return this.subjectService.removeStudents(addMembersToSubjectDto);
 	}
 
 	@Delete('teacher')
-	async removeTeachers(
-		@Body() addMembersToSubjectDto: AddMembersToSubjectDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.subjectService.removeTeachers(
-			addMembersToSubjectDto,
-			session.passport.user.organizationID
-		);
+	async removeTeachers(@Body() addMembersToSubjectDto: AddMembersToSubjectDto) {
+		return this.subjectService.removeTeachers(addMembersToSubjectDto);
 	}
 }

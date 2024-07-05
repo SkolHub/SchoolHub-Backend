@@ -7,13 +7,11 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
-	Session,
 	UseGuards
 } from '@nestjs/common';
 import { AccountsAdminService } from './accounts-admin.service';
 import { OwnerGuard } from '../../../shared/guards/owner.guard';
 import { AddAdminDto } from './dto/add-admin.dto';
-import { RawMemberSession } from '../../../types/session';
 import { ResetPasswordAdminDto } from './dto/reset-password-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 
@@ -23,52 +21,33 @@ export class AccountsAdminController {
 	constructor(private readonly accountsService: AccountsAdminService) {}
 
 	@Post()
-	create(
-		@Body() addAdminDto: AddAdminDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.accountsService.create(
-			addAdminDto,
-			session.passport.user.organizationID
-		);
+	create(@Body() addAdminDto: AddAdminDto) {
+		return this.accountsService.create(addAdminDto);
 	}
 
 	@Get()
-	findAll(@Session() session: RawMemberSession) {
-		return this.accountsService.findAll(session.passport.user.organizationID);
+	findAll() {
+		return this.accountsService.findAll();
 	}
 
 	@Patch(':id')
 	update(
 		@Body() updateAdminDto: UpdateAdminDto,
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
+		@Param('id', ParseIntPipe) id: number
 	) {
-		return this.accountsService.update(
-			updateAdminDto,
-			id,
-			session.passport.user.organizationID
-		);
+		return this.accountsService.update(updateAdminDto, id);
 	}
 
 	@Patch('password/:id')
 	resetPassword(
 		@Body() resetPasswordAdminDto: ResetPasswordAdminDto,
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
+		@Param('id', ParseIntPipe) id: number
 	) {
-		return this.accountsService.resetPassword(
-			resetPasswordAdminDto,
-			id,
-			session.passport.user.organizationID
-		);
+		return this.accountsService.resetPassword(resetPasswordAdminDto, id);
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: number, @Session() session: RawMemberSession) {
-		return this.accountsService.remove(
-			id,
-			session.passport.user.organizationID
-		);
+	remove(@Param('id') id: number) {
+		return this.accountsService.remove(id);
 	}
 }

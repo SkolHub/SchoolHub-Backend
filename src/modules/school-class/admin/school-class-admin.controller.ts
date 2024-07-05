@@ -7,11 +7,9 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
-	Session,
 	UseGuards
 } from '@nestjs/common';
 import { SchoolClassAdminService } from './school-class-admin.service';
-import { RawMemberSession } from '../../../types/session';
 import { CreateSchoolClassesDto } from './dto/create-school-classes.dto';
 import { UpdateSchoolClassDto } from './dto/update-school-class.dto';
 import { AdminGuard } from '../../../shared/guards/admin.guard';
@@ -24,77 +22,44 @@ export class SchoolClassAdminController {
 	constructor(private readonly schoolClassesService: SchoolClassAdminService) {}
 
 	@Post()
-	createMany(
-		@Body() createSchoolClassesDto: CreateSchoolClassesDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.schoolClassesService.createMany(
-			createSchoolClassesDto,
-			session.passport.user.organizationID
-		);
+	createMany(@Body() createSchoolClassesDto: CreateSchoolClassesDto) {
+		return this.schoolClassesService.createMany(createSchoolClassesDto);
 	}
 
 	@Post('student')
 	async addStudents(
-		@Body() addMembersToSchoolClassDto: AddMembersToSchoolClassDto,
-		@Session() session: RawMemberSession
+		@Body() addMembersToSchoolClassDto: AddMembersToSchoolClassDto
 	) {
-		return this.schoolClassesService.addStudents(
-			addMembersToSchoolClassDto,
-			session.passport.user.organizationID
-		);
+		return this.schoolClassesService.addStudents(addMembersToSchoolClassDto);
 	}
 
 	@Get(':id')
-	findOne(
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
-	) {
-		return this.schoolClassesService.findOne(
-			id,
-			session.passport.user.organizationID
-		);
+	findOne(@Param('id', ParseIntPipe) id: number) {
+		return this.schoolClassesService.findOne(id);
 	}
 
 	@Get()
-	findMany(@Session() session: RawMemberSession) {
-		return this.schoolClassesService.findMany(
-			session.passport.user.organizationID
-		);
+	findMany() {
+		return this.schoolClassesService.findMany();
 	}
 
 	@Patch(':id')
 	update(
 		@Body() updateSchoolClassDto: UpdateSchoolClassDto,
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
+		@Param('id', ParseIntPipe) id: number
 	) {
-		return this.schoolClassesService.update(
-			updateSchoolClassDto,
-			id,
-			session.passport.user.organizationID
-		);
+		return this.schoolClassesService.update(updateSchoolClassDto, id);
 	}
 
 	@Delete()
-	remove(
-		@Body() deleteByIdDto: DeleteByIdDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.schoolClassesService.remove(
-			deleteByIdDto,
-			session.passport.user.organizationID
-		);
+	remove(@Body() deleteByIdDto: DeleteByIdDto) {
+		return this.schoolClassesService.remove(deleteByIdDto);
 	}
 
 	@Delete('student')
 	async removeStudents(
-		@Body() addMembersToSchoolClassDto: AddMembersToSchoolClassDto,
-		@Session() session: RawMemberSession
+		@Body() addMembersToSchoolClassDto: AddMembersToSchoolClassDto
 	) {
-		return this.schoolClassesService.removeStudents(
-			addMembersToSchoolClassDto,
-			session.passport.user.organizationID
-		);
+		return this.schoolClassesService.removeStudents(addMembersToSchoolClassDto);
 	}
 }

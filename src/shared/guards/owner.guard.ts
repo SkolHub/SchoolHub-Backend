@@ -15,8 +15,6 @@ export class OwnerGuard extends DBService implements CanActivate {
 			}
 		});
 
-		console.log(request);
-
-		return organization.ownerID === request.user.userID;
+		return organization.ownerID === this.userID;
 	}
 }

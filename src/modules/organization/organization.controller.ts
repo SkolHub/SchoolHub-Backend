@@ -4,7 +4,6 @@ import {
 	Delete,
 	Patch,
 	Post,
-	Session,
 	UseGuards
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
@@ -13,7 +12,6 @@ import { AdminGuard } from '../../shared/guards/admin.guard';
 import { OwnerGuard } from '../../shared/guards/owner.guard';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
-import { RawMemberSession } from '../../types/session';
 
 @Controller()
 export class OrganizationController {
@@ -27,21 +25,13 @@ export class OrganizationController {
 
 	@Patch()
 	@UseGuards(AdminGuard)
-	update(
-		@Body() updateOrganizationDto: UpdateOrganizationDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.organizationService.update(
-			updateOrganizationDto,
-			session.passport.user.organizationID
-		);
+	update(@Body() updateOrganizationDto: UpdateOrganizationDto) {
+		return this.organizationService.update(updateOrganizationDto);
 	}
 
 	@UseGuards(OwnerGuard)
 	@Delete()
-	remove(@Session() session: RawMemberSession) {
-		return this.organizationService.remove(
-			session.passport.user.organizationID
-		);
+	remove() {
+		return this.organizationService.remove();
 	}
 }

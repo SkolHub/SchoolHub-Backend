@@ -37,21 +37,18 @@ export class OrganizationService extends DBService {
 		});
 	}
 
-	async update(
-		updateOrganizationDto: UpdateOrganizationDto,
-		organizationID: number
-	) {
+	async update(updateOrganizationDto: UpdateOrganizationDto) {
 		await this.db
 			.update(organizations)
 			.set({
 				name: updateOrganizationDto.name
 			})
-			.where(eq(organizations.id, organizationID));
+			.where(eq(organizations.id, this.organizationID));
 	}
 
-	async remove(organizationID: number) {
+	async remove() {
 		await this.db
 			.delete(organizations)
-			.where(eq(organizations.id, organizationID));
+			.where(eq(organizations.id, this.organizationID));
 	}
 }

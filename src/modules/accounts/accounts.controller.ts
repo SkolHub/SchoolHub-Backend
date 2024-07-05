@@ -7,17 +7,15 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
-	Session,
 	UseGuards
 } from '@nestjs/common';
 import { AdminGuard } from '../../shared/guards/admin.guard';
 import { AccountsService } from './accounts.service';
-import { RawMemberSession } from '../../types/session';
 import { AddMembersDto } from './dto/add-members.dto';
 import { AddParentsDto } from './dto/add-parents.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { ResetPasswordMemberDto } from './dto/reset-password-member.dto';
-import {DeleteByIdDto} from "../../common/dto/delete-by-id.dto";
+import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
 
 @Controller()
 @UseGuards(AdminGuard)
@@ -25,104 +23,58 @@ export class AccountsController {
 	constructor(private readonly accountsService: AccountsService) {}
 
 	@Post('student')
-	addStudents(
-		@Body() addMembersDto: AddMembersDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.accountsService.addStudents(
-			addMembersDto,
-			session.passport.user.organizationID
-		);
+	addStudents(@Body() addMembersDto: AddMembersDto) {
+		return this.accountsService.addStudents(addMembersDto);
 	}
 
 	@Post('teacher')
-	addTeachers(
-		@Body() addMembersDto: AddMembersDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.accountsService.addTeachers(
-			addMembersDto,
-			session.passport.user.organizationID
-		);
+	addTeachers(@Body() addMembersDto: AddMembersDto) {
+		return this.accountsService.addTeachers(addMembersDto);
 	}
 
 	@Post('parent')
-	addParents(
-		@Body() addParentsDto: AddParentsDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.accountsService.addParents(
-			addParentsDto,
-			session.passport.user.organizationID
-		);
+	addParents(@Body() addParentsDto: AddParentsDto) {
+		return this.accountsService.addParents(addParentsDto);
 	}
 
 	@Get('student')
-	getStudents(@Session() session: RawMemberSession) {
-		return this.accountsService.getStudents(
-			session.passport.user.organizationID
-		);
+	getStudents() {
+		return this.accountsService.getStudents();
 	}
 
 	@Get('teacher')
-	getTeachers(@Session() session: RawMemberSession) {
-		return this.accountsService.getTeachers(
-			session.passport.user.organizationID
-		);
+	getTeachers() {
+		return this.accountsService.getTeachers();
 	}
 
 	@Get('parent')
-	getParents(@Session() session: RawMemberSession) {
-		return this.accountsService.getParents(
-			session.passport.user.organizationID
-		);
+	getParents() {
+		return this.accountsService.getParents();
 	}
 
 	@Get(':id')
-	findOne(
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
-	) {
-		return this.accountsService.findOne(
-			id,
-			session.passport.user.organizationID
-		);
+	findOne(@Param('id', ParseIntPipe) id: number) {
+		return this.accountsService.findOne(id);
 	}
 
 	@Patch(':id')
 	update(
 		@Body() updateMemberDto: UpdateMemberDto,
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
+		@Param('id', ParseIntPipe) id: number
 	) {
-		return this.accountsService.update(
-			updateMemberDto,
-			id,
-			session.passport.user.organizationID
-		);
+		return this.accountsService.update(updateMemberDto, id);
 	}
 
 	@Patch('password/:id')
 	resetPassword(
 		@Body() resetPasswordMemberDto: ResetPasswordMemberDto,
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
+		@Param('id', ParseIntPipe) id: number
 	) {
-		return this.accountsService.resetPassword(
-			resetPasswordMemberDto,
-			id,
-			session.passport.user.organizationID
-		);
+		return this.accountsService.resetPassword(resetPasswordMemberDto, id);
 	}
 
 	@Delete()
-	remove(
-		@Body() deleteByIdDto: DeleteByIdDto,
-		@Session() session: RawMemberSession
-	) {
-		return this.accountsService.remove(
-			deleteByIdDto,
-			session.passport.user.organizationID
-		);
+	remove(@Body() deleteByIdDto: DeleteByIdDto) {
+		return this.accountsService.remove(deleteByIdDto);
 	}
 }

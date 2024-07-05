@@ -1,10 +1,12 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, Injectable } from '@nestjs/common';
+import { ClsService } from 'nestjs-cls';
+import { CustomClsStore } from '../../common/db.service';
 
 @Injectable()
 export class TeacherGuard implements CanActivate {
-	canActivate(context: ExecutionContext): boolean | Promise<boolean> {
-		const request = context.switchToHttp().getRequest();
+	constructor(private readonly cls: ClsService<CustomClsStore>) {}
 
-		return request.user.role === 'teacher';
+	canActivate(): boolean {
+		return this.cls.get('role') === 'teacher';
 	}
 }

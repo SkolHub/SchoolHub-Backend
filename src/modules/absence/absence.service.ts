@@ -13,9 +13,9 @@ export class AbsenceService extends DBService {
 		super();
 	}
 
-	async create(createAbsencesDto: CreateAbsencesDto, teacherID: number) {
+	async create(createAbsencesDto: CreateAbsencesDto) {
 		await this.permissionService.canAssignObject(
-			teacherID,
+			this.userID,
 			createAbsencesDto.absences.map((absence) => absence.studentID),
 			createAbsencesDto.subjectID
 		);
@@ -26,33 +26,29 @@ export class AbsenceService extends DBService {
 				reason: absence.reason,
 				studentID: absence.studentID,
 				subjectID: createAbsencesDto.subjectID,
-				teacherID
+				teacherID: this.userID
 			}))
 		);
 	}
 
-	async update(
-		updateAbsenceDto: UpdateAbsenceDto,
-		absenceID: number,
-		teacherID: number
-	) {
+	async update(updateAbsenceDto: UpdateAbsenceDto, absenceID: number) {
 		await this.db
 			.update(absences)
 			.set({
 				reason: updateAbsenceDto.reason
 			})
 			.where(
-				and(eq(absences.id, absenceID), eq(absences.teacherID, teacherID))
+				and(eq(absences.id, absenceID), eq(absences.teacherID, this.userID))
 			);
 	}
 
-	async remove(deleteByIdDto: DeleteByIdDto, teacherID: number) {
+	async remove(deleteByIdDto: DeleteByIdDto) {
 		await this.db
 			.delete(absences)
 			.where(
 				and(
 					inArray(absences.id, deleteByIdDto.objects),
-					eq(absences.teacherID, teacherID)
+					eq(absences.teacherID, this.userID)
 				)
 			);
 	}

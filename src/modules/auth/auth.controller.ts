@@ -1,6 +1,6 @@
-import { Controller, HttpCode, Post, Session, UseGuards } from '@nestjs/common';
+import { Controller, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
 import { Public } from '../../common/decorators/public.decorator';
-import { LocalAuthGuard } from './local.guard';
+import { LocalAuthGuard } from './guards/local.guard';
 
 @Controller()
 export class AuthController {
@@ -8,11 +8,13 @@ export class AuthController {
 	@Public()
 	@UseGuards(LocalAuthGuard)
 	@HttpCode(200)
-	async organizationLogin() {}
-
-	@Post('logout')
-	@HttpCode(200)
-	async logout(@Session() session: Record<string, any>) {
-		session.destroy();
+	async organizationLogin(@Request() req: any) {
+		return req.user;
 	}
+
+	// @Post('logout')
+	// @HttpCode(200)
+	// async logout(@Session() session: Record<string, any>) {
+	// 	session.destroy();
+	// }
 }
