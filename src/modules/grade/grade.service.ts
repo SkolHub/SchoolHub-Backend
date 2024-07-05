@@ -47,8 +47,8 @@ export class GradeService extends DBService {
 			this.db
 				.select({
 					subjectID: absences.subjectID,
-					grades: sql`JSONB_AGG
-                    (JSONB_BUILD_OBJECT('id', ${absences.id}, 'teacherID', ${absences.teacherID}, 'timestamp', ${absences.timestamp}, 'date', ${absences.date}, 'reason', ${absences.reason}, 'value', ${absences.excused}))`
+					absences: sql`JSONB_AGG
+					(JSONB_BUILD_OBJECT('id', ${absences.id}, 'teacherID', ${absences.teacherID}, 'timestamp', ${absences.timestamp}, 'date', ${absences.date}, 'reason', ${absences.reason}, 'excused', ${absences.excused}))`
 				})
 				.from(absences)
 				.where(eq(absences.studentID, this.userID))
@@ -81,7 +81,7 @@ export class GradeService extends DBService {
 					id: absences.id,
 					reason: absences.reason,
 					teacherID: absences.teacherID,
-					value: absences.excused,
+					excused: absences.excused,
 					timestamp: absences.timestamp,
 					date: absences.date
 				})
