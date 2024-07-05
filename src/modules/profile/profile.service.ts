@@ -12,7 +12,8 @@ export class ProfileService extends DBService {
 			where: eq(members.id, this.userID),
 			columns: {
 				name: true,
-				role: true
+				role: true,
+				user: true
 			},
 			with: {
 				organization: {
