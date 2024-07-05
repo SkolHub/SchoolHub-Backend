@@ -93,7 +93,7 @@ export class PostController {
 		@Param('id', ParseIntPipe) id: number,
 		@Session() session: RawMemberSession
 	) {
-		return this.postService.update(
+		return this.postService.updateStudentPost(
 			id,
 			updateStudentPostDto,
 			session.passport.user.userID
@@ -106,7 +106,7 @@ export class PostController {
 		@Param('id', ParseIntPipe) id: number,
 		@Session() session: RawMemberSession
 	) {
-		return this.postService.update(
+		return this.postService.updateTeacherPost(
 			id,
 			updateTeacherPostDto,
 			session.passport.user.userID
