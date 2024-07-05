@@ -30,7 +30,7 @@ export class SubjectMemberService extends DBService {
 				studentsToSubjects,
 				and(
 					eq(studentsToSubjects.subjectID, subjectsToSchoolClasses.subjectID),
-					eq(studentsToSubjects.studentID, this.organizationID)
+					eq(studentsToSubjects.studentID, this.userID)
 				)
 			)
 			.innerJoin(subjects, eq(subjects.id, subjectsToSchoolClasses.subjectID))
@@ -38,7 +38,7 @@ export class SubjectMemberService extends DBService {
 				schoolClasses,
 				eq(schoolClasses.id, subjectsToSchoolClasses.schoolClassID)
 			)
-			.where(eq(studentsToSchoolClasses.studentID, this.organizationID))
+			.where(eq(studentsToSchoolClasses.studentID, this.userID))
 			.groupBy(schoolClasses.id);
 	}
 
@@ -64,7 +64,7 @@ export class SubjectMemberService extends DBService {
 				schoolClasses,
 				eq(schoolClasses.id, subjectsToSchoolClasses.schoolClassID)
 			)
-			.where(eq(teachersToSubjects.teacherID, this.organizationID))
+			.where(eq(teachersToSubjects.teacherID, this.userID))
 			.groupBy(subjects.id)
 			.as('sq');
 
