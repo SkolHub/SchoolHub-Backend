@@ -4,9 +4,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 class ExcuseAbsenceDto {
 	@IsNumber()
+	@ApiProperty()
 	absenceID: number;
 
 	@IsBoolean()
+	@ApiProperty()
 	excused: boolean;
 }
 

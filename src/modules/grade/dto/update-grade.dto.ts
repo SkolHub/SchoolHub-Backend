@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateGradeDto {
 	@IsString()
 	@Length(0, 1000)
+	@ApiProperty()
 	reason: string;
 
 	@IsString()

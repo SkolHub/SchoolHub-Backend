@@ -13,6 +13,7 @@ export class CreateTeacherPostDto {
 	body: string;
 
 	@IsIn(['announcement', 'assignment', 'test', 'material'])
+	@ApiProperty()
 	type: 'announcement' | 'assignment' | 'test' | 'material';
 
 	@IsInt()

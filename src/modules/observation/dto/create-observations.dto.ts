@@ -11,9 +11,11 @@ import { Type } from 'class-transformer';
 export class ObservationDto {
 	@IsString()
 	@Length(1, 1000)
+	@ApiProperty()
 	reason: string;
 
 	@IsInt()
+	@ApiProperty()
 	studentID: number;
 }
 
