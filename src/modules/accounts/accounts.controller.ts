@@ -57,17 +57,6 @@ export class AccountsController {
 		);
 	}
 
-	@Get(':id')
-	findOne(
-		@Param('id', ParseIntPipe) id: number,
-		@Session() session: RawMemberSession
-	) {
-		return this.accountsService.findOne(
-			id,
-			session.passport.user.organizationID
-		);
-	}
-
 	@Get('student')
 	getStudents(@Session() session: RawMemberSession) {
 		return this.accountsService.getStudents(
@@ -85,6 +74,17 @@ export class AccountsController {
 	@Get('parent')
 	getParents(@Session() session: RawMemberSession) {
 		return this.accountsService.getParents(
+			session.passport.user.organizationID
+		);
+	}
+
+	@Get(':id')
+	findOne(
+		@Param('id', ParseIntPipe) id: number,
+		@Session() session: RawMemberSession
+	) {
+		return this.accountsService.findOne(
+			id,
 			session.passport.user.organizationID
 		);
 	}
