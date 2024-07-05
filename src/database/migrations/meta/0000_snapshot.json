@@ -1,5 +1,5 @@
 {
-  "id": "ece24784-ac61-4c8d-b230-c9936e49f91c",
+  "id": "bb7afef4-3fe4-42d0-adc0-5a28c1ba7085",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "6",
   "dialect": "postgresql",
@@ -289,6 +289,33 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.PostAttachment": {
+      "name": "PostAttachment",
+      "schema": "",
+      "columns": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.PostComment": {
+      "name": "PostComment",
+      "schema": "",
+      "columns": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.PostSubmission": {
+      "name": "PostSubmission",
+      "schema": "",
+      "columns": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.Post": {
       "name": "Post",
       "schema": "",
@@ -317,6 +344,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
+        },
+        "dueDate": {
+          "name": "dueDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "post_type": {
           "name": "post_type",
@@ -578,9 +611,21 @@
           "primaryKey": false,
           "notNull": true
         },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "organizationID": {
           "name": "organizationID",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         }
@@ -679,7 +724,8 @@
       "values": [
         "announcement",
         "assignment",
-        "test"
+        "test",
+        "material"
       ]
     }
   },

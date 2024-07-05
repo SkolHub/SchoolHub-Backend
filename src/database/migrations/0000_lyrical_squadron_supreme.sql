@@ -5,7 +5,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."post_type" AS ENUM('announcement', 'assignment', 'test');
+ CREATE TYPE "public"."post_type" AS ENUM('announcement', 'assignment', 'test', 'material');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -62,11 +62,24 @@ CREATE TABLE IF NOT EXISTS "Parent" (
 	"studentID" integer NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "PostAttachment" (
+
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "PostComment" (
+
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "PostSubmission" (
+
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Post" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
 	"body" text NOT NULL,
 	"timestamp" timestamp DEFAULT now(),
+	"dueDate" timestamp,
 	"post_type" "post_type",
 	"memberID" integer NOT NULL,
 	"subjectID" integer NOT NULL
@@ -100,7 +113,9 @@ CREATE TABLE IF NOT EXISTS "subjectToSchoolClass" (
 CREATE TABLE IF NOT EXISTS "Subject" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
-	"organizationID" integer NOT NULL
+	"icon" text NOT NULL,
+	"organizationID" integer NOT NULL,
+	"metadata" jsonb NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "TeacherToSubject" (
