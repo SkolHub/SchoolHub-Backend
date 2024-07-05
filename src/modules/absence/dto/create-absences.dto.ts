@@ -19,7 +19,7 @@ class AbsenceDto {
 
 	@IsISO8601()
 	@ApiProperty()
-	date: Date;
+	date: string;
 
 	@IsInt()
 	@ApiProperty()
@@ -33,7 +33,7 @@ export class CreateAbsencesDto {
 	@ApiProperty({ type: [AbsenceDto] })
 	absences: {
 		reason: string;
-		date: Date;
+		date: string;
 		studentID: number;
 	}[];
 

@@ -4,7 +4,7 @@ export const grades = pgTable('Grade', {
 	id: serial('id').primaryKey(),
 	value: text('value').notNull(),
 	reason: text('reason').notNull(),
-	date: timestamp('date').notNull(),
+	date: timestamp('date', { mode: 'string' }).notNull(),
 	timestamp: timestamp('timestamp').defaultNow(),
 	studentID: integer('studentID').notNull(),
 	teacherID: integer('teacherID').notNull(),

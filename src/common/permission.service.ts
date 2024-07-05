@@ -57,7 +57,7 @@ export class PermissionService extends DBService {
 							eq(studentsToSubjects.subjectID, subjectID)
 						)
 					)
-			)[0].count === students.length
+			)[0].count === new Set(students).size
 		);
 	}
 

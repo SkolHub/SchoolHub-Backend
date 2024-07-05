@@ -14,5 +14,5 @@ export class UpdateTeacherPostDto {
 
 	@IsISO8601()
 	@ApiProperty()
-	dueDate: Date;
+	dueDate: string;
 }

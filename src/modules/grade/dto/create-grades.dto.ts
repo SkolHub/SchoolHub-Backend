@@ -20,7 +20,7 @@ class GradeDto {
 
 	@IsISO8601()
 	@ApiProperty()
-	date: Date;
+	date: string;
 
 	@IsString()
 	@IsNotEmpty()
@@ -39,7 +39,7 @@ export class CreateGradesDto {
 	@ApiProperty({ type: [GradeDto] })
 	grades: {
 		reason: string;
-		date: Date;
+		date: string;
 		value: string;
 		studentID: number;
 	}[];

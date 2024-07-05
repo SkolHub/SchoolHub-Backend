@@ -20,7 +20,7 @@ export const posts = pgTable('Post', {
 	title: text('title').notNull(),
 	body: text('body').notNull(),
 	timestamp: timestamp('timestamp').defaultNow(),
-	dueDate: timestamp('dueDate'),
+	dueDate: timestamp('dueDate', { mode: 'string' }),
 	type: postTypeEnum('post_type'),
 	memberID: integer('memberID').notNull(),
 	subjectID: integer('subjectID').notNull()
