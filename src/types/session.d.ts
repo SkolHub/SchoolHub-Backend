@@ -4,6 +4,7 @@ export interface MemberSession {
 	userID: number;
 	organizationID: number;
 	role: Role;
+	studentID?: number;
 }
 
 export interface RawMemberSession {

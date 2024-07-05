@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DBService } from '../../../common/db.service';
 import { CreateSubjectsDto } from './dto/create-subjects.dto';
 import { subjects } from '../../../database/schema/subjects';
-import { and, count, eq, inArray } from 'drizzle-orm';
+import { and, count, eq, inArray, sql } from 'drizzle-orm';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { AddMembersToSubjectDto } from './dto/add-members-to-subject.dto';
 import { studentsToSubjects } from '../../../database/schema/students-to-subjects';
@@ -18,7 +18,11 @@ export class SubjectAdminService extends DBService {
 		await this.db.insert(subjects).values(
 			createSubjectsDto.subjects.map((subject) => ({
 				name: subject.name,
-				organizationID
+				organizationID,
+				icon: subject.icon,
+				metadata: {
+					minGrades: subject.minGrades
+				}
 			}))
 		);
 	}
@@ -83,7 +87,9 @@ export class SubjectAdminService extends DBService {
 			),
 			columns: {
 				id: true,
-				name: true
+				name: true,
+				icon: true,
+				metadata: true
 			},
 			with: {
 				teachers: {
@@ -125,7 +131,9 @@ export class SubjectAdminService extends DBService {
 			where: eq(subjects.organizationID, organizationID),
 			columns: {
 				id: true,
-				name: true
+				name: true,
+				icon: true,
+				metadata: true
 			}
 		});
 	}
@@ -138,7 +146,12 @@ export class SubjectAdminService extends DBService {
 		await this.db
 			.update(subjects)
 			.set({
-				name: updateSubjectDto.name
+				name: updateSubjectDto.name,
+				icon: updateSubjectDto.icon,
+				metadata: updateSubjectDto.minGrades
+					? sql`jsonb_set
+                    (${subjects.metadata}, array ['minGrades'], to_jsonb(${updateSubjectDto.minGrades}))`
+					: undefined
 			})
 			.where(
 				and(

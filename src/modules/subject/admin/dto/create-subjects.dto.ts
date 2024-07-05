@@ -7,6 +7,16 @@ class SubjectDto {
 	@IsNotEmpty()
 	@ApiProperty()
 	name: string;
+
+	@IsString()
+	@IsNotEmpty()
+	@ApiProperty()
+	icon: string;
+
+	@IsString()
+	@IsNotEmpty()
+	@ApiProperty()
+	minGrades: number;
 }
 
 export class CreateSubjectsDto {
@@ -16,5 +26,7 @@ export class CreateSubjectsDto {
 	@ApiProperty({ type: [SubjectDto] })
 	subjects: {
 		name: string;
+		icon: string;
+		minGrades: number;
 	}[];
 }

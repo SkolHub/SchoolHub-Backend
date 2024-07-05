@@ -24,6 +24,25 @@ export class PermissionService extends DBService {
 		);
 	}
 
+	async isStudentInSubject(studentID: number, subjectID: number) {
+		return (
+			(
+				await this.db
+					.select({
+						count: count()
+					})
+					.from(studentsToSubjects)
+					.where(
+						and(
+							eq(studentsToSubjects.studentID, studentID),
+							eq(studentsToSubjects.subjectID, subjectID)
+						)
+					)
+					.limit(1)
+			)[0].count === 1
+		);
+	}
+
 	async areStudentsInSubject(students: number[], subjectID: number) {
 		return (
 			(

@@ -245,7 +245,11 @@ export class TestService extends DBService {
 			.values(
 				this.generated_subjects.map((subject) => ({
 					organizationID: organization.id,
-					name: subject.name
+					name: subject.name,
+					icon: 'leaf',
+					metadata: {
+						minGrades: 5
+					}
 				}))
 			)
 			.returning();
@@ -278,7 +282,11 @@ export class TestService extends DBService {
 			.values(
 				this.joined_subjects.map((subject) => ({
 					name: subject.name,
-					organizationID: organization.id
+					organizationID: organization.id,
+					icon: 'leaf',
+					metadata: {
+						minGrades: 5
+					}
 				}))
 			)
 			.returning();
@@ -319,7 +327,7 @@ export class TestService extends DBService {
 		const total_subjects = await this.db.select().from(subjects);
 
 		await this.db.insert(teachersToSubjects).values(
-			total_subjects.map((subject, index) => ({
+			total_subjects.map((subject) => ({
 				teacherID:
 					teachers[
 						unique_subjects.findIndex((sub) => sub.name === subject.name)
@@ -368,7 +376,7 @@ export class TestService extends DBService {
 
                        (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
                         FROM ${subjectsToSchoolClasses}
-								 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND NOT ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
+                                 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND NOT ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
                         WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
                 FROM ${schoolClasses}
                 WHERE ${schoolClasses.organizationID} = ${organization.id};
@@ -401,20 +409,20 @@ export class TestService extends DBService {
 			}[];
 		}[] = (
 			await this.db.execute(sql`
-            SELECT ${schoolClasses.name},
-                   ${schoolClasses.id},
-                   (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
-                    FROM ${studentsToSchoolClasses}
-							 INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
-                    WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
+                SELECT ${schoolClasses.name},
+                       ${schoolClasses.id},
+                       (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
+                        FROM ${studentsToSchoolClasses}
+                                 INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
+                        WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
 
-                   (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
-                    FROM ${subjectsToSchoolClasses}
-							 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
-                    WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
-            FROM ${schoolClasses}
-            WHERE ${schoolClasses.organizationID} = ${organization.id};
-        `)
+                       (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
+                        FROM ${subjectsToSchoolClasses}
+                                 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
+                        WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
+                FROM ${schoolClasses}
+                WHERE ${schoolClasses.organizationID} = ${organization.id};
+            `)
 		).rows;
 
 		await this.db.insert(studentsToSubjects).values(

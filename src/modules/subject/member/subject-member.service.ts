@@ -16,7 +16,7 @@ export class SubjectMemberService extends DBService {
 				id: schoolClasses.id,
 				name: schoolClasses.name,
 				subjects: sql`JSON_AGG
-                    (JSONB_BUILD_OBJECT('id', ${subjects.id}, 'name', ${subjects.name}))`
+                (JSONB_BUILD_OBJECT('id', ${subjects.id}, 'name', ${subjects.name}, 'icon', ${subjects.icon}, 'metadata', ${subjects.metadata}))`
 			})
 			.from(studentsToSchoolClasses)
 			.innerJoin(
@@ -47,10 +47,12 @@ export class SubjectMemberService extends DBService {
 			.select({
 				schoolClasses: sql`JSONB_AGG
                     (JSONB_BUILD_OBJECT('id', ${schoolClasses.id}, 'name', ${schoolClasses.name}))`.as(
-					'schoolclasses'
+					'schoolClasses'
 				),
 				id: subjects.id,
-				name: subjects.name
+				name: subjects.name,
+				icon: subjects.icon,
+				metadata: subjects.metadata
 			})
 			.from(teachersToSubjects)
 			.innerJoin(subjects, eq(subjects.id, teachersToSubjects.subjectID))
@@ -70,7 +72,7 @@ export class SubjectMemberService extends DBService {
 			.select({
 				schoolClasses: sq.schoolClasses,
 				subjects: sql`JSONB_AGG
-                    (JSONB_BUILD_OBJECT('id', ${sq.id}, 'name', ${sq.name}))`
+                (JSONB_BUILD_OBJECT('id', ${sq.id}, 'name', ${sq.name}, 'icon', ${sq.icon}, 'metadata', ${subjects.metadata}))`
 			})
 			.from(sq)
 			.groupBy(sq.schoolClasses);

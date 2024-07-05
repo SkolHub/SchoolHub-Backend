@@ -11,25 +11,39 @@ import {
 	UseGuards
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { CreateStudentPostDto } from './dto/create-student-post.dto';
+import { UpdateStudentPostDto } from './dto/update-student-post.dto';
 import { RawMemberSession } from '../../types/session';
 import { StudentGuard } from '../../shared/guards/student.guard';
 import { TeacherGuard } from '../../shared/guards/teacher.guard';
+import { CreateTeacherPostDto } from './dto/create-teacher-post.dto';
+import { UpdateTeacherPostDto } from './dto/update-teacher-post.dto';
 
 @Controller()
 export class PostController {
 	constructor(private readonly postService: PostService) {}
 
-	@Post()
-	create(
-		@Body() createPostDto: CreatePostDto,
+	@Post('student')
+	@UseGuards(StudentGuard)
+	createStudentPost(
+		@Body() createStudentPostDto: CreateStudentPostDto,
 		@Session() session: RawMemberSession
 	) {
-		return this.postService.create(
-			createPostDto,
-			session.passport.user.userID,
-			session.passport.user.role
+		return this.postService.createStudentPost(
+			createStudentPostDto,
+			session.passport.user.userID
+		);
+	}
+
+	@Post('teacher')
+	@UseGuards(TeacherGuard)
+	createTeacherPost(
+		@Body() createTeacherPostDto: CreateTeacherPostDto,
+		@Session() session: RawMemberSession
+	) {
+		return this.postService.createTeacherPost(
+			createTeacherPostDto,
+			session.passport.user.userID
 		);
 	}
 
@@ -74,14 +88,27 @@ export class PostController {
 	}
 
 	@Patch(':id')
-	update(
-		@Body() updatePostDto: UpdatePostDto,
+	updateStudentPost(
+		@Body() updateStudentPostDto: UpdateStudentPostDto,
 		@Param('id', ParseIntPipe) id: number,
 		@Session() session: RawMemberSession
 	) {
 		return this.postService.update(
 			id,
-			updatePostDto,
+			updateStudentPostDto,
+			session.passport.user.userID
+		);
+	}
+
+	@Patch(':id')
+	updateTeacherPost(
+		@Body() updateTeacherPostDto: UpdateTeacherPostDto,
+		@Param('id', ParseIntPipe) id: number,
+		@Session() session: RawMemberSession
+	) {
+		return this.postService.update(
+			id,
+			updateTeacherPostDto,
 			session.passport.user.userID
 		);
 	}

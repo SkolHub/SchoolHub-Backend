@@ -1,13 +1,14 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { ForbiddenException, Injectable, Patch } from '@nestjs/common';
+import { CreateStudentPostDto } from './dto/create-student-post.dto';
+import { UpdateStudentPostDto } from './dto/update-student-post.dto';
 import { DBService } from '../../common/db.service';
 import { PermissionService } from '../../common/permission.service';
 import { posts } from '../../database/schema/posts';
 import { and, eq } from 'drizzle-orm';
-import { Role } from '../../types/session';
 import { studentsToSubjects } from '../../database/schema/students-to-subjects';
 import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
+import { CreateTeacherPostDto } from './dto/create-teacher-post.dto';
+import { UpdateTeacherPostDto } from './dto/update-teacher-post.dto';
 
 @Injectable()
 export class PostService extends DBService {
@@ -15,11 +16,32 @@ export class PostService extends DBService {
 		super();
 	}
 
-	async create(createPostDto: CreatePostDto, teacherID: number, role: Role) {
-		if (role === 'student' && createPostDto.type !== 'announcement') {
-			throw new ForbiddenException('Students can only create announcements');
+	async createStudentPost(
+		createPostDto: CreateStudentPostDto,
+		studentID: number
+	) {
+		const isStudent = this.permissionService.isStudentInSubject(
+			studentID,
+			createPostDto.subjectID
+		);
+
+		if (!isStudent) {
+			throw new ForbiddenException('You are not a student in this subject');
 		}
 
+		await this.db.insert(posts).values({
+			subjectID: createPostDto.subjectID,
+			body: createPostDto.body,
+			memberID: studentID,
+			title: createPostDto.title,
+			type: 'announcement'
+		});
+	}
+
+	async createTeacherPost(
+		createPostDto: CreateTeacherPostDto,
+		teacherID: number
+	) {
 		const isTeacher = this.permissionService.isTeacherInSubject(
 			teacherID,
 			createPostDto.subjectID
@@ -34,10 +56,9 @@ export class PostService extends DBService {
 			body: createPostDto.body,
 			memberID: teacherID,
 			title: createPostDto.title,
-			type: createPostDto.type
+			type: createPostDto.type,
+			dueDate: createPostDto.dueDate
 		});
-
-		// TODO: Fix post creation
 	}
 
 	getOrganizationPostsStudent(userID: number) {
@@ -46,7 +67,9 @@ export class PostService extends DBService {
 				id: posts.id,
 				type: posts.type,
 				subjectID: posts.subjectID,
-				title: posts.title
+				title: posts.title,
+				dueDate: posts.dueDate,
+				timestamp: posts.timestamp
 			})
 			.from(studentsToSubjects)
 			.where(eq(studentsToSubjects.studentID, userID))
@@ -65,7 +88,9 @@ export class PostService extends DBService {
 				id: posts.id,
 				type: posts.type,
 				subjectID: posts.subjectID,
-				title: posts.title
+				title: posts.title,
+				dueDate: posts.dueDate,
+				timestamp: posts.timestamp
 			})
 			.from(teachersToSubjects)
 			.where(eq(teachersToSubjects.teacherID, userID))
@@ -84,7 +109,10 @@ export class PostService extends DBService {
 				id: posts.id,
 				type: posts.type,
 				subjectID: posts.subjectID,
-				title: posts.title
+				title: posts.title,
+				body: posts.body,
+				dueDate: posts.dueDate,
+				timestamp: posts.timestamp
 			})
 			.from(studentsToSubjects)
 			.where(
@@ -102,7 +130,10 @@ export class PostService extends DBService {
 				id: posts.id,
 				type: posts.type,
 				subjectID: posts.subjectID,
-				title: posts.title
+				title: posts.title,
+				body: posts.body,
+				dueDate: posts.dueDate,
+				timestamp: posts.timestamp
 			})
 			.from(teachersToSubjects)
 			.where(
@@ -114,17 +145,33 @@ export class PostService extends DBService {
 			.innerJoin(posts, and(eq(posts.subjectID, teachersToSubjects.subjectID)));
 	}
 
-	async update(
+	@Patch(':id')
+	async updateStudentPost(
 		postID: number,
-		updatePostDto: UpdatePostDto,
-		teacherID: number
+		updatePostDto: UpdateStudentPostDto,
+		studentID: number
 	) {
 		await this.db
 			.update(posts)
 			.set({
 				title: updatePostDto.title,
-				body: updatePostDto.body,
-				type: updatePostDto.type
+				body: updatePostDto.body
+			})
+			.where(and(eq(posts.id, postID), eq(posts.memberID, studentID)));
+	}
+
+	@Patch(':id')
+	async updateTeacherPost(
+		postID: number,
+		updateTeacherPostDto: UpdateTeacherPostDto,
+		teacherID: number
+	) {
+		await this.db
+			.update(posts)
+			.set({
+				title: updateTeacherPostDto.title,
+				body: updateTeacherPostDto.body,
+				dueDate: updateTeacherPostDto.dueDate
 			})
 			.where(and(eq(posts.id, postID), eq(posts.memberID, teacherID)));
 	}
