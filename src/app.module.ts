@@ -94,6 +94,7 @@ const routes: Routes = [
 		AccountsModule,
 		ProfileModule,
 		SubjectModule,
+		SchoolClassModule,
 		ObservationModule,
 		GradeModule,
 		AbsenceModule,
