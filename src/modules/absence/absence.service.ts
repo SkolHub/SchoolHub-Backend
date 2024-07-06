@@ -6,6 +6,7 @@ import { and, eq, inArray } from 'drizzle-orm';
 import { absences } from '../../database/schema/absences';
 import { PermissionService } from '../../common/permission.service';
 import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
+import { ExcuseAbsencesDto } from './dto/excuse-absences.dto';
 
 @Injectable()
 export class AbsenceService extends DBService {
@@ -40,6 +41,10 @@ export class AbsenceService extends DBService {
 			.where(
 				and(eq(absences.id, absenceID), eq(absences.teacherID, this.userID))
 			);
+	}
+
+	async excuse(excuseAbsencesDto: ExcuseAbsencesDto) {
+		return;
 	}
 
 	async remove(deleteByIdDto: DeleteByIdDto) {

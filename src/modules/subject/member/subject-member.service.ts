@@ -4,7 +4,7 @@ import { eq, sql } from 'drizzle-orm';
 import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
 import { subjects } from '../../../database/schema/subjects';
 import { subjectsToSchoolClasses } from '../../../database/schema/subjects-to-school-classes';
-import { schoolClasses } from '../../../database/schema/school-classes'; // SELECT s.id,
+import { schoolClasses } from '../../../database/schema/school-classes';
 
 // SELECT s.id,
 //        s.name,
@@ -51,6 +51,29 @@ export class SubjectMemberService extends DBService {
                                             GROUP BY s.id, sc.id) s
                                       GROUP BY s.id, s.name`)
 		).rows;
+	}
+
+	async getStudentSubjectByID(subjectID: number) {
+		return (
+			await this.db.execute(sql`
+            SELECT (SELECT AVG(COALESCE(g.value::int, 0))
+                    FROM "Grade" g
+                    WHERE g."subjectID" = sts."subjectID"
+                      AND g."studentID" = sts."studentID")::float as average,
+                   (SELECT COUNT(a)
+                    FROM "Absence" a
+                    WHERE a."subjectID" = sts."subjectID"
+                      AND a."studentID" = sts."studentID"
+                      AND a.excused = false)::int                 as absences,
+                   (SELECT COUNT(p)
+                    FROM "Post" p
+                    WHERE p."subjectID" = sts."subjectID"
+                      AND p.post_type = 'assignment')::int        as assignments
+            FROM "StudentToSubject" sts
+            WHERE sts."studentID" = ${this.userID}
+              AND sts."subjectID" = ${subjectID};
+        `)
+		).rows[0];
 	}
 
 	getTeacherSubjects() {

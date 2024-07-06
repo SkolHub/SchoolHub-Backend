@@ -12,6 +12,7 @@ import { UpdateAbsenceDto } from './dto/update-absence.dto';
 import { CreateAbsencesDto } from './dto/create-absences.dto';
 import { TeacherGuard } from '../../shared/guards/teacher.guard';
 import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
+import { ExcuseAbsencesDto } from './dto/excuse-absences.dto';
 
 @Controller()
 @UseGuards(TeacherGuard)
@@ -26,6 +27,11 @@ export class AbsenceController {
 	@Patch(':id')
 	update(@Body() updateAbsenceDto: UpdateAbsenceDto, @Param('id') id: string) {
 		return this.absenceService.update(updateAbsenceDto, +id);
+	}
+
+	@Patch('excuse/:id')
+	excuse(@Body() excuseAbsencesDto: ExcuseAbsencesDto) {
+		return this.absenceService.excuse(excuseAbsencesDto);
 	}
 
 	@Delete()

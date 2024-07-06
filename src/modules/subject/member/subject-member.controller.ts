@@ -1,4 +1,10 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	Param,
+	ParseIntPipe,
+	UseGuards
+} from '@nestjs/common';
 import { SubjectMemberService } from './subject-member.service';
 import { StudentGuard } from '../../../shared/guards/student.guard';
 import { TeacherGuard } from '../../../shared/guards/teacher.guard';
@@ -11,6 +17,12 @@ export class SubjectMemberController {
 	@UseGuards(StudentGuard)
 	getStudentSubjects() {
 		return this.subjectService.getStudentSubjects();
+	}
+
+	@Get('student/:id')
+	@UseGuards(StudentGuard)
+	getStudentSubjectByID(@Param('id', ParseIntPipe) id: number) {
+		return this.subjectService.getStudentSubjectByID(id);
 	}
 
 	@Get('teacher')
