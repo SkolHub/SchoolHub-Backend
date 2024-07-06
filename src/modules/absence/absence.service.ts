@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateAbsencesDto } from './dto/create-absences.dto';
 import { UpdateAbsenceDto } from './dto/update-absence.dto';
 import { DBService } from '../../common/db.service';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import { absences } from '../../database/schema/absences';
 import { PermissionService } from '../../common/permission.service';
 import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
@@ -44,7 +44,19 @@ export class AbsenceService extends DBService {
 	}
 
 	async excuse(excuseAbsencesDto: ExcuseAbsencesDto) {
-		return;
+		await this.db.execute(sql`
+            UPDATE "Absence"
+            SET excused = false
+            WHERE id IN (SELECT a.id
+                         FROM "Absence" a
+                                  INNER JOIN "subjectToSchoolClass" stsc ON stsc."subjectID" = a."subjectID"
+                                  INNER JOIN "StudentToSchoolClass" sttsc ON sttsc."studentID" = a."studentID"
+                                  INNER JOIN "SchoolClass" sc
+                                             ON sc.id = stsc."schoolClassID" AND
+                                                sc.id = sttsc."schoolClassID" AND
+                                                sc."classMasterID" = ${this.userID}
+                         WHERE a.id IN ${excuseAbsencesDto});
+        `);
 	}
 
 	async remove(deleteByIdDto: DeleteByIdDto) {
