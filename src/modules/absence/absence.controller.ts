@@ -24,14 +24,15 @@ export class AbsenceController {
 		return this.absenceService.create(createAbsenceDto);
 	}
 
+	@Patch('excuse')
+	excuse(@Body() excuseAbsencesDto: ExcuseAbsencesDto) {
+		console.log(excuseAbsencesDto);
+		return this.absenceService.excuse(excuseAbsencesDto);
+	}
+
 	@Patch(':id')
 	update(@Body() updateAbsenceDto: UpdateAbsenceDto, @Param('id') id: string) {
 		return this.absenceService.update(updateAbsenceDto, +id);
-	}
-
-	@Patch('excuse')
-	excuse(@Body() excuseAbsencesDto: ExcuseAbsencesDto) {
-		return this.absenceService.excuse(excuseAbsencesDto);
 	}
 
 	@Delete()
