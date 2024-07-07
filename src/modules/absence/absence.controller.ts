@@ -29,7 +29,7 @@ export class AbsenceController {
 		return this.absenceService.update(updateAbsenceDto, +id);
 	}
 
-	@Patch('excuse/:id')
+	@Patch('excuse')
 	excuse(@Body() excuseAbsencesDto: ExcuseAbsencesDto) {
 		return this.absenceService.excuse(excuseAbsencesDto);
 	}
