@@ -7,6 +7,7 @@ import { grades } from '../../database/schema/grades';
 import { PermissionService } from '../../common/permission.service';
 import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
 import { absences } from '../../database/schema/absences';
+import { members } from '../../database/schema/members';
 
 @Injectable()
 export class GradeService extends DBService {
@@ -39,18 +40,20 @@ export class GradeService extends DBService {
 				.select({
 					subjectID: grades.subjectID,
 					grades: sql`JSONB_AGG
-                    (JSONB_BUILD_OBJECT('id', ${grades.id}, 'teacherID', ${grades.teacherID}, 'timestamp', ${grades.timestamp}, 'date', ${grades.date}, 'reason', ${grades.reason}, 'value', ${grades.value}))`
+                    (JSONB_BUILD_OBJECT('id', ${grades.id}, 'teacher', JSON_BUILD_OBJECT('id', ${members.id}, 'name', ${members.name}), 'timestamp', ${grades.timestamp}, 'date', ${grades.date}, 'reason', ${grades.reason}, 'value', ${grades.value}))`
 				})
 				.from(grades)
+				.leftJoin(members, eq(members.id, grades.teacherID))
 				.where(eq(grades.studentID, this.userID))
 				.groupBy(grades.subjectID),
 			this.db
 				.select({
 					subjectID: absences.subjectID,
 					absences: sql`JSONB_AGG
-					(JSONB_BUILD_OBJECT('id', ${absences.id}, 'teacherID', ${absences.teacherID}, 'timestamp', ${absences.timestamp}, 'date', ${absences.date}, 'reason', ${absences.reason}, 'excused', ${absences.excused}))`
+                    (JSONB_BUILD_OBJECT('id', ${absences.id}, 'teacher', JSON_BUILD_OBJECT('id', ${members.id}, 'name', ${members.name}), 'timestamp', ${absences.timestamp}, 'date', ${absences.date}, 'reason', ${absences.reason}, 'excused', ${absences.excused}))`
 				})
 				.from(absences)
+				.leftJoin(members, eq(members.id, grades.teacherID))
 				.where(eq(absences.studentID, this.userID))
 				.groupBy(absences.subjectID)
 		]);
