@@ -14,7 +14,7 @@ import { Type } from 'class-transformer';
 class GradeDto {
 	@IsString()
 	@IsOptional()
-	@Length(0, 1000)
+	@Length(0, 100)
 	@ApiProperty()
 	reason: string;
 
