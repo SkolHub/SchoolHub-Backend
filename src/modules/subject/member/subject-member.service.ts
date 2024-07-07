@@ -178,7 +178,8 @@ export class SubjectMemberService extends DBService {
 
 		return this.db
 			.select({
-				count: count(sq.count)
+				count: count(sq.count),
+				minGrades: sql`3`
 			})
 			.from(sq)
 			.where(lt(sq.count, 3));
