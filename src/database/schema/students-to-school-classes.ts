@@ -1,6 +1,5 @@
 import { integer, pgTable, primaryKey } from 'drizzle-orm/pg-core';
 import { members } from './members';
-import { subjects } from './subjects';
 import { relations } from 'drizzle-orm';
 import { schoolClasses } from './school-classes';
 
@@ -24,9 +23,9 @@ export const studentsToSchoolClassesRelations = relations(
 			fields: [studentsToSchoolClasses.studentID],
 			references: [members.id]
 		}),
-		schoolClass: one(subjects, {
+		schoolClass: one(schoolClasses, {
 			fields: [studentsToSchoolClasses.schoolClassID],
-			references: [subjects.id]
+			references: [schoolClasses.id]
 		})
 	})
 );
