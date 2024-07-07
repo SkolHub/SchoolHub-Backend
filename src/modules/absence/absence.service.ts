@@ -55,7 +55,7 @@ export class AbsenceService extends DBService {
                                              ON sc.id = stsc."schoolClassID" AND
                                                 sc.id = sttsc."schoolClassID" AND
                                                 sc."classMasterID" = ${this.userID}
-                         WHERE a.id IN ${excuseAbsencesDto});
+                         WHERE a.id IN ${excuseAbsencesDto.absences});
         `);
 	}
 

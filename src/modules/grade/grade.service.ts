@@ -67,12 +67,14 @@ export class GradeService extends DBService {
 				.select({
 					id: grades.id,
 					reason: grades.reason,
-					teacherID: grades.teacherID,
+					teacher: sql`JSON_BUILD_OBJECT
+                        ('id', ${members.id}, 'name', ${members.name})`,
 					value: grades.value,
 					timestamp: grades.timestamp,
 					date: grades.date
 				})
 				.from(grades)
+				.leftJoin(members, eq(members.id, grades.teacherID))
 				.where(
 					and(
 						eq(grades.studentID, this.userID),
@@ -83,12 +85,14 @@ export class GradeService extends DBService {
 				.select({
 					id: absences.id,
 					reason: absences.reason,
-					teacherID: absences.teacherID,
+					teacher: sql`JSON_BUILD_OBJECT
+                        ('id', ${members.id}, 'name', ${members.name})`,
 					excused: absences.excused,
 					timestamp: absences.timestamp,
 					date: absences.date
 				})
 				.from(absences)
+				.leftJoin(members, eq(members.id, absences.teacherID))
 				.where(
 					and(
 						eq(absences.studentID, this.userID),

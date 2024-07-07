@@ -41,13 +41,14 @@ export class SubjectMemberService extends DBService {
 			await this.db.execute(sql`
                 SELECT s.id,
                        s.name,
-                       JSON_AGG(JSONB_BUILD_OBJECT('id', s.sid, 'name', s.sname, 'teachers',
+                       JSON_AGG(JSONB_BUILD_OBJECT('id', s.sid, 'name', s.sname, 'metadata', s.metadata, 'teachers',
                                                    s.teachers, 'grades', s.sgrades, 'average',
                                                    s.saverage)) as subjects
                 FROM (SELECT sc.id,
                              sc.name,
                              s.id                                                              as sid,
                              s.name                                                            as sname,
+                             s.metadata                                                        as metadata,
                              JSON_AGG(DISTINCT JSONB_BUILD_OBJECT('id', m.id, 'name', m.name)) as teachers,
                              COALESCE(COUNT(DISTINCT g), 0)                                    as sgrades,
                              AVG(g.value::int)                                                 as saverage
@@ -179,7 +180,7 @@ export class SubjectMemberService extends DBService {
 		return this.db
 			.select({
 				count: count(sq.count),
-				minGrades: sql`3`
+				minGrades: sql`5`
 			})
 			.from(sq)
 			.where(lt(sq.count, 3));
