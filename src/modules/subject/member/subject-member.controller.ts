@@ -19,6 +19,12 @@ export class SubjectMemberController {
 		return this.subjectService.getStudentSubjects();
 	}
 
+	@Get('student/all')
+	@UseGuards(StudentGuard)
+	getStudentSubjectsWithMetrics() {
+		return this.subjectService.getStudentSubjectsWithMetrics();
+	}
+
 	@Get('student/:id')
 	@UseGuards(StudentGuard)
 	getStudentSubjectByID(@Param('id', ParseIntPipe) id: number) {
@@ -29,5 +35,17 @@ export class SubjectMemberController {
 	@UseGuards(TeacherGuard)
 	getTeacherSubjects() {
 		return this.subjectService.getTeacherSubjects();
+	}
+
+	@Get('teacher/:id')
+	@UseGuards(TeacherGuard)
+	getTeacherSubjectByID(@Param('id', ParseIntPipe) id: number) {
+		return this.subjectService.getTeacherSubjectByID(id);
+	}
+
+	@Get('teacher/few-grades/:id')
+	@UseGuards(TeacherGuard)
+	getStudentsWithFewGradesCount(@Param('id', ParseIntPipe) id: number) {
+		return this.subjectService.getStudentsWithFewGradesCount(id);
 	}
 }
