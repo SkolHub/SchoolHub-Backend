@@ -1,4 +1,11 @@
-import { IsIn, IsInt, IsISO8601, IsString, Length } from 'class-validator';
+import {
+	IsIn,
+	IsInt,
+	IsISO8601,
+	IsOptional,
+	IsString,
+	Length
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTeacherPostDto {
@@ -21,6 +28,7 @@ export class CreateTeacherPostDto {
 	subjectID: number;
 
 	@IsISO8601()
+	@IsOptional()
 	@ApiProperty()
 	dueDate: string;
 }
