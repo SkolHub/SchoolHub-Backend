@@ -10,7 +10,7 @@ export class PostCommentService extends DBService {
 	async createStudentComment(createPostCommentDto: CreatePostCommentDto) {
 		await this.db.execute(sql`
             INSERT INTO "PostComment" (body, "userID", "postID")
-            SELECT (${createPostCommentDto.body}, ${this.userID}, ${createPostCommentDto.postID})
+            SELECT ${createPostCommentDto.body}, ${this.userID}, ${createPostCommentDto.postID}
             WHERE EXISTS (SELECT 1
                           FROM "Post" p
                                    INNER JOIN "StudentToSubject" sts
@@ -23,7 +23,7 @@ export class PostCommentService extends DBService {
 	async createTeacherComment(createPostCommentDto: CreatePostCommentDto) {
 		await this.db.execute(sql`
             INSERT INTO "PostComment" (body, "userID", "postID")
-            SELECT (${createPostCommentDto.body}, ${this.userID}, ${createPostCommentDto.postID})
+            SELECT ${createPostCommentDto.body}, ${this.userID}, ${createPostCommentDto.postID}
             WHERE EXISTS (SELECT 1
                           FROM "Post" p
                                    INNER JOIN "TeacherToSubject" sts

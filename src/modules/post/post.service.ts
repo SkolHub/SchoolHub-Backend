@@ -140,7 +140,8 @@ export class PostService extends DBService {
 	}
 
 	async getPostByIDAsStudent(postID: number) {
-		return this.db.execute(sql`
+		return (
+			await this.db.execute(sql`
             SELECT p.id,
                    p.body,
                    p."dueDate",
@@ -158,8 +159,9 @@ export class PostService extends DBService {
                      LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
                      LEFT JOIN "Member" m2 ON m2.id = pc."userID"
             WHERE p.id = ${postID}
-            GROUP BY p.id
-        `);
+            GROUP BY p.id, m.id
+        `)
+		).rows;
 	}
 
 	async getPostByIDAsTeacher(postID: number) {
