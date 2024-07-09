@@ -22,7 +22,7 @@ export class PostSubmissionService extends DBService {
 			});
 	}
 
-	async withold(postID: number) {
+	async unsubmit(postID: number) {
 		await this.db
 			.update(postSubmissions)
 			.set({

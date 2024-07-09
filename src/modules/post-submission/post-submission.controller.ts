@@ -21,10 +21,10 @@ export class PostSubmissionController {
 		return this.postSubmissionService.turnIn(id);
 	}
 
-	@Patch('withold/:id')
+	@Patch('unsubmit/:id')
 	@UseGuards(StudentGuard)
-	withold(@Param('id', ParseIntPipe) id: number) {
-		return this.postSubmissionService.withold(id);
+	unsubmit(@Param('id', ParseIntPipe) id: number) {
+		return this.postSubmissionService.unsubmit(id);
 	}
 
 	@Patch('redo')
