@@ -162,11 +162,11 @@ export class PostService extends DBService {
           WHERE p.id = ${postID}
           GROUP BY p.id, m.id
 			`)
-		).rows;
+		).rows[0];
 	}
 
 	async getPostByIDAsTeacher(postID: number) {
-		return this.db.execute(sql`
+		return (await this.db.execute(sql`
         SELECT p.id,
                p.title,
                p.body,
@@ -185,8 +185,8 @@ export class PostService extends DBService {
                  LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
                  LEFT JOIN "Member" m2 ON m2.id = pc."userID"
         WHERE p.id = ${postID}
-        GROUP BY p.id
-		`);
+        GROUP BY p.id, m.id
+		`)).rows[0];
 	}
 
 	@Patch(':id')
