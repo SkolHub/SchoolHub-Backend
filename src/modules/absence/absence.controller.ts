@@ -26,7 +26,6 @@ export class AbsenceController {
 
 	@Patch('excuse')
 	excuse(@Body() excuseAbsencesDto: ExcuseAbsencesDto) {
-		console.log(excuseAbsencesDto);
 		return this.absenceService.excuse(excuseAbsencesDto);
 	}
 

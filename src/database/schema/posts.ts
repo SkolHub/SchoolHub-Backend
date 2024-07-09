@@ -21,7 +21,9 @@ export const posts = pgTable('Post', {
 	body: text('body').notNull(),
 	timestamp: timestamp('timestamp').defaultNow(),
 	dueDate: timestamp('dueDate', { mode: 'string' }),
-	type: postTypeEnum('post_type'),
+	type: postTypeEnum('post_type').notNull(),
+	updated: timestamp('updated'),
+	sectionID: integer('sectionID'),
 	memberID: integer('memberID').notNull(),
 	subjectID: integer('subjectID').notNull()
 });

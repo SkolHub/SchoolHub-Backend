@@ -4,7 +4,7 @@ import { UpdateStudentPostDto } from './dto/update-student-post.dto';
 import { DBService } from '../../common/db.service';
 import { PermissionService } from '../../common/permission.service';
 import { posts } from '../../database/schema/posts';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { studentsToSubjects } from '../../database/schema/students-to-subjects';
 import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 import { CreateTeacherPostDto } from './dto/create-teacher-post.dto';
@@ -139,13 +139,60 @@ export class PostService extends DBService {
 			.innerJoin(posts, and(eq(posts.subjectID, teachersToSubjects.subjectID)));
 	}
 
+	async getPostByIDAsStudent(postID: number) {
+		return this.db.execute(sql`
+            SELECT p.id,
+                   p.body,
+                   p."dueDate",
+                   p.post_type,
+                   p.timestamp,
+                   p.updated,
+                   jsonb_build_object('id', m.id, 'name', m.name)                                  AS member,
+                   jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp, 'updated',
+                                                pc.updated, 'member',
+                                                jsonb_build_object('id', m2.id, 'name', m2.name))) AS comments
+            FROM "Post" p
+                     INNER JOIN "StudentToSubject" sts
+                                ON sts."subjectID" = p."subjectID" AND sts."studentID" = ${this.userID}
+                     INNER JOIN "Member" m ON m.id = p."memberID"
+                     LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
+                     LEFT JOIN "Member" m2 ON m2.id = pc."userID"
+            WHERE p.id = ${postID}
+            GROUP BY p.id
+        `);
+	}
+
+	async getPostByIDAsTeacher(postID: number) {
+		return this.db.execute(sql`
+            SELECT p.id,
+                   p.body,
+                   p."dueDate",
+                   p.post_type,
+                   p.timestamp,
+                   p.updated,
+                   jsonb_build_object('id', m.id, 'name', m.name)                                  AS member,
+                   jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp, 'updated',
+                                                pc.updated, 'member',
+                                                jsonb_build_object('id', m2.id, 'name', m2.name))) AS comments
+            FROM "Post" p
+                     INNER JOIN "TeacherToSubject" tts
+                                ON tts."subjectID" = p."subjectID" AND tts."teacherID" = ${this.userID}
+                     INNER JOIN "Member" m ON m.id = p."memberID"
+                     LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
+                     LEFT JOIN "Member" m2 ON m2.id = pc."userID"
+            WHERE p.id = ${postID}
+            GROUP BY p.id
+        `);
+	}
+
 	@Patch(':id')
 	async updateStudentPost(postID: number, updatePostDto: UpdateStudentPostDto) {
 		await this.db
 			.update(posts)
 			.set({
 				title: updatePostDto.title,
-				body: updatePostDto.body
+				body: updatePostDto.body,
+				updated: sql`CURRENT_TIMESTAMP`
 			})
 			.where(and(eq(posts.id, postID), eq(posts.memberID, this.userID)));
 	}

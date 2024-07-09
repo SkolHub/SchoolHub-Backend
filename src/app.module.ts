@@ -19,6 +19,11 @@ import { PostModule } from './modules/post/post.module';
 import { TestModule } from './modules/test/test.module';
 import { PermissionService } from './common/permission.service';
 import { ClsModule } from 'nestjs-cls';
+import { PostCommentModule } from './modules/post-comment/post-comment.module';
+import { PostSectionModule } from './modules/post-section/post-section.module';
+import { PostSubmissionModule } from './modules/post-submission/post-submission.module';
+import { PostAttachmentModule } from './modules/post-attachment/post-attachment.module';
+import { PostSubmissionAttachmentModule } from './modules/post-submission-attachment/post-submission-attachment.module';
 
 const routes: Routes = [
 	{
@@ -99,7 +104,12 @@ const routes: Routes = [
 		GradeModule,
 		AbsenceModule,
 		PostModule,
-		TestModule
+		TestModule,
+		PostCommentModule,
+		PostSectionModule,
+		PostSubmissionModule,
+		PostAttachmentModule,
+		PostSubmissionAttachmentModule
 	],
 	providers: [
 		{

@@ -177,17 +177,25 @@ export class TestService extends DBService {
 	}
 
 	async generateDummyData() {
+		const encoded_pass = await BcryptUtils.hashPassword('Test123!');
+
+		const start = +new Date();
+
+		console.log('starting', start);
+
 		const [owner] = await this.db
 			.insert(members)
 			.values({
 				name: 'admin',
-				password: await BcryptUtils.hashPassword('Test123!'),
+				password: encoded_pass,
 				user: 'admin@cnibv.com',
 				role: 'admin'
 			})
 			.returning({
 				id: members.id
 			});
+
+		console.log('created owner', +new Date() - start);
 
 		const [organization] = await this.db
 			.insert(organizations)
@@ -199,9 +207,13 @@ export class TestService extends DBService {
 				id: organizations.id
 			});
 
+		console.log('created organization', +new Date() - start);
+
 		await this.db.update(members).set({
 			organizationID: organization.id
 		});
+
+		console.log('updated organization ID on owner', +new Date() - start);
 
 		await this.db.insert(members).values(
 			await Promise.all(
@@ -210,10 +222,12 @@ export class TestService extends DBService {
 					role: 'admin' as 'admin',
 					name: admin.name,
 					user: admin.user,
-					password: await BcryptUtils.hashPassword(admin.password)
+					password: encoded_pass
 				}))
 			)
 		);
+
+		console.log('added admins', +new Date() - start);
 
 		const st = await this.db
 			.insert(members)
@@ -224,11 +238,13 @@ export class TestService extends DBService {
 						role: 'student' as 'student',
 						name: student.name,
 						user: student.user,
-						password: await BcryptUtils.hashPassword(student.password)
+						password: encoded_pass
 					}))
 				)
 			)
 			.returning({ id: members.id });
+
+		console.log('added students', +new Date() - start);
 
 		const sc = await this.db
 			.insert(schoolClasses)
@@ -239,6 +255,8 @@ export class TestService extends DBService {
 				}))
 			)
 			.returning();
+
+		console.log('added school classes', +new Date() - start);
 
 		const s = await this.db
 			.insert(subjects)
@@ -254,6 +272,8 @@ export class TestService extends DBService {
 			)
 			.returning();
 
+		console.log('added subjects', +new Date() - start);
+
 		const split_students = this.splitIntoMatrix(st, 30);
 
 		await this.db.insert(studentsToSchoolClasses).values(
@@ -267,6 +287,8 @@ export class TestService extends DBService {
 				.flat()
 		);
 
+		console.log('Added students to school classes', +new Date() - start);
+
 		await this.db.insert(subjectsToSchoolClasses).values(
 			s.map((subject, index) => ({
 				subjectID: subject.id,
@@ -276,6 +298,8 @@ export class TestService extends DBService {
 				).id
 			}))
 		);
+
+		console.log('Added more students to school classes', +new Date() - start);
 
 		const js = await this.db
 			.insert(subjects)
@@ -291,6 +315,8 @@ export class TestService extends DBService {
 			)
 			.returning();
 
+		console.log('Added joined subjects', +new Date() - start);
+
 		await this.db.insert(subjectsToSchoolClasses).values(
 			this.joined_subjects
 				.map((subject, subjectIndex) =>
@@ -302,12 +328,16 @@ export class TestService extends DBService {
 				.flat()
 		);
 
+		console.log('added subjects to school classes', +new Date() - start);
+
 		const unique_subjects = await this.db
 			.select({
 				name: subjects.name
 			})
 			.from(subjects)
 			.groupBy(subjects.name);
+
+		console.log('Fetched unique subjects', +new Date() - start);
 
 		const teachers = await this.db
 			.insert(members)
@@ -316,7 +346,7 @@ export class TestService extends DBService {
 					unique_subjects.map(async (subject, index) => ({
 						name: `${subject.name} teacher`,
 						user: `t${index}`,
-						password: await BcryptUtils.hashPassword('Test123!'),
+						password: encoded_pass,
 						organizationID: organization.id,
 						role: 'teacher' as 'teacher'
 					}))
@@ -324,7 +354,11 @@ export class TestService extends DBService {
 			)
 			.returning({ id: members.id });
 
+		console.log('Added teachers', +new Date() - start);
+
 		const total_subjects = await this.db.select().from(subjects);
+
+		console.log('Fetched total subjects', +new Date() - start);
 
 		await this.db.insert(teachersToSubjects).values(
 			total_subjects.map((subject) => ({
@@ -336,16 +370,20 @@ export class TestService extends DBService {
 			}))
 		);
 
+		console.log('Added teachers to subjects', +new Date() - start);
+
 		const extra_teacher = await this.db
 			.insert(members)
 			.values({
 				name: `${this.commonSubjects[0]} teacher 2`,
 				user: `t${unique_subjects.length}`,
-				password: await BcryptUtils.hashPassword('Test123!'),
+				password: encoded_pass,
 				organizationID: organization.id,
 				role: 'teacher' as 'teacher'
 			})
 			.returning({ id: members.id });
+
+		console.log('added extra informatics teacher', +new Date() - start);
 
 		await this.db.insert(teachersToSubjects).values(
 			total_subjects
@@ -354,6 +392,11 @@ export class TestService extends DBService {
 					teacherID: extra_teacher[0].id,
 					subjectID: subject.id
 				}))
+		);
+
+		console.log(
+			'added extra informatics teacher to subjects',
+			+new Date() - start
 		);
 
 		const studentSubjectLinks: {
@@ -383,7 +426,7 @@ export class TestService extends DBService {
             `)
 		).rows;
 
-		console.log(studentSubjectLinks);
+		console.log('Fetched students to subjects', +new Date() - start);
 
 		await this.db.insert(studentsToSubjects).values(
 			studentSubjectLinks
@@ -397,6 +440,8 @@ export class TestService extends DBService {
 				)
 				.flat(2)
 		);
+
+		console.log('Added students to subjects', +new Date() - start);
 
 		const specialStudentSubjectLinks: {
 			students: {
@@ -425,6 +470,8 @@ export class TestService extends DBService {
             `)
 		).rows;
 
+		console.log('Fetched special students to subjects', +new Date() - start);
+
 		await this.db.insert(studentsToSubjects).values(
 			specialStudentSubjectLinks
 				.map((schoolClass) =>
@@ -440,5 +487,7 @@ export class TestService extends DBService {
 				)
 				.flat(2)
 		);
+
+		console.log('Added students to special subjects', +new Date() - start);
 	}
 }

@@ -14,3 +14,5 @@ export * from './schema/parents';
 export * from './schema/post-attachments';
 export * from './schema/post-comments';
 export * from './schema/post-submissions';
+export * from './schema/post-submission-attachments';
+export * from './schema/post-sections';

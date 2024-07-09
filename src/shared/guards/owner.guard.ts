@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+	CanActivate,
+	ExecutionContext,
+	ForbiddenException,
+	Injectable
+} from '@nestjs/common';
 import { organizations } from '../../database/schema/organizations';
 import { eq } from 'drizzle-orm';
 import { DBService } from '../../common/db.service';
@@ -15,6 +20,10 @@ export class OwnerGuard extends DBService implements CanActivate {
 			}
 		});
 
-		return organization.ownerID === this.userID;
+		if (organization.ownerID !== this.userID) {
+			throw new ForbiddenException('You are not the owner');
+		}
+
+		return true;
 	}
 }

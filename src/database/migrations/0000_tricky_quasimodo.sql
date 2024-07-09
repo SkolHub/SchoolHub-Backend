@@ -5,6 +5,18 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ CREATE TYPE "public"."attachment_type" AS ENUM('link', 'file');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."submission_status" AS ENUM('progress', 'submitted', 'redo', 'graded');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."post_type" AS ENUM('announcement', 'assignment', 'test', 'material');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -63,15 +75,43 @@ CREATE TABLE IF NOT EXISTS "Parent" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "PostAttachment" (
-
+	"id" serial PRIMARY KEY NOT NULL,
+	"attachment_type" "attachment_type" NOT NULL,
+	"source" text NOT NULL,
+	"submissionID" integer NOT NULL,
+	"studentID" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "PostComment" (
-
+	"id" serial PRIMARY KEY NOT NULL,
+	"body" text,
+	"timestamp" timestamp DEFAULT now(),
+	"updated" timestamp,
+	"userID" integer,
+	"postID" integer
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "PostSection" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text,
+	"subjectID" integer
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "PostSubmissionAttachment" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"attachment_type" "attachment_type" NOT NULL,
+	"source" text NOT NULL,
+	"submissionID" integer NOT NULL,
+	"studentID" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "PostSubmission" (
-
+	"postID" integer NOT NULL,
+	"studentID" integer NOT NULL,
+	"submission_status" "submission_status" NOT NULL,
+	"gradeID" integer,
+	"comment" text,
+	CONSTRAINT "PostSubmission_postID_studentID_pk" PRIMARY KEY("postID","studentID")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Post" (
@@ -80,7 +120,9 @@ CREATE TABLE IF NOT EXISTS "Post" (
 	"body" text NOT NULL,
 	"timestamp" timestamp DEFAULT now(),
 	"dueDate" timestamp,
-	"post_type" "post_type",
+	"post_type" "post_type" NOT NULL,
+	"updated" timestamp,
+	"sectionID" integer,
 	"memberID" integer NOT NULL,
 	"subjectID" integer NOT NULL
 );
@@ -104,10 +146,10 @@ CREATE TABLE IF NOT EXISTS "StudentToSubject" (
 	CONSTRAINT "StudentToSubject_studentID_subjectID_pk" PRIMARY KEY("studentID","subjectID")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "subjectToSchoolClass" (
+CREATE TABLE IF NOT EXISTS "SubjectToSchoolClass" (
 	"schoolClassID" integer,
 	"subjectID" integer,
-	CONSTRAINT "subjectToSchoolClass_schoolClassID_subjectID_pk" PRIMARY KEY("schoolClassID","subjectID")
+	CONSTRAINT "SubjectToSchoolClass_schoolClassID_subjectID_pk" PRIMARY KEY("schoolClassID","subjectID")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Subject" (
@@ -161,13 +203,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "subjectToSchoolClass" ADD CONSTRAINT "subjectToSchoolClass_schoolClassID_SchoolClass_id_fk" FOREIGN KEY ("schoolClassID") REFERENCES "public"."SchoolClass"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "SubjectToSchoolClass" ADD CONSTRAINT "SubjectToSchoolClass_schoolClassID_SchoolClass_id_fk" FOREIGN KEY ("schoolClassID") REFERENCES "public"."SchoolClass"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "subjectToSchoolClass" ADD CONSTRAINT "subjectToSchoolClass_subjectID_Subject_id_fk" FOREIGN KEY ("subjectID") REFERENCES "public"."Subject"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "SubjectToSchoolClass" ADD CONSTRAINT "SubjectToSchoolClass_subjectID_Subject_id_fk" FOREIGN KEY ("subjectID") REFERENCES "public"."Subject"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

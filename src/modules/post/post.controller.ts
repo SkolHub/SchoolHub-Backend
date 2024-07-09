@@ -57,6 +57,16 @@ export class PostController {
 		return this.postService.getSubjectPostsTeacher(id);
 	}
 
+	@Get('student/:id')
+	getPostByIDAsStudent(@Param('id', ParseIntPipe) id: number) {
+		return this.postService.getPostByIDAsStudent(id);
+	}
+
+	@Get('teacher/:id')
+	getPostByIDAsTeacher(@Param('id', ParseIntPipe) id: number) {
+		return this.postService.getPostByIDAsTeacher(id);
+	}
+
 	@Patch(':id')
 	@UseGuards(StudentGuard)
 	updateStudentPost(

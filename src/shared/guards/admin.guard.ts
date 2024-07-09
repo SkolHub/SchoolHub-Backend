@@ -1,4 +1,4 @@
-import { CanActivate, Injectable } from '@nestjs/common';
+import { CanActivate, ForbiddenException, Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import { CustomClsStore } from '../../common/db.service';
 
@@ -7,6 +7,10 @@ export class AdminGuard implements CanActivate {
 	constructor(private readonly cls: ClsService<CustomClsStore>) {}
 
 	canActivate(): boolean {
-		return this.cls.get('role') === 'admin';
+		if (this.cls.get('role') !== 'admin') {
+			throw new ForbiddenException('You are not an admin');
+		}
+
+		return true;
 	}
 }

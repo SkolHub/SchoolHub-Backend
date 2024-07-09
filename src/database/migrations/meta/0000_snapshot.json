@@ -1,5 +1,5 @@
 {
-  "id": "bb7afef4-3fe4-42d0-adc0-5a28c1ba7085",
+  "id": "a3cb72f0-f022-4e1f-a030-e2d410386846",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "6",
   "dialect": "postgresql",
@@ -292,7 +292,39 @@
     "public.PostAttachment": {
       "name": "PostAttachment",
       "schema": "",
-      "columns": {},
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "attachment_type": {
+          "name": "attachment_type",
+          "type": "attachment_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "submissionID": {
+          "name": "submissionID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
@@ -301,7 +333,114 @@
     "public.PostComment": {
       "name": "PostComment",
       "schema": "",
-      "columns": {},
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated": {
+          "name": "updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userID": {
+          "name": "userID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postID": {
+          "name": "postID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.PostSection": {
+      "name": "PostSection",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "subjectID": {
+          "name": "subjectID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.PostSubmissionAttachment": {
+      "name": "PostSubmissionAttachment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "attachment_type": {
+          "name": "attachment_type",
+          "type": "attachment_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "submissionID": {
+          "name": "submissionID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
@@ -310,10 +449,50 @@
     "public.PostSubmission": {
       "name": "PostSubmission",
       "schema": "",
-      "columns": {},
+      "columns": {
+        "postID": {
+          "name": "postID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "submission_status": {
+          "name": "submission_status",
+          "type": "submission_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gradeID": {
+          "name": "gradeID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "PostSubmission_postID_studentID_pk": {
+          "name": "PostSubmission_postID_studentID_pk",
+          "columns": [
+            "postID",
+            "studentID"
+          ]
+        }
+      },
       "uniqueConstraints": {}
     },
     "public.Post": {
@@ -355,6 +534,18 @@
           "name": "post_type",
           "type": "post_type",
           "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated": {
+          "name": "updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sectionID": {
+          "name": "sectionID",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -538,8 +729,8 @@
       },
       "uniqueConstraints": {}
     },
-    "public.subjectToSchoolClass": {
-      "name": "subjectToSchoolClass",
+    "public.SubjectToSchoolClass": {
+      "name": "SubjectToSchoolClass",
       "schema": "",
       "columns": {
         "schoolClassID": {
@@ -557,9 +748,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "subjectToSchoolClass_schoolClassID_SchoolClass_id_fk": {
-          "name": "subjectToSchoolClass_schoolClassID_SchoolClass_id_fk",
-          "tableFrom": "subjectToSchoolClass",
+        "SubjectToSchoolClass_schoolClassID_SchoolClass_id_fk": {
+          "name": "SubjectToSchoolClass_schoolClassID_SchoolClass_id_fk",
+          "tableFrom": "SubjectToSchoolClass",
           "tableTo": "SchoolClass",
           "columnsFrom": [
             "schoolClassID"
@@ -570,9 +761,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "subjectToSchoolClass_subjectID_Subject_id_fk": {
-          "name": "subjectToSchoolClass_subjectID_Subject_id_fk",
-          "tableFrom": "subjectToSchoolClass",
+        "SubjectToSchoolClass_subjectID_Subject_id_fk": {
+          "name": "SubjectToSchoolClass_subjectID_Subject_id_fk",
+          "tableFrom": "SubjectToSchoolClass",
           "tableTo": "Subject",
           "columnsFrom": [
             "subjectID"
@@ -585,8 +776,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "subjectToSchoolClass_schoolClassID_subjectID_pk": {
-          "name": "subjectToSchoolClass_schoolClassID_subjectID_pk",
+        "SubjectToSchoolClass_schoolClassID_subjectID_pk": {
+          "name": "SubjectToSchoolClass_schoolClassID_subjectID_pk",
           "columns": [
             "schoolClassID",
             "subjectID"
@@ -716,6 +907,24 @@
         "parent",
         "student",
         "teacher"
+      ]
+    },
+    "public.attachment_type": {
+      "name": "attachment_type",
+      "schema": "public",
+      "values": [
+        "link",
+        "file"
+      ]
+    },
+    "public.submission_status": {
+      "name": "submission_status",
+      "schema": "public",
+      "values": [
+        "progress",
+        "submitted",
+        "redo",
+        "graded"
       ]
     },
     "public.post_type": {

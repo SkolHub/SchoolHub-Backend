@@ -4,7 +4,7 @@ import { schoolClasses } from './school-classes';
 import { relations } from 'drizzle-orm';
 
 export const subjectsToSchoolClasses = pgTable(
-	'subjectToSchoolClass',
+	'SubjectToSchoolClass',
 	{
 		schoolClassID: integer('schoolClassID').references(() => schoolClasses.id),
 		subjectID: integer('subjectID').references(() => subjects.id)
