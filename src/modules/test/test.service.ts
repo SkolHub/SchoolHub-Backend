@@ -10,6 +10,8 @@ import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 import { studentsToSchoolClasses } from '../../database/schema/students-to-school-classes';
 import { sql } from 'drizzle-orm';
 import { studentsToSubjects } from '../../database/schema/students-to-subjects';
+import { posts } from '../../database/schema/posts';
+import { grades } from '../../database/schema/grades';
 
 @Injectable()
 export class TestService extends DBService {
@@ -177,6 +179,61 @@ export class TestService extends DBService {
 	}
 
 	async generateDummyData() {
+		const subjectsWithTeachersAndStudentss = (
+			await this.db.execute(sql`
+          select "Subject".id,
+                 jsonb_agg(distinct "StudentToSubject"."studentID") as "students",
+                 jsonb_agg(distinct "TeacherToSubject"."teacherID") as "teachers"
+          from "Subject"
+                   left join "StudentToSubject" on "StudentToSubject"."subjectID" = "Subject".id
+                   left join "TeacherToSubject" on "TeacherToSubject"."subjectID" = "Subject".id
+          group by "Subject".id
+			`)
+		).rows;
+
+		function splitArrayIntoChunkss<T>(array: T[], chunkSize: number): any[][] {
+			const result: T[][] = [];
+			for (let i = 0; i < array.length; i += chunkSize) {
+				const chunk = array.slice(i, i + chunkSize);
+				result.push(chunk);
+			}
+			return result;
+		}
+
+		const chunkss = splitArrayIntoChunks(subjectsWithTeachersAndStudentss, 1);
+		const dateStrs = new Date().toISOString();
+		const dates = [
+			new Date('10.06.2024').toISOString(),
+			new Date('10.05.2024').toISOString(),
+			new Date('10.04.2024').toISOString()
+		];
+
+		for (const chunk of chunkss) {
+			// console.log(chunk);
+			// break
+
+			await this.db.insert(grades).values(
+				chunk
+					.map((subject) =>
+						subject.students.map((student) =>
+							subject.teachers.map((teacher) =>
+								['9', '7', '10'].map((grade, index) => ({
+									studentID: student,
+									teacherID: teacher,
+									subjectID: subject.id,
+									value: grade,
+									date: dates[index],
+									reason: 'Test'
+								}))
+							)
+						)
+					)
+					.flat(3)
+			);
+		}
+
+		return;
+
 		const encoded_pass = await BcryptUtils.hashPassword('Test123!');
 
 		const start = +new Date();
@@ -410,20 +467,20 @@ export class TestService extends DBService {
 			}[];
 		}[] = (
 			await this.db.execute(sql`
-                SELECT ${schoolClasses.name},
-                       ${schoolClasses.id},
-                       (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
-                        FROM ${studentsToSchoolClasses}
-                                 INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
-                        WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
+          SELECT ${schoolClasses.name},
+                 ${schoolClasses.id},
+                 (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
+                  FROM ${studentsToSchoolClasses}
+                           INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
+                  WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
 
-                       (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
-                        FROM ${subjectsToSchoolClasses}
-                                 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND NOT ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
-                        WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
-                FROM ${schoolClasses}
-                WHERE ${schoolClasses.organizationID} = ${organization.id};
-            `)
+                 (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
+                  FROM ${subjectsToSchoolClasses}
+                           INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND NOT ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
+                  WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
+          FROM ${schoolClasses}
+          WHERE ${schoolClasses.organizationID} = ${organization.id};
+			`)
 		).rows;
 
 		console.log('Fetched students to subjects', +new Date() - start);
@@ -454,20 +511,20 @@ export class TestService extends DBService {
 			}[];
 		}[] = (
 			await this.db.execute(sql`
-                SELECT ${schoolClasses.name},
-                       ${schoolClasses.id},
-                       (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
-                        FROM ${studentsToSchoolClasses}
-                                 INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
-                        WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
+          SELECT ${schoolClasses.name},
+                 ${schoolClasses.id},
+                 (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
+                  FROM ${studentsToSchoolClasses}
+                           INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
+                  WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
 
-                       (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
-                        FROM ${subjectsToSchoolClasses}
-                                 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
-                        WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
-                FROM ${schoolClasses}
-                WHERE ${schoolClasses.organizationID} = ${organization.id};
-            `)
+                 (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
+                  FROM ${subjectsToSchoolClasses}
+                           INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
+                  WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
+          FROM ${schoolClasses}
+          WHERE ${schoolClasses.organizationID} = ${organization.id};
+			`)
 		).rows;
 
 		console.log('Fetched special students to subjects', +new Date() - start);
@@ -489,5 +546,110 @@ export class TestService extends DBService {
 		);
 
 		console.log('Added students to special subjects', +new Date() - start);
+
+		const teachersToSubjectsTotal = await this.db
+			.select()
+			.from(teachersToSubjects);
+
+		await this.db.insert(posts).values(
+			teachersToSubjectsTotal.map((teacherToSubject) => ({
+				memberID: teacherToSubject.teacherID,
+				subjectID: teacherToSubject.subjectID,
+				title: 'Test assignment',
+				body: 'Test post body',
+				type: 'assignment' as 'announcement'
+			}))
+		);
+		await this.db.insert(posts).values(
+			teachersToSubjectsTotal.map((teacherToSubject) => ({
+				memberID: teacherToSubject.teacherID,
+				subjectID: teacherToSubject.subjectID,
+				title: 'Test test',
+				body: 'Test post body',
+				type: 'test' as 'announcement'
+			}))
+		);
+		await this.db.insert(posts).values(
+			teachersToSubjectsTotal.map((teacherToSubject) => ({
+				memberID: teacherToSubject.teacherID,
+				subjectID: teacherToSubject.subjectID,
+				title: 'Test material',
+				body: 'Test post body',
+				type: 'material' as 'announcement'
+			}))
+		);
+		await this.db.insert(posts).values(
+			teachersToSubjectsTotal.map((teacherToSubject) => ({
+				memberID: teacherToSubject.teacherID,
+				subjectID: teacherToSubject.subjectID,
+				title: 'Test announcement',
+				body: 'Test post body',
+				type: 'announcement' as 'announcement'
+			}))
+		);
+
+		const subjectsWithTeachersAndStudents = (
+			await this.db.execute(sql`
+          select "Subject".id,
+                 jsonb_agg("StudentToSubject"."studentID") as "students",
+                 jsonb_agg("TeacherToSubject"."teacherID") as "teachers"
+          from "Subject"
+                   left join "StudentToSubject" on "StudentToSubject"."subjectID" = "Subject".id
+                   left join "TeacherToSubject" on "TeacherToSubject"."subjectID" = "Subject".id
+          group by "Subject".id
+			`)
+		).rows;
+
+		function splitArrayIntoChunks<T>(array: T[], chunkSize: number): any[][] {
+			const result: T[][] = [];
+			for (let i = 0; i < array.length; i += chunkSize) {
+				const chunk = array.slice(i, i + chunkSize);
+				result.push(chunk);
+			}
+			return result;
+		}
+
+		const chunks = splitArrayIntoChunks(subjectsWithTeachersAndStudents, 1);
+		const dateStr = new Date().toISOString();
+
+		for (const chunk of chunks) {
+			await this.db.insert(grades).values(
+				chunk
+					.map((subject) =>
+						subject.students.map((student) =>
+							subject.teachers.map((teacher) =>
+								['10'].map((grade) => ({
+									studentID: student,
+									teacherID: teacher,
+									subjectID: subject.id,
+									value: grade,
+									date: dateStr,
+									reason: 'Test'
+								}))
+							)
+						)
+					)
+					.flat(3)
+			);
+		}
+
+		// await this.db.insert(grades).values(
+		// 	subjectsWithTeachersAndStudents
+		// 		.map((subject) =>
+		// 			subject.students.map((student) =>
+		// 				subject.teachers.map((teacher) =>
+		// 					['10'].map((grade) => ({
+		// 						studentID: student,
+		// 						teacherID: teacher,
+		// 						subjectID: subject.id,
+		// 						value: grade,
+		// 						date: new Date().toISOString(),
+		// 						reason: 'Test'
+		// 					}))
+		// 				)
+		// 			)
+		// 		)
+		// 		.flat(3)
+		// );
 	}
 }

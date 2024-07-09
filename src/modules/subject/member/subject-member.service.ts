@@ -22,7 +22,7 @@ export class SubjectMemberService extends DBService {
                                                    s.name                                                   as sname,
                                                    JSON_AGG(JSONB_BUILD_OBJECT('id', m.id, 'name', m.name)) as teachers
                                             FROM "StudentToSchoolClass" sttsc
-                                                     INNER JOIN "subjectToSchoolClass" stsc
+                                                     INNER JOIN "SubjectToSchoolClass" stsc
                                                                 ON stsc."schoolClassID" = sttsc."schoolClassID"
                                                      INNER JOIN "StudentToSubject" sts
                                                                 ON sts."subjectID" = stsc."subjectID" AND sts."studentID" = ${this.userID}
@@ -53,7 +53,7 @@ export class SubjectMemberService extends DBService {
                              COALESCE(COUNT(DISTINCT g), 0)                                    as sgrades,
                              AVG(g.value::int)                                                 as saverage
                       FROM "StudentToSchoolClass" sttsc
-                               INNER JOIN "subjectToSchoolClass" stsc
+                               INNER JOIN "SubjectToSchoolClass" stsc
                                           ON stsc."schoolClassID" = sttsc."schoolClassID"
                                INNER JOIN "StudentToSubject" sts
                                           ON sts."subjectID" = stsc."subjectID" AND sts."studentID" = ${this.userID}
