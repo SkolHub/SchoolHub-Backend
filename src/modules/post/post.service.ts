@@ -171,27 +171,34 @@ export class PostService extends DBService {
 	async getPostByIDAsTeacher(postID: number) {
 		return (
 			await this.db.execute(sql`
-            SELECT p.id,
-                   p.title,
-                   p.body,
-                   p."dueDate",
-                   p.post_type,
-                   p.timestamp,
-                   p.updated,
-                   jsonb_build_object('id', m.id, 'name', m.name)                                  AS member,
-                   jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp, 'updated',
-                                                pc.updated, 'member',
-                                                jsonb_build_object('id', m2.id, 'name', m2.name))) AS comments
-            FROM "Post" p
-                     INNER JOIN "TeacherToSubject" tts
-                                ON tts."subjectID" = p."subjectID" AND tts."teacherID" = ${this.userID}
-                     INNER JOIN "Member" m ON m.id = p."memberID"
-                     LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
-                     LEFT JOIN "Member" m2 ON m2.id = pc."userID"
-            WHERE p.id = ${postID}
-            GROUP BY p.id, m.id
-        `)
-		).rows[0];
+                SELECT p.id,
+                       p.title,
+                       p.body,
+                       p."dueDate",
+                       p.post_type,
+                       p.timestamp,
+                       p.updated,
+                       jsonb_build_object('id', m.id, 'name', m.name)                                                 AS member,
+                       (CASE
+                            WHEN COUNT(pc) = 0 THEN '[]'::jsonb
+                            ELSE jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp,
+                                                              'updated',
+                                                              pc.updated, 'member',
+                                                              jsonb_build_object('id', m2.id, 'name', m2.name))) END) AS comments,
+                       (CASE
+                            WHEN COUNT(ps) = 0 THEN '[]'::jsonb
+                            ELSE jsonb_agg(jsonb_build_object('studentID', ps."studentID", 'status',
+                                                              ps."submission_status")) END)                           AS submissions
+                FROM "Post" p
+
+                         INNER JOIN "Member" m ON m.id = p."memberID"
+                         LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
+                         LEFT JOIN "Member" m2 ON m2.id = pc."userID"
+                         LEFT JOIN "PostSubmission" ps ON ps."postID" = ${postID}
+                WHERE p.id = ${postID}
+                GROUP BY p.id, m.id
+            `)
+		).rows;
 	}
 
 	@Patch(':id')
