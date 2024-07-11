@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DBService } from '../../../common/db.service';
-import { and, avg, count, eq, lt, sql } from 'drizzle-orm';
+import { and, avg, count, eq, sql } from 'drizzle-orm';
 import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
 import { subjects } from '../../../database/schema/subjects';
 import { subjectsToSchoolClasses } from '../../../database/schema/subjects-to-school-classes';
 import { schoolClasses } from '../../../database/schema/school-classes';
 import { grades } from '../../../database/schema/grades';
-import { studentsToSubjects } from '../../../database/schema/students-to-subjects';
 
 @Injectable()
 export class SubjectMemberService extends DBService {
@@ -92,7 +91,7 @@ export class SubjectMemberService extends DBService {
 		).rows[0];
 	}
 
-	getTeacherSubjects() {
+	async getTeacherSubjects() {
 		const sq = this.db
 			.select({
 				schoolClasses: sql`JSONB_AGG
@@ -131,9 +130,11 @@ export class SubjectMemberService extends DBService {
 	getTeacherSubjectByID(subjectID: number) {
 		const sq = this.db
 			.select({
-				average: avg(sql`${grades.value}::int`),
+				average: avg(sql`${grades.value}::int`).as('average'),
 				count: sql`LEAST
-                    (${count(grades)}, COALESCE (${subjects.metadata}->>'minGrades', 100000))`
+                    (${count(grades)}, COALESCE ((${subjects.metadata}->>'minGrades')::int, 100000))`.as(
+					'count'
+				)
 			})
 			.from(teachersToSubjects)
 			.innerJoin(subjects, eq(subjects.id, teachersToSubjects.subjectID))
@@ -144,45 +145,29 @@ export class SubjectMemberService extends DBService {
 					eq(teachersToSubjects.teacherID, this.userID)
 				)
 			)
-			.groupBy(grades.studentID)
+			.groupBy(grades.studentID, subjects.id)
 			.as('sq');
 
 		return this.db
 			.select({
-				average: avg(sq.average),
-				averageCount: avg(sq.count)
+				average: sq.average,
+				averageCount: sq.count
 			})
 			.from(sq);
 	}
 
-	getStudentsWithFewGradesCount(subjectID: number) {
-		const sq = this.db
-			.select({
-				count: count(grades.id)
-			})
-			.from(teachersToSubjects)
-			.innerJoin(
-				grades,
-				and(
-					eq(grades.studentID, studentsToSubjects.studentID),
-					eq(grades.subjectID, subjectID)
-				)
-			)
-			.where(
-				and(
-					eq(teachersToSubjects.subjectID, subjectID),
-					eq(teachersToSubjects.teacherID, this.userID)
-				)
-			)
-			.groupBy(grades.studentID)
-			.as('sq');
-
-		return this.db
-			.select({
-				count: count(sq.count),
-				minGrades: sql`5`
-			})
-			.from(sq)
-			.where(lt(sq.count, 3));
+	async getStudentsWithFewGradesCount(subjectID: number) {
+		return (
+			await this.db.execute(sql`
+                SELECT COUNT(*)
+                FROM (SELECT COUNT(g.value) as count
+                      FROM "TeacherToSubject" tts
+                               INNER JOIN "Grade" g ON g."subjectID" = ${subjectID}
+                      WHERE tts."subjectID" = ${subjectID}
+                        AND tts."teacherID" = ${this.userID}
+                      GROUP BY g."studentID") sq
+                WHERE sq.count < 3
+            `)
+		).rows[0];
 	}
 }

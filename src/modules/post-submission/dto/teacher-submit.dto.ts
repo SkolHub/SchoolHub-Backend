@@ -13,6 +13,7 @@ export class TeacherSubmitDto {
 	@IsString()
 	@Length(1, 200)
 	@ApiProperty()
+	@IsOptional()
 	comment: string;
 
 	@IsInt()
