@@ -151,7 +151,7 @@ export class PostService extends DBService {
                        p.updated,
                        ps.submission_status,
                        ps.comment,
-                       ps.gradeID,
+                       ps."gradeID",
                        ps.timestamp,
                        jsonb_build_object('id', m.id, 'name', m.name)                                  AS member,
                        jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp, 'updated',
@@ -162,7 +162,7 @@ export class PostService extends DBService {
                                     ON sts."subjectID" = p."subjectID" AND sts."studentID" = ${this.userID}
                          INNER JOIN "Member" m ON m.id = p."memberID"
                          LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
-                         LEFT JOIN "Member" m2 ON m2.id = pc."userID"
+                         LEFT JOIN "Member" m2 ON m2.id = pc."userID" 
                          LEFT JOIN "PostSubmission" ps ON ps."postID" = p.id AND ps."studentID" = ${this.userID}
                 WHERE p.id = ${postID}
                 GROUP BY p.id, m.id, ps."studentID"
@@ -195,7 +195,7 @@ export class PostService extends DBService {
                                                               ps."gradeID", 'timestamp',
                                                               ps."timestamp")) END)                                   AS submissions
                 FROM "Post" p
-
+ 
                          INNER JOIN "Member" m ON m.id = p."memberID"
                          LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
                          LEFT JOIN "Member" m2 ON m2.id = pc."userID"
