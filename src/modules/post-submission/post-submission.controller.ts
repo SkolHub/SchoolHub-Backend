@@ -9,7 +9,7 @@ import {
 import { PostSubmissionService } from './post-submission.service';
 import { StudentGuard } from '../../shared/guards/student.guard';
 import { TeacherGuard } from '../../shared/guards/teacher.guard';
-import {TeacherSubmitDto} from "./dto/teacher-submit.dto";
+import { TeacherSubmitDto } from './dto/teacher-submit.dto';
 
 @Controller('post-submission')
 export class PostSubmissionController {
@@ -24,7 +24,7 @@ export class PostSubmissionController {
 	@Patch('unsubmit/:id')
 	@UseGuards(StudentGuard)
 	unsubmit(@Param('id', ParseIntPipe) id: number) {
-		return this.postSubmissionService.unsubmit(id);
+		return this.postSubmissionService.unSubmit(id);
 	}
 
 	@Patch('redo')

@@ -3,7 +3,8 @@ import {
 	pgEnum,
 	pgTable,
 	primaryKey,
-	text
+	text,
+	timestamp
 } from 'drizzle-orm/pg-core';
 
 export const postStatusEnum = pgEnum('submission_status', [
@@ -20,11 +21,12 @@ export const postSubmissions = pgTable(
 		studentID: integer('studentID').notNull(),
 		status: postStatusEnum('submission_status').notNull(),
 		gradeID: integer('gradeID'),
-		comment: text('comment')
+		comment: text('comment'),
+		timestamp: timestamp('timestamp')
 	},
 	(table) => ({
 		pk: primaryKey({
-			columns: [postSubmissions.postID, postSubmissions.studentID]
+			columns: [table.postID, table.studentID]
 		})
 	})
 );

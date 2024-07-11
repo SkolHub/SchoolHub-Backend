@@ -151,6 +151,8 @@ export class PostService extends DBService {
                        p.updated,
                        ps.submission_status,
                        ps.comment,
+                       ps.gradeID,
+                       ps.timestamp,
                        jsonb_build_object('id', m.id, 'name', m.name)                                  AS member,
                        jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp, 'updated',
                                                     pc.updated, 'member',
@@ -188,7 +190,10 @@ export class PostService extends DBService {
                        (CASE
                             WHEN COUNT(ps) = 0 THEN '[]'::jsonb
                             ELSE jsonb_agg(jsonb_build_object('studentID', ps."studentID", 'status',
-                                                              ps."submission_status")) END)                           AS submissions
+                                                              ps."submission_status", 'comment', ps."comment",
+                                                              'gradeID',
+                                                              ps."gradeID", 'timestamp',
+                                                              ps."timestamp")) END)                                   AS submissions
                 FROM "Post" p
 
                          INNER JOIN "Member" m ON m.id = p."memberID"

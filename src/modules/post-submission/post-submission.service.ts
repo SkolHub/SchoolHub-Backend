@@ -12,21 +12,24 @@ export class PostSubmissionService extends DBService {
 			.values({
 				studentID: this.userID,
 				postID: postID,
-				status: 'submitted'
+				status: 'submitted',
+				timestamp: new Date()
 			})
 			.onConflictDoUpdate({
 				set: {
-					status: 'submitted'
+					status: 'submitted',
+					timestamp: new Date()
 				},
 				target: [postSubmissions.studentID, postSubmissions.postID]
 			});
 	}
 
-	async unsubmit(postID: number) {
+	async unSubmit(postID: number) {
 		await this.db
 			.update(postSubmissions)
 			.set({
-				status: 'progress'
+				status: 'progress',
+				timestamp: null
 			})
 			.where(
 				and(

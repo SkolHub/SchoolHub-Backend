@@ -1,0 +1,1 @@
+ALTER TABLE "PostSubmission" ADD COLUMN "timestamp" timestamp;
