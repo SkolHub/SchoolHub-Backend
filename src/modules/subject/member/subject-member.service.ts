@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DBService } from '../../../common/db.service';
-import { and, avg, count, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
 import { subjects } from '../../../database/schema/subjects';
 import { subjectsToSchoolClasses } from '../../../database/schema/subjects-to-school-classes';
 import { schoolClasses } from '../../../database/schema/school-classes';
-import { grades } from '../../../database/schema/grades';
 
 @Injectable()
 export class SubjectMemberService extends DBService {
@@ -127,33 +126,20 @@ export class SubjectMemberService extends DBService {
 			.groupBy(sq.schoolClasses);
 	}
 
-	getTeacherSubjectByID(subjectID: number) {
-		const sq = this.db
-			.select({
-				average: avg(sql`${grades.value}::int`).as('average'),
-				count: sql`LEAST
-                    (${count(grades)}, COALESCE ((${subjects.metadata}->>'minGrades')::int, 100000))`.as(
-					'count'
-				)
-			})
-			.from(teachersToSubjects)
-			.innerJoin(subjects, eq(subjects.id, teachersToSubjects.subjectID))
-			.innerJoin(grades, eq(grades.subjectID, subjectID))
-			.where(
-				and(
-					eq(teachersToSubjects.subjectID, subjectID),
-					eq(teachersToSubjects.teacherID, this.userID)
-				)
-			)
-			.groupBy(grades.studentID, subjects.id)
-			.as('sq');
-
-		return this.db
-			.select({
-				average: sq.average,
-				averageCount: sq.count
-			})
-			.from(sq);
+	async getTeacherSubjectByID(subjectID: number) {
+		return (
+			await this.db.execute(sql`
+            SELECT AVG(sq.average) as average, AVG(sq.count) as averageCount
+            FROM (SELECT AVG(g.value::int)                                                    AS average,
+                         LEAST(COUNT(g), COALESCE((s.metadata ->> 'minGrades')::int, 100000)) AS count
+                  FROM "TeacherToSubject" tts
+                           INNER JOIN "Subject" s ON s.id = ${subjectID}
+                           INNER JOIN "Grade" g ON g."subjectID" = ${subjectID}
+                  WHERE tts."subjectID" = ${subjectID}
+                    AND tts."teacherID" = ${this.userID}
+                  GROUP BY g."studentID", s.id) sq
+        `)
+		).rows[0];
 	}
 
 	async getStudentsWithFewGradesCount(subjectID: number) {
