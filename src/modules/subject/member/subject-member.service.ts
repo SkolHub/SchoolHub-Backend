@@ -5,6 +5,8 @@ import { teachersToSubjects } from '../../../database/schema/teachers-to-subject
 import { subjects } from '../../../database/schema/subjects';
 import { subjectsToSchoolClasses } from '../../../database/schema/subjects-to-school-classes';
 import { schoolClasses } from '../../../database/schema/school-classes';
+import { studentsToSubjects } from '../../../database/schema/students-to-subjects';
+import { members } from '../../../database/schema/members';
 
 @Injectable()
 export class SubjectMemberService extends DBService {
@@ -129,17 +131,29 @@ export class SubjectMemberService extends DBService {
 	async getTeacherSubjectByID(subjectID: number) {
 		return (
 			await this.db.execute(sql`
-            SELECT AVG(sq.average) as average, AVG(sq.count) as averageCount
-            FROM (SELECT AVG(g.value::int)                                                    AS average,
-                         LEAST(COUNT(g), COALESCE((s.metadata ->> 'minGrades')::int, 100000)) AS count
-                  FROM "TeacherToSubject" tts
-                           INNER JOIN "Subject" s ON s.id = ${subjectID}
-                           INNER JOIN "Grade" g ON g."subjectID" = ${subjectID}
-                  WHERE tts."subjectID" = ${subjectID}
-                    AND tts."teacherID" = ${this.userID}
-                  GROUP BY g."studentID", s.id) sq
-        `)
+                SELECT AVG(sq.average) as average, AVG(sq.count) as averageCount
+                FROM (SELECT AVG(g.value::int)                                                    AS average,
+                             LEAST(COUNT(g), COALESCE((s.metadata ->> 'minGrades')::int, 100000)) AS count
+                      FROM "TeacherToSubject" tts
+                               INNER JOIN "Subject" s ON s.id = ${subjectID}
+                               INNER JOIN "Grade" g ON g."subjectID" = ${subjectID}
+                      WHERE tts."subjectID" = ${subjectID}
+                        AND tts."teacherID" = ${this.userID}
+                      GROUP BY g."studentID", s.id) sq
+            `)
 		).rows[0];
+	}
+
+	// TODO: NOT SECURE, FIX
+	async getStudents(subjectID: number) {
+		return this.db
+			.select({
+				name: members.name,
+				id: members.id
+			})
+			.from(studentsToSubjects)
+			.innerJoin(members, eq(members.id, studentsToSubjects.studentID))
+			.where(eq(studentsToSubjects.subjectID, subjectID));
 	}
 
 	async getStudentsWithFewGradesCount(subjectID: number) {

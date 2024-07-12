@@ -19,6 +19,11 @@ export class SubjectMemberController {
 		return this.subjectService.getStudentSubjects();
 	}
 
+	@Get('get-students/:id')
+	getStudents(@Param('id', ParseIntPipe) id: number) {
+		return this.subjectService.getStudents(id);
+	}
+
 	@Get('student/all')
 	@UseGuards(StudentGuard)
 	getStudentSubjectsWithMetrics() {
