@@ -8,18 +8,18 @@ import {
 	Post,
 	UseGuards
 } from '@nestjs/common';
-import { ObservationService } from './observation.service';
+import { TeacherObservationService } from './teacher-observation.service';
 import { CreateObservationsDto } from './dto/create-observations.dto';
 import { UpdateObservationDto } from './dto/update-observation.dto';
-import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
-import { TeacherGuard } from '../../shared/guards/teacher.guard';
+import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
+import { TeacherGuard } from '../../../shared/guards/teacher.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller()
 @ApiTags('Teacher observations')
 @UseGuards(TeacherGuard)
-export class ObservationController {
-	constructor(private readonly observationService: ObservationService) {}
+export class TeacherObservationController {
+	constructor(private readonly observationService: TeacherObservationService) {}
 
 	@Post()
 	@ApiOperation({

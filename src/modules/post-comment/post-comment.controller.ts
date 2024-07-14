@@ -1,39 +1,28 @@
-import {
-	Body,
-	Controller,
-	Delete,
-	Param,
-	Patch,
-	Post,
-	UseGuards
-} from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { PostCommentService } from './post-comment.service';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
-import { StudentGuard } from '../../shared/guards/student.guard';
-import { TeacherGuard } from '../../shared/guards/teacher.guard';
-import {ApiOperation} from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('post-comment')
+@ApiTags('Post comment')
 export class PostCommentController {
 	constructor(private readonly postCommentService: PostCommentService) {}
 
-	@Post('student')
-	@UseGuards(StudentGuard)
+	@Post()
 	@ApiOperation({
-
+		description: 'Creates a comment on a post',
+		summary: 'Create post comment'
 	})
-	createStudentComment(@Body() createPostCommentDto: CreatePostCommentDto) {
-		return this.postCommentService.createStudentComment(createPostCommentDto);
-	}
-
-	@Post('teacher')
-	@UseGuards(TeacherGuard)
-	createTeacherComment(@Body() createPostCommentDto: CreatePostCommentDto) {
-		return this.postCommentService.createTeacherComment(createPostCommentDto);
+	create(@Body() createPostCommentDto: CreatePostCommentDto) {
+		return this.postCommentService.create(createPostCommentDto);
 	}
 
 	@Patch(':id')
+	@ApiOperation({
+		description: 'Updates a post comment by ID',
+		summary: 'Update post comment'
+	})
 	update(
 		@Param('id') id: string,
 		@Body() updatePostCommentDto: UpdatePostCommentDto
@@ -42,6 +31,10 @@ export class PostCommentController {
 	}
 
 	@Delete(':id')
+	@ApiOperation({
+		description: 'Deletes a post comment by ID',
+		summary: 'Delete post comment'
+	})
 	remove(@Param('id') id: string) {
 		return this.postCommentService.remove(+id);
 	}

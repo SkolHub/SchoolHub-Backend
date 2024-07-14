@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAbsencesDto } from './dto/create-absences.dto';
 import { UpdateAbsenceDto } from './dto/update-absence.dto';
-import { DBService } from '../../common/db.service';
+import { DBService } from '../../../common/db.service';
 import { and, eq, inArray, sql } from 'drizzle-orm';
-import { absences } from '../../database/schema/absences';
-import { PermissionService } from '../../common/permission.service';
-import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
+import { absences } from '../../../database/schema/absences';
+import { PermissionService } from '../../../common/permission.service';
+import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 import { ExcuseAbsencesDto } from './dto/excuse-absences.dto';
-import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
+import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
 
 @Injectable()
-export class AbsenceService extends DBService {
+export class TeacherAbsenceService extends DBService {
 	constructor(private readonly permissionService: PermissionService) {
 		super();
 	}

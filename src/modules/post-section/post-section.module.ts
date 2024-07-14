@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { PostSectionService } from './post-section.service';
+import { TeacherPostSectionService } from './teacher-post-section/teacher-post-section.service';
+import { TeacherPostSectionController } from './teacher-post-section/teacher-post-section.controller';
 import { PostSectionController } from './post-section.controller';
+import { PostSectionService } from './post-section.service';
 
 @Module({
-  controllers: [PostSectionController],
-  providers: [PostSectionService],
+	controllers: [TeacherPostSectionController, PostSectionController],
+	providers: [TeacherPostSectionService, PostSectionService]
 })
 export class PostSectionModule {}

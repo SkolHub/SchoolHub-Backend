@@ -24,6 +24,7 @@ import { PostSectionModule } from './modules/post-section/post-section.module';
 import { PostSubmissionModule } from './modules/post-submission/post-submission.module';
 import { PostAttachmentModule } from './modules/post-attachment/post-attachment.module';
 import { PostSubmissionAttachmentModule } from './modules/post-submission-attachment/post-submission-attachment.module';
+import { AttachmentModule } from './modules/attachment/attachment.module';
 
 const routes: Routes = [
 	{
@@ -65,6 +66,18 @@ const routes: Routes = [
 	{
 		path: 'post',
 		module: PostModule
+	},
+	{
+		path: 'post-section',
+		module: PostSectionModule
+	},
+	{
+		path: 'post-comment',
+		module: PostCommentModule
+	},
+	{
+		path: 'post-submission',
+		module: PostSubmissionModule
 	},
 	{
 		path: 'test',
@@ -109,7 +122,8 @@ const routes: Routes = [
 		PostSectionModule,
 		PostSubmissionModule,
 		PostAttachmentModule,
-		PostSubmissionAttachmentModule
+		PostSubmissionAttachmentModule,
+		AttachmentModule
 	],
 	providers: [
 		{

@@ -1,7 +1,7 @@
-import { integer, pgEnum, pgTable, serial, text } from 'drizzle-orm/pg-core';
-import {attachmentTypeEnum} from "./enums/attachment-type-enum";
+import { integer, pgTable, serial, text } from 'drizzle-orm/pg-core';
+import { attachmentTypeEnum } from './enums/attachment-type-enum';
 
-export const postAttachments = pgTable('PostAttachment', {
+export const attachments = pgTable('Attachment', {
 	id: serial('id').primaryKey(),
 	type: attachmentTypeEnum('attachmentType').notNull(),
 	source: text('source').notNull(),

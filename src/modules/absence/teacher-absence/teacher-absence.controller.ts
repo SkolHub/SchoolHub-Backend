@@ -9,19 +9,19 @@ import {
 	Post,
 	UseGuards
 } from '@nestjs/common';
-import { AbsenceService } from './absence.service';
+import { TeacherAbsenceService } from './teacher-absence.service';
 import { UpdateAbsenceDto } from './dto/update-absence.dto';
 import { CreateAbsencesDto } from './dto/create-absences.dto';
-import { TeacherGuard } from '../../shared/guards/teacher.guard';
-import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
+import { TeacherGuard } from '../../../shared/guards/teacher.guard';
+import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 import { ExcuseAbsencesDto } from './dto/excuse-absences.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller()
 @ApiTags('Teacher absences')
 @UseGuards(TeacherGuard)
-export class AbsenceController {
-	constructor(private readonly absenceService: AbsenceService) {}
+export class TeacherAbsenceController {
+	constructor(private readonly absenceService: TeacherAbsenceService) {}
 
 	@Post()
 	@ApiOperation({

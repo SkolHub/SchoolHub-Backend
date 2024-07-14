@@ -31,4 +31,9 @@ export class CreateTeacherPostDto {
 	@IsOptional()
 	@ApiProperty()
 	dueDate: string;
+
+	@IsInt()
+	@ApiProperty()
+	@IsOptional()
+	sectionID: number;
 }

@@ -6,6 +6,7 @@ import { PermissionService } from '../../../common/permission.service';
 import { UpdateStudentPostDto } from './dto/update-student-post.dto';
 import { and, eq, sql } from 'drizzle-orm';
 import { studentsToSubjects } from '../../../database/schema/students-to-subjects';
+import { postSections } from '../../../database/schema/post-sections';
 
 @Injectable()
 export class StudentPostService extends DBService {
@@ -28,7 +29,8 @@ export class StudentPostService extends DBService {
 			body: createPostDto.body,
 			memberID: this.userID,
 			title: createPostDto.title,
-			type: 'announcement'
+			type: 'announcement',
+			sectionID: createPostDto.sectionID
 		});
 	}
 
@@ -62,7 +64,8 @@ export class StudentPostService extends DBService {
 				title: posts.title,
 				body: posts.body,
 				dueDate: posts.dueDate,
-				timestamp: posts.timestamp
+				timestamp: posts.timestamp,
+				section: postSections.name
 			})
 			.from(studentsToSubjects)
 			.where(
@@ -71,7 +74,8 @@ export class StudentPostService extends DBService {
 					eq(studentsToSubjects.subjectID, subjectID)
 				)
 			)
-			.innerJoin(posts, and(eq(posts.subjectID, studentsToSubjects.subjectID)));
+			.innerJoin(posts, and(eq(posts.subjectID, studentsToSubjects.subjectID)))
+			.leftJoin(postSections, eq(postSections.id, posts.sectionID));
 	}
 
 	async getPostByID(postID: number) {
@@ -91,16 +95,18 @@ export class StudentPostService extends DBService {
                        jsonb_build_object('id', m.id, 'name', m.name)                                  AS member,
                        jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp, 'updated',
                                                     pc.updated, 'member',
-                                                    jsonb_build_object('id', m2.id, 'name', m2.name))) AS comments
+                                                    jsonb_build_object('id', m2.id, 'name', m2.name))) AS comments,
+                       psec.name                                                                       AS section
                 FROM "Post" p
                          INNER JOIN "StudentToSubject" sts
                                     ON sts."subjectID" = p."subjectID" AND sts."studentID" = ${this.userID}
                          INNER JOIN "Member" m ON m.id = p."memberID"
+                         LEFT JOIN "PostSection" psec ON psec.id = p."sectionID"
                          LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
                          LEFT JOIN "Member" m2 ON m2.id = pc."userID"
                          LEFT JOIN "PostSubmission" ps ON ps."postID" = p.id AND ps."studentID" = ${this.userID}
                 WHERE p.id = ${postID}
-                GROUP BY p.id, m.id, ps."studentID"
+                GROUP BY p.id, m.id, ps."studentID", psec.id
             `)
 		).rows[0];
 	}
@@ -111,7 +117,8 @@ export class StudentPostService extends DBService {
 			.set({
 				title: updatePostDto.title,
 				body: updatePostDto.body,
-				updated: sql`CURRENT_TIMESTAMP`
+				updated: sql`CURRENT_TIMESTAMP`,
+				sectionID: updatePostDto.sectionID
 			})
 			.where(and(eq(posts.id, postID), eq(posts.memberID, this.userID)));
 	}

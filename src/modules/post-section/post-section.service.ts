@@ -1,60 +1,49 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePostSectionDto } from './dto/create-post-section.dto';
-import { UpdatePostSectionDto } from './dto/update-post-section.dto';
 import { DBService } from '../../common/db.service';
-import { and, eq, sql } from 'drizzle-orm';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { postSections } from '../../database/schema/post-sections';
+import { studentsToSubjects } from '../../database/schema/students-to-subjects';
+import { and, eq } from 'drizzle-orm';
 import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 
 @Injectable()
 export class PostSectionService extends DBService {
-	async create(createPostSectionDto: CreatePostSectionDto) {
-		await this.db.execute(sql`
-			INSERT INTO "PostSection" (name, "subjectID")
-			SELECT ${createPostSectionDto.name}, ${createPostSectionDto.subjectID}
-			WHERE EXISTS (SELECT 1
-						  FROM "TeacherToSubject"
-						  WHERE "subjectID" = ${createPostSectionDto.subjectID}
-							AND "teacherID" = ${this.userID})
-		`);
-	}
-
-	findOne(subjectID: number) {
-		return this.db
-			.select({
-				id: postSections.id,
-				name: postSections.name
-			})
-			.from(postSections)
-			.innerJoin(
-				teachersToSubjects,
-				and(
-					eq(teachersToSubjects.subjectID, subjectID),
-					eq(teachersToSubjects.teacherID, this.userID)
+	findAll(subjectID: number) {
+		if (this.role === 'teacher') {
+			return this.db
+				.select({
+					id: postSections.id,
+					name: postSections.name
+				})
+				.from(postSections)
+				.innerJoin(
+					teachersToSubjects,
+					and(
+						eq(teachersToSubjects.subjectID, subjectID),
+						eq(teachersToSubjects.teacherID, this.userID)
+					)
 				)
-			)
-			.where(eq(postSections.subjectID, subjectID));
-	}
+				.where(eq(postSections.subjectID, subjectID));
+		}
 
-	async update(sectionID: number, updatePostSectionDto: UpdatePostSectionDto) {
-		await this.db.execute(sql`
-            UPDATE "PostSection" ps
-            SET name = ${updatePostSectionDto.name}
-            FROM "TeacherToSubject" tts
-            WHERE ps.id = ${sectionID}
-              AND tts."teacherID" = ${this.userID}
-              AND tts."subjectID" = ps."subjectID"
-        `);
-	}
+		if (this.role === 'student') {
+			return this.db
+				.select({
+					id: postSections.id,
+					name: postSections.name
+				})
+				.from(postSections)
+				.innerJoin(
+					studentsToSubjects,
+					and(
+						eq(studentsToSubjects.subjectID, subjectID),
+						eq(studentsToSubjects.studentID, this.userID)
+					)
+				)
+				.where(eq(postSections.subjectID, subjectID));
+		}
 
-	async remove(sectionID: number) {
-		await this.db.execute(sql`
-            DELETE
-            FROM "PostSection" ps
-                USING "TeacherToSubject" tts
-            WHERE ps.id = ${sectionID}
-              AND tts."teacherID" = ${this.userID}
-              AND tts."subjectID" = ps."subjectID"
-        `)
+		throw new UnauthorizedException(
+			'You are neither a teacher nor a student in this subject'
+		);
 	}
 }

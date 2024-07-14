@@ -32,7 +32,7 @@ export class SchoolClassAdminController {
 		return this.schoolClassesService.createMany(createSchoolClassesDto);
 	}
 
-	@Post('student')
+	@Post('student-link')
 	@ApiOperation({
 		description: 'Adds multiple students to multiple school classes',
 		summary: 'Add students'
@@ -41,7 +41,7 @@ export class SchoolClassAdminController {
 		return this.schoolClassesService.addStudents(linkObjectsDto);
 	}
 
-	@Post('subject')
+	@Post('subject-link')
 	@ApiOperation({
 		description: 'Adds multiple subjects to multiple school classes',
 		summary: 'Add subjects'
@@ -82,7 +82,7 @@ export class SchoolClassAdminController {
 		return this.schoolClassesService.update(updateSchoolClassDto, id);
 	}
 
-	@Delete('student')
+	@Delete('student-link')
 	@ApiOperation({
 		description: 'Removes multiple students from multiple school classes',
 		summary: 'Remove students'
@@ -93,7 +93,7 @@ export class SchoolClassAdminController {
 		);
 	}
 
-	@Delete('student')
+	@Delete('subject-link')
 	@ApiOperation({
 		description: 'Removes multiple subjects from multiple school classes',
 		summary: 'Remove subjects'

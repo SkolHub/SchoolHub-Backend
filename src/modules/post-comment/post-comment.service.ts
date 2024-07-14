@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
 import { DBService } from '../../common/db.service';
@@ -7,30 +7,40 @@ import { postComments } from '../../database/schema/post-comments';
 
 @Injectable()
 export class PostCommentService extends DBService {
-	async createStudentComment(createPostCommentDto: CreatePostCommentDto) {
-		await this.db.execute(sql`
-            INSERT INTO "PostComment" (body, "userID", "postID")
-            SELECT ${createPostCommentDto.body}, ${this.userID}, ${createPostCommentDto.postID}
-            WHERE EXISTS (SELECT 1
-                          FROM "Post" p
-                                   INNER JOIN "StudentToSubject" sts
-                                              ON sts."subjectID" = p."subjectID" AND sts."studentID" = ${this.userID}
-                          WHERE p.id = ${createPostCommentDto.postID})
+	async create(createPostCommentDto: CreatePostCommentDto) {
+		if (this.role === 'student') {
+			await this.db.execute(sql`
+                INSERT INTO "PostComment" (body, "userID", "postID")
+                SELECT ${createPostCommentDto.body}, ${this.userID}, ${createPostCommentDto.postID}
+                WHERE EXISTS (SELECT 1
+                              FROM "Post" p
+                                       INNER JOIN "StudentToSubject" sts
+                                                  ON sts."subjectID" = p."subjectID" AND sts."studentID" = ${this.userID}
+                              WHERE p.id = ${createPostCommentDto.postID})
 
-        `);
-	}
+            `);
 
-	async createTeacherComment(createPostCommentDto: CreatePostCommentDto) {
-		await this.db.execute(sql`
-            INSERT INTO "PostComment" (body, "userID", "postID")
-            SELECT ${createPostCommentDto.body}, ${this.userID}, ${createPostCommentDto.postID}
-            WHERE EXISTS (SELECT 1
-                          FROM "Post" p
-                                   INNER JOIN "TeacherToSubject" sts
-                                              ON sts."subjectID" = p."subjectID" AND sts."teacherID" = ${this.userID}
-                          WHERE p.id = ${createPostCommentDto.postID})
+			return;
+		}
 
-        `);
+		if (this.role === 'teacher') {
+			await this.db.execute(sql`
+                INSERT INTO "PostComment" (body, "userID", "postID")
+                SELECT ${createPostCommentDto.body}, ${this.userID}, ${createPostCommentDto.postID}
+                WHERE EXISTS (SELECT 1
+                              FROM "Post" p
+                                       INNER JOIN "TeacherToSubject" sts
+                                                  ON sts."subjectID" = p."subjectID" AND sts."teacherID" = ${this.userID}
+                              WHERE p.id = ${createPostCommentDto.postID})
+
+            `);
+
+			return;
+		}
+
+		throw new UnauthorizedException(
+			'You are neither a teacher nor a student in this subject'
+		);
 	}
 
 	async update(commentID: number, updatePostCommentDto: UpdatePostCommentDto) {

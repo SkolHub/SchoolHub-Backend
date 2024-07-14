@@ -9,18 +9,18 @@ import {
 	Post,
 	UseGuards
 } from '@nestjs/common';
-import { GradeService } from './grade.service';
+import { TeacherGradeService } from './teacher-grade.service';
 import { CreateGradesDto } from './dto/create-grades.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
-import { TeacherGuard } from '../../shared/guards/teacher.guard';
-import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
+import { TeacherGuard } from '../../../shared/guards/teacher.guard';
+import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@Controller()
+@Controller('teacher')
 @ApiTags('Teacher grades')
 @UseGuards(TeacherGuard)
-export class GradeController {
-	constructor(private readonly gradeService: GradeService) {}
+export class TeacherGradeController {
+	constructor(private readonly gradeService: TeacherGradeService) {}
 
 	@Post()
 	@ApiOperation({
@@ -43,17 +43,6 @@ export class GradeController {
 		return this.gradeService.getStudentGrades(subjectID, studentID);
 	}
 
-	// @Get('student/organization')
-	// @UseGuards(StudentGuard)
-	// getOrganizationObjectsStudent() {
-	// 	return this.gradeService.getOrganizationObjectsStudent();
-	// }
-	//
-	// @Get('student/subject/:id')
-	// @UseGuards(StudentGuard)
-	// getSubjectObjectsStudent(@Param('id', ParseIntPipe) id: number) {
-	// 	return this.gradeService.getSubjectObjectsStudent(id);
-	// }
 	@Patch(':id')
 	@ApiOperation({
 		description: 'Updates a grade by ID',

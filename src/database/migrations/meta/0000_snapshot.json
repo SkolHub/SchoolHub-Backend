@@ -1,0 +1,768 @@
+{
+  "id": "5b2ffdcd-6162-43d1-8a1d-d2f525669492",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "6",
+  "dialect": "postgresql",
+  "tables": {
+    "public.Absence": {
+      "name": "Absence",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "excused": {
+          "name": "excused",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "teacherID": {
+          "name": "teacherID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subjectID": {
+          "name": "subjectID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Attachment": {
+      "name": "Attachment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "attachmentType": {
+          "name": "attachmentType",
+          "type": "AttachmentType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "submissionID": {
+          "name": "submissionID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Grade": {
+      "name": "Grade",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "teacherID": {
+          "name": "teacherID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subjectID": {
+          "name": "subjectID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Member": {
+      "name": "Member",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user": {
+          "name": "user",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "organizationID": {
+          "name": "organizationID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Member_user_unique": {
+          "name": "Member_user_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user"
+          ]
+        }
+      }
+    },
+    "public.Observation": {
+      "name": "Observation",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "teacherID": {
+          "name": "teacherID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subjectID": {
+          "name": "subjectID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Organization": {
+      "name": "Organization",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ownerID": {
+          "name": "ownerID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Parent": {
+      "name": "Parent",
+      "schema": "",
+      "columns": {
+        "memberID": {
+          "name": "memberID",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.PostComment": {
+      "name": "PostComment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated": {
+          "name": "updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userID": {
+          "name": "userID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "postID": {
+          "name": "postID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.PostSection": {
+      "name": "PostSection",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subjectID": {
+          "name": "subjectID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.PostSubmission": {
+      "name": "PostSubmission",
+      "schema": "",
+      "columns": {
+        "postID": {
+          "name": "postID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "submissionStatus": {
+          "name": "submissionStatus",
+          "type": "SubmissionStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gradeID": {
+          "name": "gradeID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "PostSubmission_postID_studentID_pk": {
+          "name": "PostSubmission_postID_studentID_pk",
+          "columns": [
+            "postID",
+            "studentID"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.Post": {
+      "name": "Post",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "dueDate": {
+          "name": "dueDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postType": {
+          "name": "postType",
+          "type": "post_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated": {
+          "name": "updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sectionID": {
+          "name": "sectionID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "memberID": {
+          "name": "memberID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subjectID": {
+          "name": "subjectID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.SchoolClass": {
+      "name": "SchoolClass",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classMasterID": {
+          "name": "classMasterID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "organizationID": {
+          "name": "organizationID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.StudentToSchoolClass": {
+      "name": "StudentToSchoolClass",
+      "schema": "",
+      "columns": {
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "schoolClassID": {
+          "name": "schoolClassID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "StudentToSchoolClass_studentID_schoolClassID_pk": {
+          "name": "StudentToSchoolClass_studentID_schoolClassID_pk",
+          "columns": [
+            "studentID",
+            "schoolClassID"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.StudentToSubject": {
+      "name": "StudentToSubject",
+      "schema": "",
+      "columns": {
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subjectID": {
+          "name": "subjectID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "StudentToSubject_studentID_subjectID_pk": {
+          "name": "StudentToSubject_studentID_subjectID_pk",
+          "columns": [
+            "studentID",
+            "subjectID"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.SubjectToSchoolClass": {
+      "name": "SubjectToSchoolClass",
+      "schema": "",
+      "columns": {
+        "schoolClassID": {
+          "name": "schoolClassID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subjectID": {
+          "name": "subjectID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "SubjectToSchoolClass_schoolClassID_subjectID_pk": {
+          "name": "SubjectToSchoolClass_schoolClassID_subjectID_pk",
+          "columns": [
+            "schoolClassID",
+            "subjectID"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.Subject": {
+      "name": "Subject",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "organizationID": {
+          "name": "organizationID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.TeacherToSubject": {
+      "name": "TeacherToSubject",
+      "schema": "",
+      "columns": {
+        "teacherID": {
+          "name": "teacherID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subjectID": {
+          "name": "subjectID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "TeacherToSubject_teacherID_subjectID_pk": {
+          "name": "TeacherToSubject_teacherID_subjectID_pk",
+          "columns": [
+            "teacherID",
+            "subjectID"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {
+    "public.AttachmentType": {
+      "name": "AttachmentType",
+      "schema": "public",
+      "values": [
+        "link",
+        "file"
+      ]
+    },
+    "public.post_type": {
+      "name": "post_type",
+      "schema": "public",
+      "values": [
+        "announcement",
+        "assignment",
+        "test",
+        "material"
+      ]
+    },
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "admin",
+        "parent",
+        "student",
+        "teacher"
+      ]
+    },
+    "public.SubmissionStatus": {
+      "name": "SubmissionStatus",
+      "schema": "public",
+      "values": [
+        "progress",
+        "submitted",
+        "redo",
+        "graded"
+      ]
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

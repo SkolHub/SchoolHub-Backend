@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateObservationsDto } from './dto/create-observations.dto';
-import { DBService } from '../../common/db.service';
-import { observations } from '../../database/schema/observations';
-import { grades } from '../../database/schema/grades';
-import { PermissionService } from '../../common/permission.service';
+import { DBService } from '../../../common/db.service';
+import { observations } from '../../../database/schema/observations';
+import { grades } from '../../../database/schema/grades';
+import { PermissionService } from '../../../common/permission.service';
 import { and, eq, inArray } from 'drizzle-orm';
-import { DeleteByIdDto } from '../../common/dto/delete-by-id.dto';
+import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 import { UpdateObservationDto } from './dto/update-observation.dto';
 
 @Injectable()
-export class ObservationService extends DBService {
+export class TeacherObservationService extends DBService {
 	constructor(private readonly permissionService: PermissionService) {
 		super();
 	}
