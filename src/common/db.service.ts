@@ -24,7 +24,7 @@ export abstract class DBService {
 		return this.clsService.get('organizationID');
 	}
 
-	get role(): number {
+	get role(): 'student' | 'teacher' | 'parent' | 'admin' {
 		return this.clsService.get('role');
 	}
 

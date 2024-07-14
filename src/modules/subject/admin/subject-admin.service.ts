@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { DBService } from '../../../common/db.service';
 import { CreateSubjectsDto } from './dto/create-subjects.dto';
 import { subjects } from '../../../database/schema/subjects';
 import { and, count, eq, inArray, sql } from 'drizzle-orm';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
-import { AddMembersToSubjectDto } from './dto/add-members-to-subject.dto';
 import { studentsToSubjects } from '../../../database/schema/students-to-subjects';
 import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
 import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
+import { members } from '../../../database/schema/members';
+import { LinkObjectsDto } from '../../../common/dto/link-objects.dto';
 
 @Injectable()
 export class SubjectAdminService extends DBService {
@@ -24,50 +25,92 @@ export class SubjectAdminService extends DBService {
 		);
 	}
 
-	private subjectExists(subjectID: number, organizationID: number) {
-		return this.db
-			.select({
-				exists: count()
-			})
-			.from(subjects)
-			.where(
-				and(
-					eq(subjects.id, subjectID),
-					eq(subjects.organizationID, organizationID)
+	private async subjectsAndMembersInOrganization(
+		subjectIDs: number[],
+		memberIDs: number[],
+		organizationID: number
+	) {
+		const subjectCount = (
+			await this.db
+				.select({
+					count: count()
+				})
+				.from(subjects)
+				.where(
+					and(
+						inArray(subjects.id, subjectIDs),
+						eq(subjects.organizationID, organizationID)
+					)
 				)
+		)[0].count;
+
+		const studentCount = (
+			await this.db
+				.select({
+					count: count()
+				})
+				.from(members)
+				.where(
+					and(
+						inArray(members.id, memberIDs),
+						eq(members.organizationID, organizationID)
+					)
+				)
+		)[0].count;
+
+		if (subjectCount !== subjectIDs.length) {
+			throw new ForbiddenException(
+				'Your organization does not include all of the given subjects'
 			);
-	}
+		}
 
-	async addStudents(addMembersToSubjectDto: AddMembersToSubjectDto) {
-		const exists = await this.subjectExists(
-			addMembersToSubjectDto.subjectID,
-			this.organizationID
-		);
-
-		if (exists[0].exists) {
-			await this.db.insert(studentsToSubjects).values(
-				addMembersToSubjectDto.members.map((member) => ({
-					studentID: member,
-					subjectID: addMembersToSubjectDto.subjectID
-				}))
+		if (studentCount !== memberIDs.length) {
+			throw new ForbiddenException(
+				'Your organization does not include all of the given members'
 			);
 		}
 	}
 
-	async addTeachers(addMembersToSubjectDto: AddMembersToSubjectDto) {
-		const exists = await this.subjectExists(
-			addMembersToSubjectDto.subjectID,
+	private async validateLink(linkObjectsDto: LinkObjectsDto) {
+		await this.subjectsAndMembersInOrganization(
+			linkObjectsDto.links.map((schoolClass) => schoolClass.mainID),
+			[
+				...new Set(
+					linkObjectsDto.links.map((schoolClass) => schoolClass.objects).flat()
+				)
+			],
 			this.organizationID
 		);
+	}
 
-		if (exists[0].exists) {
-			await this.db.insert(teachersToSubjects).values(
-				addMembersToSubjectDto.members.map((member) => ({
-					teacherID: member,
-					subjectID: addMembersToSubjectDto.subjectID
-				}))
-			);
-		}
+	async addStudents(linkObjectsDto: LinkObjectsDto) {
+		await this.validateLink(linkObjectsDto);
+
+		await this.db.insert(studentsToSubjects).values(
+			linkObjectsDto.links
+				.map((subject) =>
+					subject.objects.map((student) => ({
+						studentID: student,
+						subjectID: subject.mainID
+					}))
+				)
+				.flat()
+		);
+	}
+
+	async addTeachers(linkObjectsDto: LinkObjectsDto) {
+		await this.validateLink(linkObjectsDto);
+
+		await this.db.insert(teachersToSubjects).values(
+			linkObjectsDto.links
+				.map((subject) =>
+					subject.objects.map((teacher) => ({
+						teacherID: teacher,
+						subjectID: subject.mainID
+					}))
+				)
+				.flat()
+		);
 	}
 
 	findOne(subjectID: number) {
@@ -159,45 +202,34 @@ export class SubjectAdminService extends DBService {
 			);
 	}
 
-	async removeStudents(addMembersToSubjectDto: AddMembersToSubjectDto) {
-		const exists = await this.subjectExists(
-			addMembersToSubjectDto.subjectID,
-			this.organizationID
-		);
+	async removeStudents(linkObjectsDto: LinkObjectsDto) {
+		await this.validateLink(linkObjectsDto);
 
-		if (exists[0].exists) {
-			await this.db
-				.delete(studentsToSubjects)
-				.where(
-					and(
-						inArray(
-							studentsToSubjects.studentID,
-							addMembersToSubjectDto.members
-						),
-						eq(studentsToSubjects.subjectID, addMembersToSubjectDto.subjectID)
-					)
-				);
-		}
+		await this.db.delete(studentsToSubjects).where(
+			sql`(${studentsToSubjects.studentID}, ${studentsToSubjects.subjectID})
+                IN
+                ( ${linkObjectsDto.links
+									.map((subject) =>
+										subject.objects.map((student) => [student, subject.mainID])
+									)
+									.flat()})`
+		);
 	}
 
-	async removeTeachers(addMembersToSubjectDto: AddMembersToSubjectDto) {
-		const exists = await this.subjectExists(
-			addMembersToSubjectDto.subjectID,
-			this.organizationID
-		);
+	async removeTeachers(linkObjectsDto: LinkObjectsDto) {
+		await this.validateLink(linkObjectsDto);
 
-		if (exists[0].exists) {
-			await this.db
-				.delete(teachersToSubjects)
-				.where(
-					and(
-						inArray(
-							teachersToSubjects.teacherID,
-							addMembersToSubjectDto.members
-						),
-						eq(teachersToSubjects.subjectID, addMembersToSubjectDto.subjectID)
-					)
-				);
-		}
+		await this.db.delete(teachersToSubjects).where(
+			sql`(${teachersToSubjects.teacherID}, ${teachersToSubjects.subjectID})
+                    IN
+                    ( ${linkObjectsDto.links
+											.map((subject) =>
+												subject.objects.map((teacher) => [
+													teacher,
+													subject.mainID
+												])
+											)
+											.flat()})`
+		);
 	}
 }

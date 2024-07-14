@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsString, Length } from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ExcuseAbsencesDto {
@@ -9,5 +9,6 @@ export class ExcuseAbsencesDto {
 
 	@IsString()
 	@Length(0, 100)
+	@IsOptional()
 	reason: string;
 }

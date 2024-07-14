@@ -1,16 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DBService } from '../../../common/db.service';
-import { eq, sql } from 'drizzle-orm';
-import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
-import { subjects } from '../../../database/schema/subjects';
-import { subjectsToSchoolClasses } from '../../../database/schema/subjects-to-school-classes';
-import { schoolClasses } from '../../../database/schema/school-classes';
-import { studentsToSubjects } from '../../../database/schema/students-to-subjects';
-import { members } from '../../../database/schema/members';
+import { sql } from 'drizzle-orm';
 
 @Injectable()
-export class SubjectMemberService extends DBService {
-	async getStudentSubjects() {
+export class SubjectStudentService extends DBService {
+	async getSubjects() {
 		return (
 			await this.db.execute(sql`SELECT s.id,
                                              s.name,
@@ -36,7 +30,7 @@ export class SubjectMemberService extends DBService {
 		).rows;
 	}
 
-	async getStudentSubjectsWithMetrics() {
+	async getSubjectsWithMetrics() {
 		return (
 			await this.db.execute(sql`
                 SELECT s.id,
@@ -69,7 +63,7 @@ export class SubjectMemberService extends DBService {
 		).rows;
 	}
 
-	async getStudentSubjectByID(subjectID: number) {
+	async getSubjectByID(subjectID: number) {
 		return (
 			await this.db.execute(sql`
                 SELECT (SELECT AVG(COALESCE(g.value::int, 0))
@@ -88,85 +82,6 @@ export class SubjectMemberService extends DBService {
                 FROM "StudentToSubject" sts
                 WHERE sts."studentID" = ${this.userID}
                   AND sts."subjectID" = ${subjectID};
-            `)
-		).rows[0];
-	}
-
-	async getTeacherSubjects() {
-		const sq = this.db
-			.select({
-				schoolClasses: sql`JSONB_AGG
-                    (JSONB_BUILD_OBJECT('id', ${schoolClasses.id}, 'name', ${schoolClasses.name}))`.as(
-					'schoolClasses'
-				),
-				id: subjects.id,
-				name: subjects.name,
-				icon: subjects.icon,
-				metadata: subjects.metadata
-			})
-			.from(teachersToSubjects)
-			.innerJoin(subjects, eq(subjects.id, teachersToSubjects.subjectID))
-			.innerJoin(
-				subjectsToSchoolClasses,
-				eq(subjectsToSchoolClasses.subjectID, subjects.id)
-			)
-			.innerJoin(
-				schoolClasses,
-				eq(schoolClasses.id, subjectsToSchoolClasses.schoolClassID)
-			)
-			.where(eq(teachersToSubjects.teacherID, this.userID))
-			.groupBy(subjects.id)
-			.as('sq');
-
-		return this.db
-			.select({
-				schoolClasses: sq.schoolClasses,
-				subjects: sql`JSONB_AGG
-                (JSONB_BUILD_OBJECT('id', ${sq.id}, 'name', ${sq.name}, 'icon', ${sq.icon}, 'metadata', ${subjects.metadata}))`
-			})
-			.from(sq)
-			.groupBy(sq.schoolClasses);
-	}
-
-	async getTeacherSubjectByID(subjectID: number) {
-		return (
-			await this.db.execute(sql`
-                SELECT AVG(sq.average) as average, AVG(sq.count) as averageCount
-                FROM (SELECT AVG(g.value::int)                                                    AS average,
-                             LEAST(COUNT(g), COALESCE((s.metadata ->> 'minGrades')::int, 100000)) AS count
-                      FROM "TeacherToSubject" tts
-                               INNER JOIN "Subject" s ON s.id = ${subjectID}
-                               INNER JOIN "Grade" g ON g."subjectID" = ${subjectID}
-                      WHERE tts."subjectID" = ${subjectID}
-                        AND tts."teacherID" = ${this.userID}
-                      GROUP BY g."studentID", s.id) sq
-            `)
-		).rows[0];
-	}
-
-	// TODO: NOT SECURE, FIX
-	async getStudents(subjectID: number) {
-		return this.db
-			.select({
-				name: members.name,
-				id: members.id
-			})
-			.from(studentsToSubjects)
-			.innerJoin(members, eq(members.id, studentsToSubjects.studentID))
-			.where(eq(studentsToSubjects.subjectID, subjectID));
-	}
-
-	async getStudentsWithFewGradesCount(subjectID: number) {
-		return (
-			await this.db.execute(sql`
-                SELECT COUNT(*)
-                FROM (SELECT COUNT(g.value) as count
-                      FROM "TeacherToSubject" tts
-                               INNER JOIN "Grade" g ON g."subjectID" = ${subjectID}
-                      WHERE tts."subjectID" = ${subjectID}
-                        AND tts."teacherID" = ${this.userID}
-                      GROUP BY g."studentID") sq
-                WHERE sq.count < 3
             `)
 		).rows[0];
 	}

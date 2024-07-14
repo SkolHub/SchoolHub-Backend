@@ -4,6 +4,11 @@ import { Injectable } from '@nestjs/common';
 import config from '../../../config/config';
 import { ClsService } from 'nestjs-cls';
 
+/*
+    The JWT strategy; Validates the JWT token based on the JWT_SECRET in the .env file. Grants permission if successful;
+   	Also sets the users userID, organizationID, role and studentID in the cls storage for easy access
+*/
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor(private readonly cls: ClsService) {

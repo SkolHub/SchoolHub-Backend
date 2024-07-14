@@ -16,3 +16,7 @@ export * from './schema/post-comments';
 export * from './schema/post-submissions';
 export * from './schema/post-submission-attachments';
 export * from './schema/post-sections';
+export * from './schema/enums/role-enum';
+export * from './schema/enums/post-type-enum';
+export * from './schema/enums/attachment-type-enum';
+export * from './schema/enums/submission-status-enum';

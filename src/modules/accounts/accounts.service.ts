@@ -62,20 +62,6 @@ export class AccountsService extends DBService {
 		);
 	}
 
-	findOne(memberID: number) {
-		return this.db.query.members.findFirst({
-			where: and(
-				eq(members.id, memberID),
-				eq(members.organizationID, this.organizationID)
-			),
-			columns: {
-				name: true,
-				role: true,
-				user: true
-			}
-		});
-	}
-
 	private getMany(
 		role: 'student' | 'teacher' | 'parent',
 		organizationID: number
@@ -84,7 +70,12 @@ export class AccountsService extends DBService {
 			where: and(
 				eq(members.organizationID, organizationID),
 				eq(members.role, role)
-			)
+			),
+			columns: {
+				name: true,
+				id: true,
+				user: true
+			}
 		});
 	}
 

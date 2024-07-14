@@ -26,6 +26,7 @@ export class ObservationService extends DBService {
 		await this.db.insert(observations).values(
 			createObservationsDto.observations.map((observation) => ({
 				reason: observation.reason,
+				date: observation.date,
 				studentID: observation.studentID,
 				subjectID: createObservationsDto.subjectID,
 				teacherID: this.userID

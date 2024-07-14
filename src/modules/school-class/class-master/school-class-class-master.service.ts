@@ -4,7 +4,7 @@ import { and, eq } from 'drizzle-orm';
 import { schoolClasses } from '../../../database/schema/school-classes';
 
 @Injectable()
-export class SchoolClassMemberService extends DBService {
+export class SchoolClassClassMasterService extends DBService {
 	findOne(schoolClassID: number) {
 		return this.db.query.schoolClasses.findFirst({
 			where: and(

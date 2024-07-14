@@ -1,19 +1,5 @@
-import {
-	integer,
-	pgEnum,
-	pgTable,
-	serial,
-	text,
-	timestamp
-} from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
-
-export const postTypeEnum = pgEnum('post_type', [
-	'announcement',
-	'assignment',
-	'test',
-	'material'
-]);
+import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { postTypeEnum } from './enums/post-type-enum';
 
 export const posts = pgTable('Post', {
 	id: serial('id').primaryKey(),
@@ -21,11 +7,9 @@ export const posts = pgTable('Post', {
 	body: text('body').notNull(),
 	timestamp: timestamp('timestamp').defaultNow(),
 	dueDate: timestamp('dueDate', { mode: 'string' }),
-	type: postTypeEnum('post_type').notNull(),
+	type: postTypeEnum('postType').notNull(),
 	updated: timestamp('updated'),
 	sectionID: integer('sectionID'),
 	memberID: integer('memberID').notNull(),
 	subjectID: integer('subjectID').notNull()
 });
-
-export const postsRelations = relations(posts, () => ({}));

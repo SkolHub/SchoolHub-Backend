@@ -18,6 +18,7 @@ export class AuthService extends DBService {
 	): Promise<{
 		token: string;
 	}> {
+		// Searches for the member
 		const member = await this.db.query.members.findFirst({
 			where: eq(members.user, user),
 			columns: {
@@ -28,6 +29,7 @@ export class AuthService extends DBService {
 			}
 		});
 
+		// Checks if the member has the right password
 		if (
 			member &&
 			(await BcryptUtils.comparePasswords(password, member.password))
@@ -37,6 +39,7 @@ export class AuthService extends DBService {
 					userID: member.id,
 					organizationID: member.organizationID,
 					role: member.role,
+					// Also returns the studentID if a parent account is detected
 					studentID:
 						member.role === 'parent'
 							? (
@@ -52,6 +55,7 @@ export class AuthService extends DBService {
 			};
 		}
 
+		// Return null on failure
 		return null;
 	}
 }

@@ -12,6 +12,7 @@ import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
 import { StudentGuard } from '../../shared/guards/student.guard';
 import { TeacherGuard } from '../../shared/guards/teacher.guard';
+import {ApiOperation} from "@nestjs/swagger";
 
 @Controller('post-comment')
 export class PostCommentController {
@@ -19,6 +20,9 @@ export class PostCommentController {
 
 	@Post('student')
 	@UseGuards(StudentGuard)
+	@ApiOperation({
+
+	})
 	createStudentComment(@Body() createPostCommentDto: CreatePostCommentDto) {
 		return this.postCommentService.createStudentComment(createPostCommentDto);
 	}

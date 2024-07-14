@@ -1,13 +1,5 @@
-import { integer, pgEnum, pgTable, serial, text } from 'drizzle-orm/pg-core';
-import { organizations } from './organizations';
-import { relations } from 'drizzle-orm';
-
-export const roleEnum = pgEnum('role', [
-	'admin',
-	'parent',
-	'student',
-	'teacher'
-]);
+import { integer, pgTable, serial, text } from 'drizzle-orm/pg-core';
+import { roleEnum } from './enums/role-enum';
 
 export const members = pgTable('Member', {
 	id: serial('id').primaryKey(),
@@ -15,14 +7,5 @@ export const members = pgTable('Member', {
 	name: text('name').notNull(),
 	password: text('password').notNull(),
 	role: roleEnum('role').notNull(),
-	organizationID: integer('organizationID').references(() => organizations.id, {
-		onDelete: 'cascade'
-	})
+	organizationID: integer('organizationID')
 });
-
-export const membersRelations = relations(members, ({ one }) => ({
-	organization: one(organizations, {
-		fields: [members.organizationID],
-		references: [organizations.id]
-	})
-}));

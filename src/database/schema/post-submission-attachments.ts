@@ -1,9 +1,9 @@
 import { integer, pgTable, serial, text } from 'drizzle-orm/pg-core';
-import { attachmentTypeEnum } from './post-attachments';
+import { attachmentTypeEnum } from './enums/attachment-type-enum';
 
 export const postSubmissionAttachments = pgTable('PostSubmissionAttachment', {
 	id: serial('id').primaryKey(),
-	type: attachmentTypeEnum('attachment_type').notNull(),
+	type: attachmentTypeEnum('attachmentType').notNull(),
 	source: text('source').notNull(),
 	submissionID: integer('submissionID').notNull(),
 	studentID: integer('studentID').notNull()

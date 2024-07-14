@@ -10,7 +10,7 @@ import {
 export const absences = pgTable('Absence', {
 	id: serial('id').primaryKey(),
 	excused: boolean('excused').default(false).notNull(),
-	reason: text('reason').notNull(),
+	reason: text('reason'),
 	date: timestamp('date', { mode: 'string' }).notNull(),
 	timestamp: timestamp('timestamp').defaultNow(),
 	studentID: integer('studentID').notNull(),

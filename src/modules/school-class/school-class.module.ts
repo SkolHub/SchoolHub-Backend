@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { SchoolClassAdminService } from './admin/school-class-admin.service';
 import { SchoolClassAdminController } from './admin/school-class-admin.controller';
-import { SchoolClassMemberController } from './member/school-class-member.controller';
-import { SchoolClassMemberService } from './member/school-class-member.service';
+import { SchoolClassClassMasterController } from './class-master/school-class-class-master.controller';
+import { SchoolClassClassMasterService } from './class-master/school-class-class-master.service';
 
 @Module({
-	controllers: [SchoolClassAdminController, SchoolClassMemberController],
-	providers: [SchoolClassAdminService, SchoolClassMemberService]
+	controllers: [SchoolClassAdminController, SchoolClassClassMasterController],
+	providers: [SchoolClassAdminService, SchoolClassClassMasterService]
 })
 export class SchoolClassModule {}
