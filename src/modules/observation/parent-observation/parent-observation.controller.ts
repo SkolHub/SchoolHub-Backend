@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ParentObservationService } from './parent-observation.service';
 import { ApiTags } from '@nestjs/swagger';
 import { ParentGuard } from '../../../shared/guards/parent.guard';
@@ -10,4 +10,9 @@ export class ParentObservationController {
 	constructor(
 		private readonly parentObservationService: ParentObservationService
 	) {}
+
+	@Get()
+	findAll() {
+		return this.parentObservationService.findAll();
+	}
 }
