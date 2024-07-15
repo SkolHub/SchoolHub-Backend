@@ -1,7 +1,8 @@
 import {
+	IsArray,
 	IsIn,
-	IsInt,
 	IsISO8601,
+	IsNumberString,
 	IsOptional,
 	IsString,
 	Length
@@ -23,17 +24,23 @@ export class CreateTeacherPostDto {
 	@ApiProperty()
 	type: 'announcement' | 'assignment' | 'test' | 'material';
 
-	@IsInt()
+	@IsNumberString()
 	@ApiProperty()
-	subjectID: number;
+	subjectID: string;
 
 	@IsISO8601()
 	@IsOptional()
 	@ApiProperty()
 	dueDate: string;
 
-	@IsInt()
+	@IsNumberString()
 	@ApiProperty()
 	@IsOptional()
-	sectionID: number;
+	sectionID: string;
+
+	@IsString({ each: true })
+	@Length(1, 300)
+	@IsOptional()
+	@ApiProperty()
+	attachments: string;
 }

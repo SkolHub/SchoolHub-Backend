@@ -1,26 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { DBService } from '../../common/db.service';
 import { CreatePostSubmissionAttachmentDto } from './dto/create-post-submission-attachment.dto';
-import { UpdatePostSubmissionAttachmentDto } from './dto/update-post-submission-attachment.dto';
+import { submissionAttachments } from '../../database/schema/submission-attachments';
+import { and, count, eq } from 'drizzle-orm';
+import { posts } from '../../database/schema/posts';
+import { studentsToSubjects } from '../../database/schema/students-to-subjects';
 
 @Injectable()
-export class PostSubmissionAttachmentService {
-  create(createPostSubmissionAttachmentDto: CreatePostSubmissionAttachmentDto) {
-    return 'This action adds a new postSubmissionAttachment';
-  }
+export class PostSubmissionAttachmentService extends DBService {
+	async isInPostSubject(postID: number) {
+		if (
+			(
+				await this.db
+					.select({
+						count: count(studentsToSubjects)
+					})
+					.from(posts)
+					.innerJoin(
+						studentsToSubjects,
+						and(
+							eq(studentsToSubjects.subjectID, posts.subjectID),
+							eq(studentsToSubjects.studentID, this.userID)
+						)
+					)
+					.where(eq(posts.id, postID))
+			)[0].count === 0
+		) {
+			throw new ForbiddenException('You are not a student in this subject');
+		}
+	}
 
-  findAll() {
-    return `This action returns all postSubmissionAttachment`;
-  }
+	async addFile(postID: number, file: Express.Multer.File) {
+		await this.isInPostSubject(postID);
 
-  findOne(id: number) {
-    return `This action returns a #${id} postSubmissionAttachment`;
-  }
+		return this.db.insert(submissionAttachments).values({
+			postID,
+			studentID: this.userID,
+			source: file.filename
+		});
+	}
 
-  update(id: number, updatePostSubmissionAttachmentDto: UpdatePostSubmissionAttachmentDto) {
-    return `This action updates a #${id} postSubmissionAttachment`;
-  }
+	async addLink(
+		createPostSubmissionAttachmentDto: CreatePostSubmissionAttachmentDto,
+		postID: number
+	) {
+		await this.isInPostSubject(postID);
 
-  remove(id: number) {
-    return `This action removes a #${id} postSubmissionAttachment`;
-  }
+		return this.db.insert(submissionAttachments).values({
+			postID,
+			studentID: this.userID,
+			source: createPostSubmissionAttachmentDto.link
+		});
+	}
+
+	remove(id: number) {
+		this.db
+			.delete(submissionAttachments)
+			.where(
+				and(
+					eq(submissionAttachments.id, id),
+					eq(submissionAttachments.studentID, this.userID)
+				)
+			);
+	}
 }

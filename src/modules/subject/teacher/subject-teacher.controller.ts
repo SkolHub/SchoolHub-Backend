@@ -28,11 +28,21 @@ export class SubjectTeacherController {
 	@Get(':id')
 	@ApiOperation({
 		description:
-			'Gets the average of the subject and the average number of grades in the subject',
+			'Gets all the students in a subject along with their averages and number of grades',
 		summary: 'Get subject'
 	})
-	getSubjectByID(@Param('id', ParseIntPipe) id: number) {
-		return this.subjectTeacherService.getSubjectByID(id);
+	getSubjectStudents(@Param('id', ParseIntPipe) id: number) {
+		return this.subjectTeacherService.getSubjectStudents(id);
+	}
+
+	@Get(':id/grade-metrics')
+	@ApiOperation({
+		description:
+			'Gets the average of the subject and the average number of grades in the subject',
+		summary: 'Get subject metrics'
+	})
+	getSubjectGradeMetricsByID(@Param('id', ParseIntPipe) id: number) {
+		return this.subjectTeacherService.getSubjectGradeMetricsByID(id);
 	}
 
 	@Get(':id/few-grades')

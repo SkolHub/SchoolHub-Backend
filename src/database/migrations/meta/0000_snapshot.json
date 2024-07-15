@@ -1,5 +1,5 @@
 {
-  "id": "5b2ffdcd-6162-43d1-8a1d-d2f525669492",
+  "id": "ac7c4ffd-3521-4f21-911e-59c708fadf49",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "6",
   "dialect": "postgresql",
@@ -54,47 +54,6 @@
         },
         "subjectID": {
           "name": "subjectID",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.Attachment": {
-      "name": "Attachment",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "attachmentType": {
-          "name": "attachmentType",
-          "type": "AttachmentType",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "source": {
-          "name": "source",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "submissionID": {
-          "name": "submissionID",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "studentID": {
-          "name": "studentID",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -312,6 +271,34 @@
         },
         "studentID": {
           "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.PostAttachment": {
+      "name": "PostAttachment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "postID": {
+          "name": "postID",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -688,6 +675,40 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.SubmissionAttachment": {
+      "name": "SubmissionAttachment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "postID": {
+          "name": "postID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "studentID": {
+          "name": "studentID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.TeacherToSubject": {
       "name": "TeacherToSubject",
       "schema": "",
@@ -720,14 +741,6 @@
     }
   },
   "enums": {
-    "public.AttachmentType": {
-      "name": "AttachmentType",
-      "schema": "public",
-      "values": [
-        "link",
-        "file"
-      ]
-    },
     "public.post_type": {
       "name": "post_type",
       "schema": "public",

@@ -44,7 +44,24 @@ export class SubjectTeacherService extends DBService {
 			.groupBy(sq.schoolClasses);
 	}
 
-	async getSubjectByID(subjectID: number) {
+	async getSubjectStudents(subjectID: number) {
+		return (
+			await this.db.execute(sql`
+            SELECT jsonb_build_object('id', m.id, 'name', m.name) AS student,
+                   avg(g.value::int)                              as average,
+                   count(g)                                       as count
+            FROM "TeacherToSubject" tts
+                     INNER JOIN "StudentToSubject" sts ON sts."subjectID" = ${subjectID}
+                     INNER JOIN "Member" m ON m.id = sts."studentID"
+                     LEFT JOIN "Grade" g ON g."studentID" = sts."studentID"
+            WHERE tts."subjectID" = ${subjectID}
+              AND tts."teacherID" = ${this.userID}
+            GROUP BY m.id
+        `)
+		).rows;
+	}
+
+	async getSubjectGradeMetricsByID(subjectID: number) {
 		return (
 			await this.db.execute(sql`
                 SELECT AVG(sq.average) as average, AVG(sq.count) as averageCount

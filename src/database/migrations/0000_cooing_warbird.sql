@@ -1,10 +1,4 @@
 DO $$ BEGIN
- CREATE TYPE "public"."AttachmentType" AS ENUM('link', 'file');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  CREATE TYPE "public"."post_type" AS ENUM('announcement', 'assignment', 'test', 'material');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -31,14 +25,6 @@ CREATE TABLE IF NOT EXISTS "Absence" (
 	"studentID" integer NOT NULL,
 	"teacherID" integer NOT NULL,
 	"subjectID" integer NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "Attachment" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"attachmentType" "AttachmentType" NOT NULL,
-	"source" text NOT NULL,
-	"submissionID" integer NOT NULL,
-	"studentID" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Grade" (
@@ -81,6 +67,12 @@ CREATE TABLE IF NOT EXISTS "Organization" (
 CREATE TABLE IF NOT EXISTS "Parent" (
 	"memberID" integer PRIMARY KEY NOT NULL,
 	"studentID" integer NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "PostAttachment" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"source" text NOT NULL,
+	"postID" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "PostComment" (
@@ -152,6 +144,13 @@ CREATE TABLE IF NOT EXISTS "Subject" (
 	"icon" text NOT NULL,
 	"organizationID" integer NOT NULL,
 	"metadata" jsonb NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "SubmissionAttachment" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"source" text NOT NULL,
+	"postID" integer NOT NULL,
+	"studentID" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "TeacherToSubject" (

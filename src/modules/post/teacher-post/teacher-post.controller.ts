@@ -6,13 +6,17 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
-	UseGuards
+	UploadedFiles,
+	UseGuards,
+	UseInterceptors
 } from '@nestjs/common';
 import { TeacherPostService } from './teacher-post.service';
 import { TeacherGuard } from '../../../shared/guards/teacher.guard';
 import { CreateTeacherPostDto } from './dto/create-teacher-post.dto';
 import { UpdateTeacherPostDto } from './dto/update-teacher-post.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @Controller('teacher')
 @ApiTags('Teacher posts')
@@ -21,12 +25,30 @@ export class TeacherPostController {
 	constructor(private readonly teacherPostService: TeacherPostService) {}
 
 	@Post()
+	@UseInterceptors(
+		FilesInterceptor('files', 5, {
+			storage: diskStorage({
+				destination: './uploads',
+				filename(_req, file, callback) {
+					const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}-${file.originalname}`;
+					callback(null, filename);
+				}
+			}),
+			limits: {
+				fileSize: 50_000_000,
+				fieldNameSize: 300
+			}
+		})
+	)
 	@ApiOperation({
-		description: 'Creates a post as teacher',
+		description: 'Creates a post as teacher. Also processes attachments',
 		summary: 'Create post'
 	})
-	create(@Body() createTeacherPostDto: CreateTeacherPostDto) {
-		return this.teacherPostService.create(createTeacherPostDto);
+	create(
+		@Body() createTeacherPostDto: CreateTeacherPostDto,
+		@UploadedFiles() files: Express.Multer.File[]
+	) {
+		return this.teacherPostService.create(createTeacherPostDto, files);
 	}
 
 	@Get('organization')

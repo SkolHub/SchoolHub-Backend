@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	Get,
 	Param,
 	ParseIntPipe,
 	Patch,
@@ -9,11 +10,25 @@ import {
 import { PostSubmissionService } from './post-submission.service';
 import { StudentGuard } from '../../shared/guards/student.guard';
 import { TeacherGuard } from '../../shared/guards/teacher.guard';
-import { TeacherSubmitDto } from './dto/teacher-submit.dto';
+import { GradeSubmissionDto } from './dto/grade-submission.dto';
+import { RedoSubmissionDto } from './dto/redo-submission.dto';
 
 @Controller('post-submission')
 export class PostSubmissionController {
 	constructor(private readonly postSubmissionService: PostSubmissionService) {}
+
+	@Get('post/:postID/student/:studentID')
+	findOne(
+		@Param('postID', ParseIntPipe) postID: number,
+		@Param('studentID', ParseIntPipe) studentID: number
+	) {
+		return this.postSubmissionService.findOne(postID, studentID);
+	}
+
+	@Get(':postID')
+	findMany(@Param('postID', ParseIntPipe) postID: number) {
+		return this.postSubmissionService.findMany(postID);
+	}
 
 	@Patch('turn-in/:id')
 	@UseGuards(StudentGuard)
@@ -21,21 +36,21 @@ export class PostSubmissionController {
 		return this.postSubmissionService.turnIn(id);
 	}
 
-	@Patch('unsubmit/:id')
+	@Patch('un-submit/:id')
 	@UseGuards(StudentGuard)
-	unsubmit(@Param('id', ParseIntPipe) id: number) {
+	unSubmit(@Param('id', ParseIntPipe) id: number) {
 		return this.postSubmissionService.unSubmit(id);
 	}
 
 	@Patch('redo')
 	@UseGuards(TeacherGuard)
-	redo(@Body() teacherSubmitDto: TeacherSubmitDto) {
-		return this.postSubmissionService.redo(teacherSubmitDto);
+	redo(@Body() redoSubmissionDto: RedoSubmissionDto) {
+		return this.postSubmissionService.redo(redoSubmissionDto);
 	}
 
 	@Patch('grade')
 	@UseGuards(TeacherGuard)
-	grade(@Body() teacherSubmitDto: TeacherSubmitDto) {
-		return this.postSubmissionService.grade(teacherSubmitDto);
+	grade(@Body() gradeSubmissionDto: GradeSubmissionDto) {
+		return this.postSubmissionService.grade(gradeSubmissionDto);
 	}
 }

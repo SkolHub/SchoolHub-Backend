@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+	BadRequestException,
+	ForbiddenException,
+	Injectable
+} from '@nestjs/common';
 import { DBService } from '../../../common/db.service';
 import { CreateTeacherPostDto } from './dto/create-teacher-post.dto';
 import { posts } from '../../../database/schema/posts';
@@ -7,6 +11,7 @@ import { UpdateTeacherPostDto } from './dto/update-teacher-post.dto';
 import { and, eq, sql } from 'drizzle-orm';
 import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
 import { postSections } from '../../../database/schema/post-sections';
+import { postAttachments } from '../../../database/schema/post-attachments';
 
 @Injectable()
 export class TeacherPostService extends DBService {
@@ -14,25 +19,61 @@ export class TeacherPostService extends DBService {
 		super();
 	}
 
-	async create(createPostDto: CreateTeacherPostDto) {
+	async create(
+		createPostDto: CreateTeacherPostDto,
+		files: Express.Multer.File[]
+	) {
+		if (createPostDto.attachments) {
+			createPostDto.attachments = JSON.parse(createPostDto.attachments);
+		}
+
+		const len =
+			(files?.length ?? 0) + (createPostDto?.attachments?.length ?? 0);
+
+		if (len > 10) {
+			throw new BadRequestException('You can only upload up to 10 attachments');
+		}
+
 		const isTeacher = this.permissionService.isTeacherInSubject(
 			this.userID,
-			createPostDto.subjectID
+			+createPostDto.subjectID
 		);
 
 		if (!isTeacher) {
 			throw new ForbiddenException('You are not a teacher in this subject');
 		}
 
-		await this.db.insert(posts).values({
-			subjectID: createPostDto.subjectID,
-			body: createPostDto.body,
-			memberID: this.userID,
-			title: createPostDto.title,
-			type: createPostDto.type,
-			dueDate: createPostDto.dueDate,
-			sectionID: createPostDto.sectionID
-		});
+		const postID = (
+			await this.db
+				.insert(posts)
+				.values({
+					subjectID: +createPostDto.subjectID,
+					body: createPostDto.body,
+					memberID: this.userID,
+					title: createPostDto.title,
+					type: createPostDto.type,
+					dueDate: createPostDto.dueDate,
+					sectionID: +createPostDto.sectionID || null
+				})
+				.returning({
+					id: posts.id
+				})
+		)[0].id;
+
+		if (len) {
+			await this.db.insert(postAttachments).values([
+				...(files?.map((file) => ({
+					source: file.filename,
+					postID
+				})) ?? []),
+				...((createPostDto?.attachments as unknown as string[])?.map(
+					(attachment) => ({
+						source: attachment,
+						postID
+					})
+				) ?? [])
+			]);
+		}
 	}
 
 	getOrganizationPosts() {
@@ -86,7 +127,7 @@ export class TeacherPostService extends DBService {
                        p.title,
                        p.body,
                        p."dueDate",
-                       p.post_type,
+                       p."postType",
                        p.timestamp,
                        p.updated,
                        psec.name                                                                                      AS section,
@@ -100,19 +141,23 @@ export class TeacherPostService extends DBService {
                        (CASE
                             WHEN COUNT(ps) = 0 THEN '[]'::jsonb
                             ELSE jsonb_agg(jsonb_build_object('studentID', ps."studentID", 'status',
-                                                              ps."submission_status", 'comment', ps."comment",
+                                                              ps."submissionStatus", 'comment', ps."comment",
                                                               'gradeID',
                                                               ps."gradeID", 'timestamp',
-                                                              ps."timestamp")) END)                                   AS submissions
+                                                              ps."timestamp")) END)                                   AS submissions,
+                       (CASE
+                            WHEN COUNT(pa) = 0 THEN '[]'::jsonb
+                            ELSE jsonb_agg(jsonb_build_object('id', pa.id, 'source', pa.source)) END)                 AS attachments
                 FROM "Post" p
 
                          INNER JOIN "Member" m ON m.id = p."memberID"
                          LEFT JOIN "PostSection" psec ON psec.id = p."sectionID"
+                         LEFT JOIN "PostAttachment" pa ON pa."postID" = ${postID}
                          LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
                          LEFT JOIN "Member" m2 ON m2.id = pc."userID"
                          LEFT JOIN "PostSubmission" ps ON ps."postID" = ${postID}
                 WHERE p.id = ${postID}
-                GROUP BY p.id, m.id
+                GROUP BY p.id, m.id, psec.name
             `)
 		).rows;
 	}

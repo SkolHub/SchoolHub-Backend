@@ -24,7 +24,7 @@ import { PostSectionModule } from './modules/post-section/post-section.module';
 import { PostSubmissionModule } from './modules/post-submission/post-submission.module';
 import { PostAttachmentModule } from './modules/post-attachment/post-attachment.module';
 import { PostSubmissionAttachmentModule } from './modules/post-submission-attachment/post-submission-attachment.module';
-import { AttachmentModule } from './modules/attachment/attachment.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 const routes: Routes = [
 	{
@@ -106,6 +106,10 @@ const routes: Routes = [
 				mount: true
 			}
 		}),
+		ServeStaticModule.forRoot({
+			rootPath: './uploads',
+			serveRoot: '/files'
+		}),
 		RouterModule.register(routes),
 		AuthModule,
 		OrganizationModule,
@@ -122,8 +126,7 @@ const routes: Routes = [
 		PostSectionModule,
 		PostSubmissionModule,
 		PostAttachmentModule,
-		PostSubmissionAttachmentModule,
-		AttachmentModule
+		PostSubmissionAttachmentModule
 	],
 	providers: [
 		{

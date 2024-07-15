@@ -1,7 +1,7 @@
 import { IsInt, IsOptional, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class TeacherSubmitDto {
+export class GradeSubmissionDto {
 	@IsInt()
 	@ApiProperty()
 	postID: number;
