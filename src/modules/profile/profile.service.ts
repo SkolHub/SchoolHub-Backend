@@ -13,7 +13,8 @@ export class ProfileService extends DBService {
 			columns: {
 				name: true,
 				role: true,
-				user: true
+				user: true,
+				id: true
 			},
 			with: {
 				organization: {
