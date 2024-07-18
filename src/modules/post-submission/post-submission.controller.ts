@@ -13,7 +13,7 @@ import { TeacherGuard } from '../../shared/guards/teacher.guard';
 import { GradeSubmissionDto } from './dto/grade-submission.dto';
 import { RedoSubmissionDto } from './dto/redo-submission.dto';
 
-@Controller('post-submission')
+@Controller()
 export class PostSubmissionController {
 	constructor(private readonly postSubmissionService: PostSubmissionService) {}
 
