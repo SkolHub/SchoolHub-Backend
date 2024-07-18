@@ -3,7 +3,7 @@ import { ParentAbsenceService } from './parent-absence.service';
 import { ParentGuard } from '../../../shared/guards/parent.guard';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller()
+@Controller('parent')
 @ApiTags('Parent absences')
 @UseGuards(ParentGuard)
 export class ParentAbsenceController {

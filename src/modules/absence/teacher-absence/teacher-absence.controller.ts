@@ -17,7 +17,7 @@ import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 import { ExcuseAbsencesDto } from './dto/excuse-absences.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@Controller()
+@Controller('teacher')
 @ApiTags('Teacher absences')
 @UseGuards(TeacherGuard)
 export class TeacherAbsenceController {

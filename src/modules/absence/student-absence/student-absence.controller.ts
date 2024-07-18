@@ -9,7 +9,7 @@ import { StudentAbsenceService } from './student-absence.service';
 import { StudentGuard } from '../../../shared/guards/student.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@Controller()
+@Controller('student')
 @ApiTags('Student absences')
 @UseGuards(StudentGuard)
 export class StudentAbsenceController {
