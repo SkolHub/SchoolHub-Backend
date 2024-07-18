@@ -1,4 +1,8 @@
 import { integer, jsonb, pgTable, serial, text } from 'drizzle-orm/pg-core';
+import {relations} from "drizzle-orm";
+import {studentsToSubjects} from "./students-to-subjects";
+import {teachersToSubjects} from "./teachers-to-subjects";
+import {subjectsToSchoolClasses} from "./subjects-to-school-classes";
 
 export const subjects = pgTable('Subject', {
 	id: serial('id').primaryKey(),
@@ -11,3 +15,9 @@ export const subjects = pgTable('Subject', {
 /* Metadata
  * minGrades?: number
  * */
+
+export const subjectsRelations = relations(subjects, ({ many }) => ({
+	students: many(studentsToSubjects),
+	teachers: many(teachersToSubjects),
+	schoolClasses: many(subjectsToSchoolClasses)
+}));

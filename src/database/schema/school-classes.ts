@@ -1,4 +1,8 @@
 import { integer, pgTable, serial, text } from 'drizzle-orm/pg-core';
+import {relations} from "drizzle-orm";
+import {members} from "./members";
+import {subjectsToSchoolClasses} from "./subjects-to-school-classes";
+import {studentsToSchoolClasses} from "./students-to-school-classes";
 
 export const schoolClasses = pgTable('SchoolClass', {
 	id: serial('id').primaryKey(),
@@ -6,3 +10,15 @@ export const schoolClasses = pgTable('SchoolClass', {
 	classMasterID: integer('classMasterID'),
 	organizationID: integer('organizationID').notNull()
 });
+
+export const schoolClassesRelations = relations(
+	schoolClasses,
+	({ one, many }) => ({
+		classMaster: one(members, {
+			fields: [schoolClasses.classMasterID],
+			references: [members.id]
+		}),
+		subjects: many(subjectsToSchoolClasses),
+		students: many(studentsToSchoolClasses)
+	})
+);
