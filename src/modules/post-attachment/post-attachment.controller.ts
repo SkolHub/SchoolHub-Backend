@@ -14,7 +14,7 @@ import { CreatePostAttachmentDto } from './dto/create-post-attachment.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
-@Controller('post-attachment')
+@Controller()
 @ApiTags('Post attachment')
 export class PostAttachmentController {
 	constructor(private readonly postAttachmentService: PostAttachmentService) {}

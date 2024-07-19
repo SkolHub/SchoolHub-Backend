@@ -4,7 +4,7 @@ import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@Controller('post-comment')
+@Controller()
 @ApiTags('Post comment')
 export class PostCommentController {
 	constructor(private readonly postCommentService: PostCommentService) {}

@@ -15,7 +15,7 @@ import { StudentGuard } from '../../shared/guards/student.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
-@Controller('post-submission-attachment')
+@Controller()
 @UseGuards(StudentGuard)
 export class PostSubmissionAttachmentController {
 	constructor(
