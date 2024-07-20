@@ -78,7 +78,7 @@ export class SubjectStudentService extends DBService {
                        (SELECT COUNT(p)
                         FROM "Post" p
                         WHERE p."subjectID" = sts."subjectID"
-                          AND p.post_type = 'assignment')::int        as assignments
+                          AND p."postType" = 'assignment')::int        as assignments
                 FROM "StudentToSubject" sts
                 WHERE sts."studentID" = ${this.userID}
                   AND sts."subjectID" = ${subjectID};

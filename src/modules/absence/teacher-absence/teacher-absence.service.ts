@@ -39,7 +39,8 @@ export class TeacherAbsenceService extends DBService {
 				date: absences.date,
 				timestamp: absences.timestamp,
 				teacherID: absences.teacherID,
-				excused: absences.excused
+				excused: absences.excused,
+				reason: absences.reason
 			})
 			.from(teachersToSubjects)
 			.innerJoin(
@@ -59,35 +60,35 @@ export class TeacherAbsenceService extends DBService {
 
 	async excuse(excuseAbsencesDto: ExcuseAbsencesDto) {
 		await this.db.execute(sql`
-            UPDATE "Absence"
-            SET excused = true,
-                reason  = ${excuseAbsencesDto.reason}
-            WHERE id IN (SELECT a.id
-                         FROM "Absence" a
-                                  INNER JOIN "SubjectToSchoolClass" stsc ON stsc."subjectID" = a."subjectID"
-                                  INNER JOIN "StudentToSchoolClass" sttsc ON sttsc."studentID" = a."studentID"
-                                  INNER JOIN "SchoolClass" sc
-                                             ON sc.id = stsc."schoolClassID" AND
-                                                sc.id = sttsc."schoolClassID" AND
-                                                sc."classMasterID" = ${this.userID}
-                         WHERE a.id IN ${excuseAbsencesDto.absences});
-        `);
+        UPDATE "Absence"
+        SET excused = true,
+            reason  = ${excuseAbsencesDto.reason}
+        WHERE id IN (SELECT a.id
+                     FROM "Absence" a
+                              INNER JOIN "SubjectToSchoolClass" stsc ON stsc."subjectID" = a."subjectID"
+                              INNER JOIN "StudentToSchoolClass" sttsc ON sttsc."studentID" = a."studentID"
+                              INNER JOIN "SchoolClass" sc
+                                         ON sc.id = stsc."schoolClassID" AND
+                                            sc.id = sttsc."schoolClassID" AND
+                                            sc."classMasterID" = ${this.userID}
+                     WHERE a.id IN ${excuseAbsencesDto.absences});
+		`);
 	}
 
 	async update(updateAbsenceDto: UpdateAbsenceDto, absenceID: number) {
 		await this.db.execute(sql`
-            UPDATE "Absence"
-            SET reason = ${updateAbsenceDto.reason}
-            WHERE id IN (SELECT a.id
-                         FROM "Absence" a
-                                  INNER JOIN "SubjectToSchoolClass" stsc ON stsc."subjectID" = a."subjectID"
-                                  INNER JOIN "StudentToSchoolClass" sttsc ON sttsc."studentID" = a."studentID"
-                                  INNER JOIN "SchoolClass" sc
-                                             ON sc.id = stsc."schoolClassID" AND
-                                                sc.id = sttsc."schoolClassID" AND
-                                                sc."classMasterID" = ${this.userID}
-                         WHERE a.id = ${absenceID});
-        `);
+        UPDATE "Absence"
+        SET reason = ${updateAbsenceDto.reason}
+        WHERE id IN (SELECT a.id
+                     FROM "Absence" a
+                              INNER JOIN "SubjectToSchoolClass" stsc ON stsc."subjectID" = a."subjectID"
+                              INNER JOIN "StudentToSchoolClass" sttsc ON sttsc."studentID" = a."studentID"
+                              INNER JOIN "SchoolClass" sc
+                                         ON sc.id = stsc."schoolClassID" AND
+                                            sc.id = sttsc."schoolClassID" AND
+                                            sc."classMasterID" = ${this.userID}
+                     WHERE a.id = ${absenceID});
+		`);
 
 		await this.db
 			.update(absences)

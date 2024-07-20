@@ -159,7 +159,7 @@ export class TeacherPostService extends DBService {
                 WHERE p.id = ${postID}
                 GROUP BY p.id, m.id, psec.name
             `)
-		).rows;
+		).rows[0];
 	}
 
 	async update(postID: number, updateTeacherPostDto: UpdateTeacherPostDto) {
