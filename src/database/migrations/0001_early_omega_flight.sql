@@ -1,0 +1,1 @@
+ALTER TABLE "Grade" ALTER COLUMN "reason" DROP NOT NULL;
