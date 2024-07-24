@@ -2,6 +2,7 @@ import {
 	Body,
 	Controller,
 	Delete,
+	Get,
 	Param,
 	ParseIntPipe,
 	Patch,
@@ -28,6 +29,18 @@ export class TeacherObservationController {
 	})
 	create(@Body() createObservationsDto: CreateObservationsDto) {
 		return this.observationService.create(createObservationsDto);
+	}
+
+	@Get('subject/:subjectID/student/:studentID')
+	@ApiOperation({
+		description: 'Get the observations of a student in a subject',
+		summary: 'Get grades'
+	})
+	getStudentGrades(
+		@Param('subjectID', ParseIntPipe) subjectID: number,
+		@Param('studentID', ParseIntPipe) studentID: number
+	) {
+		return this.observationService.getStudentObservations(subjectID, studentID);
 	}
 
 	@Patch(':id')

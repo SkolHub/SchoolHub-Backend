@@ -7,6 +7,7 @@ import { PermissionService } from '../../../common/permission.service';
 import { and, eq, inArray } from 'drizzle-orm';
 import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 import { UpdateObservationDto } from './dto/update-observation.dto';
+import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
 
 @Injectable()
 export class TeacherObservationService extends DBService {
@@ -31,6 +32,30 @@ export class TeacherObservationService extends DBService {
 				teacherID: this.userID
 			}))
 		);
+	}
+
+	async getStudentObservations(subjectID: number, studentID: number) {
+		return this.db
+			.select({
+				id: observations.id,
+				reason: observations.reason,
+				timestamp: observations.timestamp,
+				teacherID: observations.teacherID
+			})
+			.from(teachersToSubjects)
+			.innerJoin(
+				observations,
+				and(
+					eq(observations.subjectID, subjectID),
+					eq(observations.studentID, studentID)
+				)
+			)
+			.where(
+				and(
+					eq(teachersToSubjects.teacherID, this.userID),
+					eq(teachersToSubjects.subjectID, subjectID)
+				)
+			);
 	}
 
 	async update(

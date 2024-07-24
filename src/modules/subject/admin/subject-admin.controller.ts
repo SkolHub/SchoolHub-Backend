@@ -17,7 +17,7 @@ import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LinkObjectsDto } from '../../../common/dto/link-objects.dto';
 
-@Controller()
+@Controller('admin')
 @ApiTags('Admin subjects')
 @UseGuards(AdminGuard)
 export class SubjectAdminController {
