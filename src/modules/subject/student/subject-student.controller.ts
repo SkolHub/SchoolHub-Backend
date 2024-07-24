@@ -36,6 +36,11 @@ export class SubjectStudentController {
 		return this.subjectStudentService.getSubjectsWithMetrics();
 	}
 
+	@Get('overall-metrics')
+	findMetrics() {
+		return this.subjectStudentService.overallMetrics();
+	}
+
 	@Get(':id')
 	@ApiOperation({
 		description:

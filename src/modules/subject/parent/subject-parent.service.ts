@@ -39,9 +39,18 @@ export class SubjectParentService extends DBService {
 
 	async overallMetrics() {
 		return this.db.execute(sql`
-			SELECT (SELECT COUNT(*) FROM "Absence" a WHERE a."studentID" = ${this.studentID})  AS absences,
-				   (SELECT AVG(g::int) FROM "Grade" g WHERE g."studentID" = ${this.studentID}) AS average
-        `)
-
+            SELECT average.average,
+                   absences.excused,
+                   absences.not_excused
+            FROM (SELECT SUM(CASE WHEN a.excused THEN 1 ELSE 0 END) AS "excused",
+                         SUM(CASE WHEN a.excused THEN 0 ELSE 1 END) AS "not_excused"
+                  FROM "Absence" a
+                  WHERE a."studentID" = 5) AS absences
+                     LEFT JOIN (SELECT AVG(average.a) AS average
+                                FROM (SELECT AVG(g.value::int) AS a
+                                      FROM "Grade" g
+                                      WHERE g."studentID" = 5
+                                      GROUP BY g."subjectID") AS average) AS average ON true;
+        `);
 	}
 }

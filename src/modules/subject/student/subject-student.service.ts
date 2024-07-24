@@ -63,6 +63,23 @@ export class SubjectStudentService extends DBService {
 		).rows;
 	}
 
+	async overallMetrics() {
+		return this.db.execute(sql`
+            SELECT average.average,
+                   absences.excused,
+                   absences.not_excused
+            FROM (SELECT SUM(CASE WHEN a.excused THEN 1 ELSE 0 END) AS "excused",
+                         SUM(CASE WHEN a.excused THEN 0 ELSE 1 END) AS "not_excused"
+                  FROM "Absence" a
+                  WHERE a."studentID" = 5) AS absences
+                     LEFT JOIN (SELECT AVG(average.a) AS average
+                                FROM (SELECT AVG(g.value::int) AS a
+                                      FROM "Grade" g
+                                      WHERE g."studentID" = 5
+                                      GROUP BY g."subjectID") AS average) AS average ON true;
+        `);
+	}
+
 	async getSubjectByID(subjectID: number) {
 		return (
 			await this.db.execute(sql`
@@ -78,7 +95,7 @@ export class SubjectStudentService extends DBService {
                        (SELECT COUNT(p)
                         FROM "Post" p
                         WHERE p."subjectID" = sts."subjectID"
-                          AND p."postType" = 'assignment')::int        as assignments
+                          AND p."postType" = 'assignment')::int       as assignments
                 FROM "StudentToSubject" sts
                 WHERE sts."studentID" = ${this.userID}
                   AND sts."subjectID" = ${subjectID};
