@@ -13,6 +13,8 @@ import { teachersToSubjects } from '../../../database/schema/teachers-to-subject
 import { postSections } from '../../../database/schema/post-sections';
 import { postAttachments } from '../../../database/schema/post-attachments';
 import { subjects } from '../../../database/schema/subjects';
+import { subjectsToSchoolClasses } from '../../../database/schema/subjects-to-school-classes';
+import { schoolClasses } from '../../../database/schema/school-classes';
 
 @Injectable()
 export class TeacherPostService extends DBService {
@@ -86,7 +88,9 @@ export class TeacherPostService extends DBService {
 				title: posts.title,
 				dueDate: posts.dueDate,
 				timestamp: posts.timestamp,
-				subjectName: subjects.name
+				subjectName: subjects.name,
+				classes: sql`JSONB_AGG
+                    (${schoolClasses.name})`
 			})
 			.from(teachersToSubjects)
 			.where(eq(teachersToSubjects.teacherID, this.userID))
@@ -97,7 +101,16 @@ export class TeacherPostService extends DBService {
 					eq(posts.type, 'assignment')
 				)
 			)
-			.innerJoin(subjects, eq(subjects.id, posts.subjectID));
+			.innerJoin(subjects, eq(subjects.id, posts.subjectID))
+			.leftJoin(
+				subjectsToSchoolClasses,
+				eq(subjectsToSchoolClasses.subjectID, subjects.id)
+			)
+			.innerJoin(
+				schoolClasses,
+				eq(schoolClasses.id, subjectsToSchoolClasses.schoolClassID)
+			)
+			.groupBy(subjects.name, posts.id);
 	}
 
 	getSubjectPosts(subjectID: number) {
