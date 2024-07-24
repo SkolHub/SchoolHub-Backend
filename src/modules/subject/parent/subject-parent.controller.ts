@@ -11,4 +11,9 @@ export class SubjectParentController {
 	findMany() {
 		return this.subjectParentService.findMany();
 	}
+
+	@Get('overall-metrics')
+	findMetrics() {
+		return this.subjectParentService.overallMetrics();
+	}
 }
