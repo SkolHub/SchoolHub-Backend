@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CreateObservationsDto } from './dto/create-observations.dto';
 import { DBService } from '../../../common/db.service';
 import { observations } from '../../../database/schema/observations';
-import { grades } from '../../../database/schema/grades';
 import { PermissionService } from '../../../common/permission.service';
 import { and, eq, inArray } from 'drizzle-orm';
 import { DeleteByIdDto } from '../../../common/dto/delete-by-id.dto';
@@ -77,11 +76,11 @@ export class TeacherObservationService extends DBService {
 
 	async remove(deleteByIdDto: DeleteByIdDto) {
 		await this.db
-			.delete(grades)
+			.delete(observations)
 			.where(
 				and(
-					inArray(grades.id, deleteByIdDto.objects),
-					eq(grades.teacherID, this.userID)
+					inArray(observations.id, deleteByIdDto.objects),
+					eq(observations.teacherID, this.userID)
 				)
 			);
 	}
