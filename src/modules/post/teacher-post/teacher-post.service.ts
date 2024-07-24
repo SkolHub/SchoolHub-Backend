@@ -12,6 +12,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { teachersToSubjects } from '../../../database/schema/teachers-to-subjects';
 import { postSections } from '../../../database/schema/post-sections';
 import { postAttachments } from '../../../database/schema/post-attachments';
+import { subjects } from '../../../database/schema/subjects';
 
 @Injectable()
 export class TeacherPostService extends DBService {
@@ -107,7 +108,8 @@ export class TeacherPostService extends DBService {
 				body: posts.body,
 				dueDate: posts.dueDate,
 				timestamp: posts.timestamp,
-				section: postSections.name
+				section: postSections.name,
+				subjectName: subjects.name
 			})
 			.from(teachersToSubjects)
 			.where(
@@ -116,7 +118,8 @@ export class TeacherPostService extends DBService {
 					eq(teachersToSubjects.subjectID, subjectID)
 				)
 			)
-			.innerJoin(posts, and(eq(posts.subjectID, teachersToSubjects.subjectID)))
+			.innerJoin(posts, eq(posts.subjectID, teachersToSubjects.subjectID))
+			.innerJoin(subjects, eq(subjects.id, posts.subjectID))
 			.leftJoin(postSections, eq(postSections.id, posts.sectionID));
 	}
 
