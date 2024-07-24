@@ -8,7 +8,7 @@ export class ParentGuard implements CanActivate {
 
 	canActivate(): boolean {
 		if (this.cls.get('role') !== 'parent') {
-			throw new ForbiddenException('You are not a student');
+			throw new ForbiddenException('You are not a parent');
 		}
 
 		return true;

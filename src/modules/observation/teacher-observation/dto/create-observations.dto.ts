@@ -1,7 +1,6 @@
 import {
 	IsArray,
 	IsInt,
-	IsISO8601,
 	IsString,
 	Length,
 	ValidateNested
@@ -18,10 +17,6 @@ export class ObservationDto {
 	@IsInt()
 	@ApiProperty()
 	studentID: number;
-
-	@IsISO8601()
-	@ApiProperty()
-	date: string;
 }
 
 export class CreateObservationsDto {
@@ -32,7 +27,6 @@ export class CreateObservationsDto {
 	observations: {
 		reason: string;
 		studentID: number;
-		date: string;
 	}[];
 
 	@IsInt()

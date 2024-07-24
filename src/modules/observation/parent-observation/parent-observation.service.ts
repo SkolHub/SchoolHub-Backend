@@ -11,7 +11,6 @@ export class ParentObservationService extends DBService {
 			.select({
 				id: observations.id,
 				reason: observations.reason,
-				date: observations.date,
 				timestamp: observations.timestamp,
 				teacher: sql`JSON_BUILD_OBJECT
                     ('id', ${members.id}, 'name', ${members.name})`

@@ -48,7 +48,7 @@ export class AccountsService extends DBService {
 		const accounts = await this.db
 			.insert(members)
 			.values(
-				await this.hashAccounts(addParentsDto, this.organizationID, 'student')
+				await this.hashAccounts(addParentsDto, this.organizationID, 'parent')
 			)
 			.returning({
 				id: members.id
