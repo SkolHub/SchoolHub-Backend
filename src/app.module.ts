@@ -80,6 +80,14 @@ const routes: Routes = [
 		module: PostSubmissionModule
 	},
 	{
+		path: 'post-attachment',
+		module: PostAttachmentModule
+	},
+	{
+		path: 'post-submission-attachment',
+		module: PostSubmissionAttachmentModule
+	},
+	{
 		path: 'test',
 		module: TestModule
 	}

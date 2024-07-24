@@ -14,6 +14,7 @@ import { CreatePostSubmissionAttachmentDto } from './dto/create-post-submission-
 import { StudentGuard } from '../../shared/guards/student.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller()
 @UseGuards(StudentGuard)
@@ -38,6 +39,10 @@ export class PostSubmissionAttachmentController {
 			}
 		})
 	)
+	@ApiOperation({
+		description: 'Adds a file attachment to a submission',
+		summary: 'Add file attachment'
+	})
 	addFile(
 		@Param('id', ParseIntPipe) id: number,
 		@UploadedFile() file: Express.Multer.File
@@ -46,6 +51,10 @@ export class PostSubmissionAttachmentController {
 	}
 
 	@Post('link/:id')
+	@ApiOperation({
+		description: 'Adds a link attachment to a submission',
+		summary: 'Add file attachment'
+	})
 	addLink(
 		@Body()
 		createPostSubmissionAttachmentDto: CreatePostSubmissionAttachmentDto,
@@ -58,6 +67,10 @@ export class PostSubmissionAttachmentController {
 	}
 
 	@Delete(':id')
+	@ApiOperation({
+		description: 'Deletes a submission attachment by ID',
+		summary: 'Delete attachment'
+	})
 	remove(@Param('id', ParseIntPipe) id: number) {
 		this.postSubmissionAttachmentService.remove(id);
 	}
