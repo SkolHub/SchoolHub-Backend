@@ -37,6 +37,10 @@ export class SubjectStudentController {
 	}
 
 	@Get('overall-metrics')
+	@ApiOperation({
+		description:
+			'Gets the number of excused and not excused absences as well as the overall average of the current student'
+	})
 	findMetrics() {
 		return this.subjectStudentService.overallMetrics();
 	}

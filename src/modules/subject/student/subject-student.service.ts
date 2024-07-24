@@ -56,7 +56,7 @@ export class SubjectStudentService extends DBService {
                                INNER JOIN "TeacherToSubject" tts ON tts."subjectID" = s.id
                                LEFT JOIN "Member" m ON m.id = tts."teacherID"
                                LEFT JOIN "Grade" g ON g."subjectID" = s.id AND g."studentID" = ${this.userID}
-                      WHERE sttsc."studentID" = 5
+                      WHERE sttsc."studentID" = ${this.userID}
                       GROUP BY s.id, sc.id) s
                 GROUP BY s.id, s.name
             `)

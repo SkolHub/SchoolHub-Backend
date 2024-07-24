@@ -34,7 +34,7 @@ export class TeacherObservationController {
 	@Get('subject/:subjectID/student/:studentID')
 	@ApiOperation({
 		description: 'Get the observations of a student in a subject',
-		summary: 'Get grades'
+		summary: 'Get observations'
 	})
 	getStudentGrades(
 		@Param('subjectID', ParseIntPipe) subjectID: number,
