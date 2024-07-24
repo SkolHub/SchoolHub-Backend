@@ -19,7 +19,7 @@ export class ParentAbsenceService extends DBService {
                     ('id', ${members.id}, 'name', ${members.name})`
 			})
 			.from(absences)
-			.innerJoin(members, eq(members.id, grades.teacherID))
+			.innerJoin(members, eq(members.id, absences.teacherID))
 			.where(
 				and(
 					eq(absences.studentID, this.studentID),
