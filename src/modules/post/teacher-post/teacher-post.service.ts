@@ -85,7 +85,8 @@ export class TeacherPostService extends DBService {
 				subjectID: posts.subjectID,
 				title: posts.title,
 				dueDate: posts.dueDate,
-				timestamp: posts.timestamp
+				timestamp: posts.timestamp,
+				subjectName: subjects.name
 			})
 			.from(teachersToSubjects)
 			.where(eq(teachersToSubjects.teacherID, this.userID))
@@ -95,7 +96,8 @@ export class TeacherPostService extends DBService {
 					eq(posts.subjectID, teachersToSubjects.subjectID),
 					eq(posts.type, 'assignment')
 				)
-			);
+			)
+			.innerJoin(subjects, eq(subjects.id, posts.subjectID));
 	}
 
 	getSubjectPosts(subjectID: number) {
