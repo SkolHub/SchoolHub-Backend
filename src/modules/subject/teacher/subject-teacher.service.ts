@@ -12,7 +12,7 @@ export class SubjectTeacherService extends DBService {
 		const sq = this.db
 			.select({
 				schoolClasses: sql`JSONB_AGG
-                    (JSONB_BUILD_OBJECT('id', ${schoolClasses.id}, 'name', ${schoolClasses.name}))`.as(
+                (JSONB_BUILD_OBJECT('id', ${schoolClasses.id}, 'name', ${schoolClasses.name}, 'classMasterID', ${schoolClasses.classMasterID}))`.as(
 					'schoolClasses'
 				),
 				id: subjects.id,

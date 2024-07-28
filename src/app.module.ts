@@ -25,6 +25,7 @@ import { PostSubmissionModule } from './modules/post-submission/post-submission.
 import { PostAttachmentModule } from './modules/post-attachment/post-attachment.module';
 import { PostSubmissionAttachmentModule } from './modules/post-submission-attachment/post-submission-attachment.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { QuizCraftModule } from './modules/quiz-craft/quiz-craft.module';
 
 const routes: Routes = [
 	{
@@ -88,6 +89,10 @@ const routes: Routes = [
 		module: PostSubmissionAttachmentModule
 	},
 	{
+		path: 'quiz-craft',
+		module: QuizCraftModule
+	},
+	{
 		path: 'test',
 		module: TestModule
 	}
@@ -134,7 +139,8 @@ const routes: Routes = [
 		PostSectionModule,
 		PostSubmissionModule,
 		PostAttachmentModule,
-		PostSubmissionAttachmentModule
+		PostSubmissionAttachmentModule,
+		QuizCraftModule
 	],
 	providers: [
 		{

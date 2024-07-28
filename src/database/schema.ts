@@ -18,3 +18,4 @@ export * from './schema/submission-attachments';
 export * from './schema/enums/role-enum';
 export * from './schema/enums/post-type-enum';
 export * from './schema/enums/submission-status-enum';
+export * from './schema/quiz-craft';

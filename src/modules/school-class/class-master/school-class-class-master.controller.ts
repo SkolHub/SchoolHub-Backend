@@ -9,7 +9,7 @@ import { SchoolClassClassMasterService } from './school-class-class-master.servi
 import { TeacherGuard } from '../../../shared/guards/teacher.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@Controller()
+@Controller('class-master')
 @ApiTags('Class master school classes')
 @UseGuards(TeacherGuard)
 export class SchoolClassClassMasterController {
@@ -17,7 +17,20 @@ export class SchoolClassClassMasterController {
 		private readonly schoolClassMemberService: SchoolClassClassMasterService
 	) {}
 
-	@Get('/class-master/:id')
+	@Get('/school-class/:schoolClassID/student/:studentID')
+	@ApiOperation({
+		description:
+			'Gets a student by ID with all of its subjects, grades and absences inside a school class',
+		summary: 'Get student'
+	})
+	findStudent(
+		@Param('schoolClassID', ParseIntPipe) schoolClassID: number,
+		@Param('studentID', ParseIntPipe) studentID: number
+	) {
+		return this.schoolClassMemberService.findStudent(schoolClassID, studentID);
+	}
+
+	@Get(':id')
 	@ApiOperation({
 		description:
 			'Gets a school class by ID with all of its subjects and students',
