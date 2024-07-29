@@ -5,8 +5,9 @@ import { schoolClasses } from '../../../database/schema/school-classes';
 
 @Injectable()
 export class SchoolClassClassMasterService extends DBService {
-	findStudent(schoolClassID: number, studentID: number) {
-		return this.db.execute(sql`
+	async findStudent(schoolClassID: number, studentID: number) {
+		return (
+			await this.db.execute(sql`
             SELECT s.name,
                    s.id,
                    s.icon,
@@ -34,7 +35,8 @@ export class SchoolClassClassMasterService extends DBService {
                      INNER JOIN "Member" am ON am.id = g."teacherID"
             WHERE stsc."schoolClassID" = ${schoolClassID}
             GROUP BY s.id;
-        `);
+        `)
+		).rows;
 	}
 
 	findOne(schoolClassID: number) {

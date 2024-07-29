@@ -219,15 +219,13 @@ export class TestService extends DBService {
 		console.log('updated organization ID on owner', +new Date() - start);
 
 		await this.db.insert(members).values(
-			await Promise.all(
-				this.admins.map(async (admin) => ({
-					organizationID: organization.id,
-					role: 'admin' as 'admin',
-					name: admin.name,
-					user: admin.user,
-					password: encoded_pass
-				}))
-			)
+			this.admins.map((admin) => ({
+				organizationID: organization.id,
+				role: 'admin' as 'admin',
+				name: admin.name,
+				user: admin.user,
+				password: encoded_pass
+			}))
 		);
 
 		console.log('added admins', +new Date() - start);
@@ -235,15 +233,13 @@ export class TestService extends DBService {
 		const st = await this.db
 			.insert(members)
 			.values(
-				await Promise.all(
-					this.students.flat().map(async (student) => ({
-						organizationID: organization.id,
-						role: 'student' as 'student',
-						name: student.name,
-						user: student.user,
-						password: encoded_pass
-					}))
-				)
+				this.students.flat().map((student) => ({
+					organizationID: organization.id,
+					role: 'student' as 'student',
+					name: student.name,
+					user: student.user,
+					password: encoded_pass
+				}))
 			)
 			.returning({ id: members.id });
 
@@ -345,15 +341,13 @@ export class TestService extends DBService {
 		const teachers = await this.db
 			.insert(members)
 			.values(
-				await Promise.all(
-					unique_subjects.map(async (subject, index) => ({
-						name: `${subject.name} teacher`,
-						user: `t${index}`,
-						password: encoded_pass,
-						organizationID: organization.id,
-						role: 'teacher' as 'teacher'
-					}))
-				)
+				unique_subjects.map((subject, index) => ({
+					name: `${subject.name} teacher`,
+					user: `t${index}`,
+					password: encoded_pass,
+					organizationID: organization.id,
+					role: 'teacher' as 'teacher'
+				}))
 			)
 			.returning({ id: members.id });
 
