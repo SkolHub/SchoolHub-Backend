@@ -141,42 +141,48 @@ export class TeacherPostService extends DBService {
 	async getPostByID(postID: number) {
 		return (
 			await this.db.execute(sql`
-                SELECT p.id,
-                       p.title,
-                       p.body,
-                       p."dueDate",
-                       p."postType",
-                       p.timestamp,
-                       p.updated,
-                       psec.name                                                                                      AS section,
-                       jsonb_build_object('id', m.id, 'name', m.name)                                                 AS member,
-                       (CASE
-                            WHEN COUNT(pc) = 0 THEN '[]'::jsonb
-                            ELSE jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp,
-                                                              'updated',
-                                                              pc.updated, 'member',
-                                                              jsonb_build_object('id', m2.id, 'name', m2.name))) END) AS comments,
-                       (CASE
-                            WHEN COUNT(ps) = 0 THEN '[]'::jsonb
-                            ELSE jsonb_agg(jsonb_build_object('studentID', ps."studentID", 'status',
-                                                              ps."submissionStatus", 'comment', ps."comment",
-                                                              'gradeID',
-                                                              ps."gradeID", 'timestamp',
-                                                              ps."timestamp")) END)                                   AS submissions,
-                       (CASE
-                            WHEN COUNT(pa) = 0 THEN '[]'::jsonb
-                            ELSE jsonb_agg(jsonb_build_object('id', pa.id, 'source', pa.source)) END)                 AS attachments
-                FROM "Post" p
-
-                         INNER JOIN "Member" m ON m.id = p."memberID"
-                         LEFT JOIN "PostSection" psec ON psec.id = p."sectionID"
-                         LEFT JOIN "PostAttachment" pa ON pa."postID" = ${postID}
-                         LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
-                         LEFT JOIN "Member" m2 ON m2.id = pc."userID"
-                         LEFT JOIN "PostSubmission" ps ON ps."postID" = ${postID}
-                WHERE p.id = ${postID}
-                GROUP BY p.id, m.id, psec.name
-            `)
+          SELECT p.id,
+                 p.title,
+                 p.body,
+                 p."dueDate",
+                 p."postType",
+                 p.timestamp,
+                 p.updated,
+                 psec.name                                              AS section,
+                 jsonb_build_object('id', m.id, 'name', m.name)         AS member,
+                 COALESCE((SELECT jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp,
+                                                               'updated',
+                                                               pc.updated, 'member',
+                                                               jsonb_build_object('id', m2.id, 'name', m2.name)))
+                           FROM "PostComment" pc
+                                    INNER JOIN "Member" m2 ON m2.id = pc."userID"
+                           WHERE pc."postID" = ${postID}), '[]'::jsonb) AS comments,
+                 COALESCE((SELECT jsonb_agg(jsonb_build_object('studentID', ps."studentID", 'status',
+                                                               ps."submissionStatus", 'comment', ps."comment",
+                                                               'grade',
+                                                               jsonb_build_object(
+                                                                       'id', g.id, 'value', g.value, 'timestamp',
+                                                                       g."timestamp", 'date', g."date", 'reason',
+                                                                       g.reason
+                                                               ), 'timestamp',
+                                                               ps."timestamp", 'studentName', s.name))
+                           FROM "PostSubmission" ps
+                                    INNER JOIN "Member" s ON s.id = ps."studentID"
+                                    left JOIN "Grade" g ON g.id = ps."gradeID"
+                           WHERE "postID" = ${postID}), '[]'::jsonb)    AS submissions,
+                 COALESCE((SELECT jsonb_agg(jsonb_build_object('id', pa.id, 'source', pa.source))
+                           FROM "PostAttachment" pa
+                           WHERE pa."postID" = ${postID}), '[]'::jsonb) AS attachments,
+                 (SELECT count(*)
+                  FROM "StudentToSubject" sts
+                  WHERE sts."subjectID" = p."subjectID")::int           AS "studentCount"
+          FROM "Post" p
+                   INNER JOIN "Member" m
+                              ON m.id = p."memberID"
+                   LEFT JOIN "PostSection" psec ON psec.id = p."sectionID"
+          WHERE p.id = ${postID}
+          GROUP BY p.id, m.id, psec.name
+			`)
 		).rows[0];
 	}
 

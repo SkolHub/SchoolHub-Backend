@@ -12,6 +12,9 @@ import { and, eq, sql } from 'drizzle-orm';
 import { studentsToSubjects } from '../../../database/schema/students-to-subjects';
 import { postSections } from '../../../database/schema/post-sections';
 import { postAttachments } from '../../../database/schema/post-attachments';
+import { subjects } from '../../../database/schema/subjects';
+import { schoolClasses } from '../../../database/schema/school-classes';
+import { subjectsToSchoolClasses } from '../../../database/schema/subjects-to-school-classes';
 
 @Injectable()
 export class StudentPostService extends DBService {
@@ -83,7 +86,10 @@ export class StudentPostService extends DBService {
 				subjectID: posts.subjectID,
 				title: posts.title,
 				dueDate: posts.dueDate,
-				timestamp: posts.timestamp
+				timestamp: posts.timestamp,
+				subjectName: subjects.name,
+				classes: sql`JSONB_AGG
+            (${schoolClasses.name})`
 			})
 			.from(studentsToSubjects)
 			.where(eq(studentsToSubjects.studentID, this.userID))
@@ -93,7 +99,17 @@ export class StudentPostService extends DBService {
 					eq(posts.subjectID, studentsToSubjects.subjectID),
 					eq(posts.type, 'assignment')
 				)
-			);
+			)
+			.innerJoin(subjects, eq(subjects.id, posts.subjectID))
+			.leftJoin(
+				subjectsToSchoolClasses,
+				eq(subjectsToSchoolClasses.subjectID, subjects.id)
+			)
+			.innerJoin(
+				schoolClasses,
+				eq(schoolClasses.id, subjectsToSchoolClasses.schoolClassID)
+			)
+			.groupBy(posts.id)
 	}
 
 	getSubjectPosts(subjectID: number) {

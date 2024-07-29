@@ -21,16 +21,19 @@ export class TeacherGradeService extends DBService {
 			createGradesDto.subjectID
 		);
 
-		await this.db.insert(grades).values(
-			createGradesDto.grades.map((grade) => ({
-				date: grade.date,
-				reason: grade.reason,
-				value: grade.value,
-				studentID: grade.studentID,
-				subjectID: createGradesDto.subjectID,
-				teacherID: this.userID
-			}))
-		);
+		return this.db
+			.insert(grades)
+			.values(
+				createGradesDto.grades.map((grade) => ({
+					date: grade.date,
+					reason: grade.reason,
+					value: grade.value,
+					studentID: grade.studentID,
+					subjectID: createGradesDto.subjectID,
+					teacherID: this.userID
+				}))
+			)
+			.returning({ id: grades.id });
 	}
 
 	async getStudentGrades(subjectID: number, studentID: number) {

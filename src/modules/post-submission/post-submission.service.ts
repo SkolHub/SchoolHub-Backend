@@ -13,13 +13,18 @@ import { members } from '../../database/schema/members';
 
 @Injectable()
 export class PostSubmissionService extends DBService {
-	findOne(postID: number, studentID: number) {
-		return this.db
+	async findOne(postID: number, studentID: number) {
+		return (await this.db
 			.select({
 				attachments: sql`JSONB_AGG
-                    (JSONB_BUILD_OBJECT('id', ${submissionAttachments.id}, 'source', ${submissionAttachments.source}))`,
+            (JSONB_BUILD_OBJECT('id', ${submissionAttachments.id}, 'source', ${submissionAttachments.source}))`,
 				student: sql`JSONB_BUILD_OBJECT
-                    ('id', ${members.id}, 'name', ${members.name})`
+            ('id', ${members.id}, 'name', ${members.name})`,
+				comment: postSubmissions.comment,
+				timestamp: postSubmissions.timestamp,
+				status: postSubmissions.status,
+				grade: sql`JSONB_BUILD_OBJECT
+        ('id', ${grades.id}, 'value', ${grades.value}, 'timestamp', ${grades.timestamp}, 'date', ${grades.date}, 'reason', ${grades.reason})`
 			})
 			.from(posts)
 			.innerJoin(
@@ -30,6 +35,14 @@ export class PostSubmissionService extends DBService {
 				)
 			)
 			.innerJoin(members, eq(members.id, studentID))
+			.leftJoin(
+				postSubmissions,
+				and(
+					eq(postSubmissions.postID, postID),
+					eq(postSubmissions.studentID, studentID)
+				)
+			)
+			.leftJoin(grades, eq(grades.id, postSubmissions.gradeID))
 			.innerJoin(
 				submissionAttachments,
 				and(
@@ -38,7 +51,14 @@ export class PostSubmissionService extends DBService {
 				)
 			)
 			.where(eq(posts.id, postID))
-			.groupBy(members.id);
+			.groupBy(
+				members.id,
+				postSubmissions.postID,
+				postSubmissions.comment,
+				postSubmissions.timestamp,
+				postSubmissions.status,
+				grades.id
+			))[0];
 	}
 
 	findMany(postID: number) {
@@ -48,9 +68,9 @@ export class PostSubmissionService extends DBService {
 				timestamp: postSubmissions.timestamp,
 				status: postSubmissions.status,
 				grade: sql`JSONB_BUILD_OBJECT
-                ('id', ${grades.id}, 'value', ${grades.value}, 'timestamp', ${grades.timestamp}, 'date', ${grades.date}, 'reason', ${grades.reason})`,
+        ('id', ${grades.id}, 'value', ${grades.value}, 'timestamp', ${grades.timestamp}, 'date', ${grades.date}, 'reason', ${grades.reason})`,
 				student: sql`JSONB_BUILD_OBJECT
-                    ('id', ${members.id}, 'name', ${members.name})`
+            ('id', ${members.id}, 'name', ${members.name})`
 			})
 			.from(posts)
 			.innerJoin(

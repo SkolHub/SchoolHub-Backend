@@ -33,7 +33,7 @@ export class PostSubmissionAttachmentService extends DBService {
 	async addFile(postID: number, file: Express.Multer.File) {
 		await this.isInPostSubject(postID);
 
-		return this.db.insert(submissionAttachments).values({
+		await this.db.insert(submissionAttachments).values({
 			postID,
 			studentID: this.userID,
 			source: file.filename
@@ -46,15 +46,15 @@ export class PostSubmissionAttachmentService extends DBService {
 	) {
 		await this.isInPostSubject(postID);
 
-		return this.db.insert(submissionAttachments).values({
+		await this.db.insert(submissionAttachments).values({
 			postID,
 			studentID: this.userID,
 			source: createPostSubmissionAttachmentDto.link
 		});
 	}
 
-	remove(id: number) {
-		this.db
+	async remove(id: number) {
+		await this.db
 			.delete(submissionAttachments)
 			.where(
 				and(
