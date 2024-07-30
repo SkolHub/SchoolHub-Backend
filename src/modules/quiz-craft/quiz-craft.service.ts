@@ -5,6 +5,7 @@ import { eq, sql } from 'drizzle-orm';
 import { GeminiService } from '../../common/gemini.service';
 import { VerifyQuizCraftDto } from './dto/verify-quiz-craft.dto';
 import { CreateQuizCraftDto } from './dto/create-quiz-craft.dto';
+import { FeedbackQuizCraftDto } from './dto/feedback-quiz-craft.dto';
 
 type QuestionType =
 	| 'True or False'
@@ -118,6 +119,37 @@ export class QuizCraftService extends DBService {
 		}[];
 
 		const prompt = `Starting from the given files, verify if the given answers are right or wrong for the given questions. The questions and answers are: ${JSON.stringify(verifyQuizCraftDto)}. If the answer is wrong, also provide what's wrong and an example answer. You should return a list in the following format { response: boolean, wrong?: string, example?: string } with no extra props, the list directly, not an object with the list, where wrong is what's wrong if anything`;
+
+		const response = await this.geminiService.generate(
+			prompt,
+			files.map((file) => ({
+				path: file.path,
+				mimetype: file.mimetype
+			}))
+		);
+
+		return JSON.parse(response.response.candidates[0].content.parts[0].text);
+	}
+
+	async feedback(id: number, feedbackQuizCraftDto: FeedbackQuizCraftDto) {
+		const files: {
+			path: string;
+			mimetype: string;
+		}[] = JSON.parse(
+			(
+				await this.db
+					.select({
+						files: sql`${quizCraft.body}->>'files'`
+					})
+					.from(quizCraft)
+					.where(eq(quizCraft.id, id))
+			)[0].files as string
+		) as {
+			path: string;
+			mimetype: string;
+		}[];
+
+		const prompt = `Starting from the given files, give an overall feedback on the following answers: ${feedbackQuizCraftDto.responses}. The response should be in this format: { feedback: string } and should contain positive, negative constructive etc. feedback, whatever you consider.`;
 
 		const response = await this.geminiService.generate(
 			prompt,
