@@ -10,5 +10,5 @@ export class ExcuseAbsencesDto {
 	@IsString()
 	@Length(0, 100)
 	@IsOptional()
-	reason: string;
+	reason?: string;
 }

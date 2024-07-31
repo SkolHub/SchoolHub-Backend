@@ -148,6 +148,7 @@ export class TeacherPostService extends DBService {
                  p."postType",
                  p.timestamp,
                  p.updated,
+                 p."subjectID",
                  psec.name                                              AS section,
                  jsonb_build_object('id', m.id, 'name', m.name)         AS member,
                  COALESCE((SELECT jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp,

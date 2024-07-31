@@ -12,14 +12,13 @@ export class SchoolClassClassMasterService extends DBService {
                    s.id,
                    s.icon,
                    s.metadata,
-                   JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('id', sm.id, 'name', sm.name))    AS teachers,
                    JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('id', g.id, 'value', g.value, 'teacher',
                                                          JSONB_BUILD_OBJECT('id', gm.id, 'name', gm.name), 'date',
                                                          g.date,
                                                          'timestamp',
                                                          g.timestamp, 'reason', g.reason)) AS grades,
                    JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT('id', a.id, 'excused', a.excused, 'teacher',
-                                                         JSONB_BUILD_OBJECT('id', gm.id, 'name', gm.name), 'date',
+                                                         JSONB_BUILD_OBJECT('id', am.id, 'name', am.name), 'date',
                                                          a.date,
                                                          'timestamp',
                                                          a.timestamp, 'reason', a.reason)) AS absences
@@ -28,11 +27,11 @@ export class SchoolClassClassMasterService extends DBService {
                                 ON sts."studentID" = ${studentID} AND sts."subjectID" = stsc."subjectID"
                      INNER JOIN "Subject" s ON s.id = stsc."subjectID"
                      LEFT JOIN "TeacherToSubject" tts ON tts."subjectID" = s.id
-                     INNER JOIN "Member" sm ON sm.id = tts."teacherID"
+                     LEFT JOIN "Absence" a ON a."subjectID" = s.id AND a."studentID" = ${studentID}
+                     INNER JOIN "Member" am ON am.id = a."teacherID"
                      LEFT JOIN "Grade" g ON g."subjectID" = s.id AND g."studentID" = ${studentID}
                      INNER JOIN "Member" gm ON gm.id = g."teacherID"
-                     LEFT JOIN "Absence" a ON a."subjectID" = s.id AND a."studentID" = ${studentID}
-                     INNER JOIN "Member" am ON am.id = g."teacherID"
+                     
             WHERE stsc."schoolClassID" = ${schoolClassID}
             GROUP BY s.id;
         `)

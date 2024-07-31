@@ -8,7 +8,7 @@ import { schoolClasses } from '../../database/schema/school-classes';
 import { subjectsToSchoolClasses } from '../../database/schema/subjects-to-school-classes';
 import { teachersToSubjects } from '../../database/schema/teachers-to-subjects';
 import { studentsToSchoolClasses } from '../../database/schema/students-to-school-classes';
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { studentsToSubjects } from '../../database/schema/students-to-subjects';
 import { posts } from '../../database/schema/posts';
 import { grades } from '../../database/schema/grades';
@@ -896,20 +896,20 @@ export class TestService extends DBService {
 			}[];
 		}[] = (
 			await this.db.execute(sql`
-                SELECT ${schoolClasses.name},
-                       ${schoolClasses.id},
-                       (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
-                        FROM ${studentsToSchoolClasses}
-                                 INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
-                        WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
+          SELECT ${schoolClasses.name},
+                 ${schoolClasses.id},
+                 (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
+                  FROM ${studentsToSchoolClasses}
+                           INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
+                  WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
 
-                       (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
-                        FROM ${subjectsToSchoolClasses}
-                                 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND NOT ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
-                        WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
-                FROM ${schoolClasses}
-                WHERE ${schoolClasses.organizationID} = ${organization.id};
-            `)
+                 (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
+                  FROM ${subjectsToSchoolClasses}
+                           INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND NOT ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
+                  WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
+          FROM ${schoolClasses}
+          WHERE ${schoolClasses.organizationID} = ${organization.id};
+			`)
 		).rows;
 
 		console.log('Fetched students to subjects', +new Date() - start);
@@ -940,20 +940,20 @@ export class TestService extends DBService {
 			}[];
 		}[] = (
 			await this.db.execute(sql`
-                SELECT ${schoolClasses.name},
-                       ${schoolClasses.id},
-                       (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
-                        FROM ${studentsToSchoolClasses}
-                                 INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
-                        WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
+          SELECT ${schoolClasses.name},
+                 ${schoolClasses.id},
+                 (SELECT json_agg(json_build_object('id', ${members.id}, 'name', ${members.name}))
+                  FROM ${studentsToSchoolClasses}
+                           INNER JOIN ${members} ON ${members.id} = ${studentsToSchoolClasses.studentID} AND ${members.role} = 'student'
+                  WHERE ${studentsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as students,
 
-                       (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
-                        FROM ${subjectsToSchoolClasses}
-                                 INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
-                        WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
-                FROM ${schoolClasses}
-                WHERE ${schoolClasses.organizationID} = ${organization.id};
-            `)
+                 (SELECT json_agg(json_build_object('id', ${subjects.id}, 'name', ${subjects.name}))
+                  FROM ${subjectsToSchoolClasses}
+                           INNER JOIN ${subjects} ON ${subjects.id} = ${subjectsToSchoolClasses.subjectID} AND ${subjects.name} IN ${this.class_joins.map((join) => join.subject)}
+                  WHERE ${subjectsToSchoolClasses.schoolClassID} = ${schoolClasses.id}) as subjects
+          FROM ${schoolClasses}
+          WHERE ${schoolClasses.organizationID} = ${organization.id};
+			`)
 		).rows;
 
 		console.log('Fetched special students to subjects', +new Date() - start);
@@ -1035,14 +1035,14 @@ export class TestService extends DBService {
 
 		const subjectsWithTeachersAndStudentss = (
 			await this.db.execute(sql`
-                select "Subject".id,
-                       jsonb_agg(distinct "StudentToSubject"."studentID") as "students",
-                       jsonb_agg(distinct "TeacherToSubject"."teacherID") as "teachers"
-                from "Subject"
-                         left join "StudentToSubject" on "StudentToSubject"."subjectID" = "Subject".id
-                         left join "TeacherToSubject" on "TeacherToSubject"."subjectID" = "Subject".id
-                group by "Subject".id
-            `)
+          select "Subject".id,
+                 jsonb_agg(distinct "StudentToSubject"."studentID") as "students",
+                 jsonb_agg(distinct "TeacherToSubject"."teacherID") as "teachers"
+          from "Subject"
+                   left join "StudentToSubject" on "StudentToSubject"."subjectID" = "Subject".id
+                   left join "TeacherToSubject" on "TeacherToSubject"."subjectID" = "Subject".id
+          group by "Subject".id
+			`)
 		).rows;
 
 		function splitArrayIntoChunkss<T>(array: T[], chunkSize: number): any[][] {
@@ -1102,5 +1102,12 @@ export class TestService extends DBService {
 					.flat(3)
 			);
 		}
+
+		await this.db
+			.update(schoolClasses)
+			.set({
+				classMasterID: 734
+			})
+			.where(eq(schoolClasses.id, 1));
 	}
 }

@@ -62,7 +62,7 @@ export class TeacherAbsenceService extends DBService {
 		await this.db.execute(sql`
         UPDATE "Absence"
         SET excused = true,
-            reason  = ${excuseAbsencesDto.reason}
+            reason  = ${excuseAbsencesDto.reason ?? null}
         WHERE id IN (SELECT a.id
                      FROM "Absence" a
                               INNER JOIN "SubjectToSchoolClass" stsc ON stsc."subjectID" = a."subjectID"

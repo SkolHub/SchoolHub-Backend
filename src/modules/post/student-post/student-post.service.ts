@@ -109,7 +109,7 @@ export class StudentPostService extends DBService {
 				schoolClasses,
 				eq(schoolClasses.id, subjectsToSchoolClasses.schoolClassID)
 			)
-			.groupBy(posts.id)
+			.groupBy(posts.id, subjects.name)
 	}
 
 	getSubjectPosts(subjectID: number) {
@@ -145,33 +145,39 @@ export class StudentPostService extends DBService {
                  p."postType",
                  p.timestamp,
                  p.updated,
-                 jsonb_build_object('status', ps."submissionStatus", 'comment', ps.comment, 'gradeID', ps."gradeID", 'timestamp', ps.timestamp) AS submission,
-                 jsonb_build_object('id', m.id, 'name', m.name)                                                 AS member,
-                 (CASE
-                      WHEN count(pc) = 0 THEN '[]'::jsonb
-                      ELSE jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp,
-                                                        'updated',
-                                                        pc.updated, 'member',
-                                                        jsonb_build_object('id', m2.id, 'name', m2.name))) END) AS comments,
-                 psec.name AS section,
-                       (CASE
-                            WHEN count(pa) = 0 THEN '[]'::jsonb
-                            ELSE jsonb_agg(jsonb_build_object('id', pa.id, 'source', pa.source)) END)                 AS attachments,
-                       (CASE
-                            WHEN count(sa) = 0 THEN '[]'::jsonb
-                            ELSE jsonb_agg(jsonb_build_object('id', sa.id, 'source', sa.source)) END)                 AS submissions
+                 p."subjectID",
+                 jsonb_build_object('status', ps."submissionStatus", 'comment', ps.comment, 'grade',
+                                    jsonb_build_object('id', g.id, 'value', g.value, 'timestamp', g."timestamp", 'date',
+                                                       g."date", 'reason', g.reason),
+                                    'timestamp', ps.timestamp,
+                                    'attachments',
+                                    COALESCE((SELECT jsonb_agg(jsonb_build_object('id', sa.id, 'source', sa.source))
+                                              FROM "SubmissionAttachment" sa
+                                              WHERE sa."postID" = p.id
+                                                AND sa."studentID" = ${this.userID}), '[]'::jsonb)) AS submission,
+                 jsonb_build_object('id', m.id, 'name', m.name)                                     AS member,
+                 COALESCE((SELECT jsonb_agg(jsonb_build_object('id', pc.id, 'body', pc.body, 'timestamp', pc.timestamp,
+                                                               'updated', pc.updated, 'member',
+                                                               jsonb_build_object('id', m2.id, 'name', m2.name)))
+                           FROM "PostComment" pc
+                                    INNER JOIN "Member" m2 ON m2.id = pc."userID"
+                           WHERE pc."postID" = ${postID}), '[]'::jsonb)                             AS comments,
+                 psec.name                                                                          AS section,
+                 COALESCE((SELECT jsonb_agg(jsonb_build_object('id', pa.id, 'source', pa.source))
+                           FROM "PostAttachment" pa
+                           WHERE pa."postID" = ${postID}), '[]'::jsonb)                             AS attachments
           FROM "Post" p
-              INNER JOIN "StudentToSubject" sts
-          ON sts."subjectID" = p."subjectID" AND sts."studentID" = ${this.userID}
-              INNER JOIN "Member" m ON m.id = p."memberID"
-              LEFT JOIN "PostSection" psec ON psec.id = p."sectionID"
-              LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
-              LEFT JOIN "PostAttachment" pa ON pa."postID" = ${postID}
-              LEFT JOIN "Member" m2 ON m2.id = pc."userID"
-              LEFT JOIN "PostSubmission" ps ON ps."postID" = p.id AND ps."studentID" = ${this.userID}
-              LEFT JOIN "SubmissionAttachment" sa ON sa."postID" = p.id AND sa."studentID" = ${this.userID}
+                   INNER JOIN "StudentToSubject" sts
+                              ON sts."subjectID" = p."subjectID" AND sts."studentID" = ${this.userID}
+                   INNER JOIN "Member" m ON m.id = p."memberID"
+                   LEFT JOIN "PostSection" psec ON psec.id = p."sectionID"
+                   LEFT JOIN "PostComment" pc ON pc."postID" = ${postID}
+                   LEFT JOIN "PostAttachment" pa ON pa."postID" = ${postID}
+                   LEFT JOIN "PostSubmission" ps ON ps."postID" = p.id AND ps."studentID" = ${this.userID}
+                   LEFT JOIN "Grade" g ON g.id = ps."gradeID"
           WHERE p.id = ${postID}
-          GROUP BY p.id, m.id, ps."studentID", psec.id, psec.name, ps."submissionStatus", ps.comment, ps."gradeID", ps.timestamp
+          GROUP BY p.id, m.id, ps."studentID", psec.id, psec.name, ps."submissionStatus", ps.comment, ps."gradeID",
+                   ps.timestamp, g.id
 			`)
 		).rows[0];
 	}
