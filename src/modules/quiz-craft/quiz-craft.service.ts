@@ -38,6 +38,8 @@ export class QuizCraftService extends DBService {
 			groups: []
 		};
 
+		console.log('started for');
+
 		for (const group of groups) {
 			let prompt: string;
 
@@ -81,23 +83,37 @@ export class QuizCraftService extends DBService {
 			});
 		}
 
-		await this.db.insert(quizCraft).values({
-			body: data
-		});
+		console.log('finished');
+
+		return (
+			await this.db
+				.insert(quizCraft)
+				.values({
+					body: data
+				})
+				.returning({ id: quizCraft.id })
+		)[0];
 	}
 
-	findAll() {
-		return this.db
-			.select({
-				id: quizCraft.id,
-				timestamp: quizCraft.timestamp,
-				files: sql`${quizCraft.body}->>'files'`
-			})
-			.from(quizCraft);
+	async findAll() {
+		return (
+			await this.db
+				.select({
+					id: quizCraft.id,
+					timestamp: quizCraft.timestamp,
+					files: sql`${quizCraft.body}->>'files'`
+				})
+				.from(quizCraft)
+		).map((quiz) => ({
+			...quiz,
+			files: JSON.parse(quiz.files as string)
+		}));
 	}
 
-	findOne(id: number) {
-		return this.db.select().from(quizCraft).where(eq(quizCraft.id, id));
+	async findOne(id: number) {
+		return (
+			await this.db.select().from(quizCraft).where(eq(quizCraft.id, id))
+		)[0];
 	}
 
 	async verify(id: number, verifyQuizCraftDto: VerifyQuizCraftDto) {
@@ -149,7 +165,7 @@ export class QuizCraftService extends DBService {
 			mimetype: string;
 		}[];
 
-		const prompt = `Starting from the given files, give an overall feedback on the following answers: ${feedbackQuizCraftDto.responses}. The response should be in this format: { feedback: string } and should contain positive, negative constructive etc. feedback, whatever you consider.`;
+		const prompt = `Some questions were generated from the given files and someone answered them. Your job is to give an overall feedback for the one that answered the questions, more specifically what they could improve when learning about the given files. These are the questions and answers: ${feedbackQuizCraftDto.responses}. The response should be in this format: { feedback: string } and should contain positive, negative constructive etc. feedback.`;
 
 		const response = await this.geminiService.generate(
 			prompt,
